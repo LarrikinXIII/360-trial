@@ -1,12 +1,12 @@
 /* ==========================================================================
-   1. GLOBAL SYSTEM SETUP & MOBILE VIEW OVERRIDES
+   1. GLOBAL SYSTEM SETUP & MOBILE VIEW LOCKS
    ========================================================================== */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    /* Locks the main browser page frame from scrolling or bouncing on touch swipes */
+    /* Prevents the mobile phone wrapper browser framework from bouncing when dragged */
     overflow: hidden; 
     position: fixed;
     touch-action: none; 
@@ -15,7 +15,7 @@ html, body {
 }
 
 /* ==========================================================================
-   2. HEADER & FOOTER LAYOUT NAVIGATION STRIPS
+   2. HEADER & FOOTER STATIC STRIPS
    ========================================================================== */
 .studio-header {
     position: fixed;
@@ -31,7 +31,7 @@ html, body {
     align-items: center;
     padding: 0 24px;
     box-sizing: border-box;
-    z-index: 100; /* Stays anchored cleanly above the virtual room textures */
+    z-index: 100; /* Keeps nav strip resting above the background sphere canvas layer */
 }
 
 .logo-text {
@@ -72,363 +72,21 @@ html, body {
 }
 
 /* ==========================================================================
-   3. FULLSCREEN 360 WebGL RECTANGULAR CANVAS ENGINE
+   3. FULLSCREEN 360 WebGL RECTANGULAR VIEWPORT CANVAS
    ========================================================================== */
-/* 1. Clear pointer blocking events from the main window frame content container */
 .virtual-tour-viewport {
     width: 100%;
     height: 100vh;
     position: relative;
-    z-index: 5; /* Moves the tour wrapper above background body scripts */
-    pointer-events: none; /* Allows click actions to bypass structural layout columns */
+    z-index: 1;
 }
+
 #panorama-viewer {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10; /* Moves canvas layer into focus */
-    pointer-events: auto !important; /* Forces the browser to process your hotspots */
-    touch-action: pan-x pan-y;
-}
-
-/* ==========================================================================
-   4. 38 INVISIBLE PROGRAMMATIC HOTSPOT DEBUG TARGET BOUNDS
-   ========================================================================== */
-
-.debug-hotspot{
-
-    width:40px !important;
-    height:40px !important;
-
-    background:rgba(255,0,0,.45) !important;
-
-    border:3px solid yellow !important;
-
-    border-radius:6px;
-
-    cursor:pointer !important;
-
-    pointer-events:auto !important;
-
-    z-index:99999 !important;
-
-    transform:translate(-50%,-50%) !important;
-
-    display:block !important;
-
-    opacity:1 !important;
-
-    visibility:visible !important;
-
-}
-
-.debug-hotspot:hover{
-
-    background:rgba(0,255,0,.65) !important;
-
-}
-
-/* 3. Elevate the invisible green targets to the highest clickable layer in the 3D room */
-.invisible-hotspot-target.pnm-hotspot.pnm-info {
-    /* Bright semi-transparent neon green fill highlights the size of the target */
-    background: rgba(34, 197, 94, 0.45) !important; 
-    
-    /* High-contrast dashed green outline traces the exact frame border dimensions */
-    border: 2px dashed #22c55e !important; 
-    border-radius: 4px;
-    cursor: pointer !important;
-    
-    /* Forces touch events down to the highest interactive layer */
-    z-index: 9999 !important; 
-    pointer-events: auto !important; 
-    transform: translate(-50%, -50%) !important;
-}
-
-/* Turns the target neon pink when you hover your cursor or press on your phone screen */
-.invisible-hotspot-target.pnm-hotspot.pnm-info:active,
-.invisible-hotspot-target.pnm-hotspot.pnm-info:hover {
-    background: rgba(236, 72, 153, 0.6) !important;
-    border-color: #ec4899 !important;
-}
-/* Symmetric Sizing Allocations for Specific Framework Matrix Keys */
-.frame-sm-p { width: 45px;  height: 60px;  }
-.frame-sm-l { width: 55px;  height: 40px;  }
-.frame-md-p { width: 50px;  height: 65px;  }
-.frame-md-l { width: 75px;  height: 55px;  }
-.frame-lg-p { width: 75px;  height: 110px; }
-.frame-lg-l { width: 100px; height: 75px;  }
-.frame-xl-l { width: 90px;  height: 70px;  }
-.frame-sq   { width: 50px;  height: 50px;  }
-
-/* ==========================================================================
-   5. REUSED CONFIGURATOR DARK MODE MODAL OVERLAY WRAPPERS
-   ========================================================================== */
-/* 4. Keep your dark-mode product configuration card locked securely over the entire screen surface */
-.order-overlay-wrapper {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100vw; 
-    height: 100vh;
-    background: rgba(3, 7, 18, 0.85); 
-    backdrop-filter: blur(12px);       
-    
-    /* 🚀 TOP LEVEL: Overrides your 3D view once a frame is selected */
-    z-index: 99999 !important; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    opacity: 0; 
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-/* 🚀 UNIVERSAL DISPLAY BRIDGE: Handles either style identifier smoothly */
-.order-overlay-wrapper.open,
-.order-overlay-wrapper.active { 
-    opacity: 1 !important; 
-    visibility: visible !important;
-    pointer-events: auto !important; 
-}
-
-.config-card {
-    background: #111827; 
-    width: 90%; 
-    max-width: 420px; 
-    border-radius: 12px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-    overflow: hidden; 
-    display: flex; 
-    flex-direction: column;
-    max-height: 85vh; 
-    border: 1px solid #1f2937;        
-}
-
-/* Modal Content Header Configuration Components */
-.config-header {
-    padding: 20px; 
-    background: #1f2937; 
-    border-bottom: 1px solid #374151; 
-    display: flex; 
-    align-items: center; 
-    gap: 15px; 
-    position: relative;
-}
-
-.config-header h2, 
-.config-header h3, 
-.config-header div {
-    color: #ffffff;                    
-}
-
-.close-x {
-    position: absolute; 
-    top: 15px; 
-    right: 20px;
-    font-size: 28px; 
-    cursor: pointer; 
-    color: #ffffff; 
-    line-height: 20px; 
-    transition: color 0.2s ease;
-}
-.close-x:hover {
-    color: #ff4757;
-}
-
-.thumb-img { 
-    width: 50px; 
-    height: 50px; 
-    object-fit: cover; 
-    border-radius: 4px; 
-    border: 1px solid #374151; 
-}
-
-/* Modal Body Sizing Matrix Blocks */
-.config-body { 
-    padding: 25px; 
-    overflow-y: auto; 
-    color: #ffffff; 
-}
-
-.section-title {
-    font-size: 11px; 
-    font-weight: 800; 
-    color: #9333ea; /* Signature Brand Purple Accents */
-    text-transform: uppercase; 
-    letter-spacing: 1px;
-    margin-bottom: 12px; 
-    display: block;
-}
-
-/* Format Price Selection Cards Layout Details */
-.tier-grid { 
-    display: flex; 
-    gap: 10px; 
-    margin-bottom: 25px; 
-}
-
-.tier-card {
-    flex: 1; 
-    border: 1px solid #374151; 
-    padding: 12px 5px;
-    text-align: center; 
-    border-radius: 6px; 
-    cursor: pointer;
-    background: #1f2937;
-    transition: all 0.2s ease;
-}
-
-.tier-card.selected { 
-    border-color: #2563eb; 
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(147, 51, 234, 0.2)); 
-    box-shadow: 0 0 12px rgba(147, 51, 234, 0.25);
-}
-
-.tier-name { 
-    display: block; 
-    font-size: 11px; 
-    font-weight: bold; 
-    margin-bottom: 4px; 
-    color: #ffffff; 
-}
-
-.tier-price { 
-    font-size: 13px; 
-    color: #9333ea; 
-    font-weight: 600; 
-} 
-
-/* Reference Pictures Upload Component Nodes */
-.upload-row {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    background: #1f2937; 
-    padding: 10px 15px;
-    margin-bottom: 8px; 
-    border-radius: 6px; 
-    border: 1px solid #374151; 
-}
-
-.upload-label { 
-    font-size: 13px; 
-    font-weight: 500; 
-    color: #ffffff; 
-}
-
-.file-btn {
-    font-size: 11px; 
-    padding: 6px 12px; 
-    background: #374151;
-    border: 1px solid #4b5563; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    color: #ffffff;
-    transition: background 0.2s ease;
-}
-.file-btn:hover {
-    background: #4b5563;
-}
-
-.file-btn.done { 
-    background: linear-gradient(135deg, #2563eb, #9333ea); 
-    border: none;
-    color: #ffffff; 
-}
-
-/* Interactive Checkout Footers */
-.config-footer { 
-    padding: 15px 25px; 
-    border-top: 1px solid #374151; 
-    background: #111827; 
-}
-
-.add-cart-btn {
-    width: 100%; 
-    background: linear-gradient(135deg, #2563eb, #9333ea); 
-    color: #fff; 
-    padding: 15px;
-    border: none; 
-    border-radius: 6px; 
-    font-weight: bold;
-    font-size: 14px; 
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
-    transition: opacity 0.2s ease;
-}
-.add-cart-btn:hover {
-    opacity: 0.95;
-}
-
-/* ==========================================================================
-   6. FILE UPLOADER UTILITIES & MEMBER ROW CONTROLS
-   ========================================================================== */
-.file-list {
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 8px;
-    margin-top: 8px; 
-    margin-bottom: 15px;
-}
-
-.file-chip {
-    background: #1f2937; 
-    border: 1px solid #374151;
-    padding: 6px 10px; 
-    border-radius: 4px;
-    font-size: 11px; 
-    color: #e5e7eb;
-    display: flex; 
-    align-items: center; 
-    gap: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.file-chip span {
-    max-width: 150px; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    white-space: nowrap;
-}
-
-.delete-file {
-    color: #ff4757; 
-    font-weight: bold; 
-    cursor: pointer;
-    background: rgba(255, 71, 87, 0.15);
-    width: 18px; 
-    height: 18px; 
-    border-radius: 50%;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    line-height: 0; 
-    font-size: 14px;
-    transition: background 0.2s, color 0.2s;
-}
-.delete-file:hover { 
-    background: #ff4757; 
-    color: white; 
-}
-
-.add-member-btn {
-    width: 100%;
-    padding: 10px;
-    border: 2px dashed #374151;
-    background: #1f2937;
-    color: #9ca3af;
-    font-weight: bold;
-    font-size: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.2s ease;
-}
-.add-member-btn:hover {
-    border-color: #2563eb;
-    color: #ffffff;
-    background: #1f2937;
+    /* Hands all swiping gestures cleanly down to the internal WebGL panning engine */
+    touch-action: pan-x pan-y; 
 }

@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AVA XIN | Family Studio Canvas 360</title>
     
-    <!-- 1. Pannellum 360 WebGL Viewer Library CDN Links -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.7/build/pannellum.css"/>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.7/build/pannellum.js"></script>
+    <!-- 1. Pannellum 360 CSS Library Asset Link -->
+    <link rel="stylesheet" href="https://jsdelivr.net"/>
     
-    <!-- Your existing global styles layer -->
+    <!-- Your master presentation layout stylesheets -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,61 +27,56 @@
 
     <!-- ========================================== -->
     <!-- NEW: FULLSCREEN 360 VIRTUAL TOUR CANVAS    -->
-    <!-- Replaces old floating desk photo wrapper divs-->
     <!-- ========================================== -->
     <main class="virtual-tour-viewport">
         <div id="panorama-viewer"></div>
     </main>
 
     <!-- ========================================== -->
-    <!-- RETAINED: YOUR WORKING POLAROID MODAL FLOW -->
-    <!-- Keep your exact inner structures untouched -->
+    <!-- CATEGORY A: WINDOW WALL FRAMES (e.g., F1)  -->
     <!-- ========================================== -->
-<!-- ========================================== -->
-<!-- CATEGORY A: WINDOW WALL FRAMES (e.g., F1)  -->
-<!-- ========================================== -->
-<div id="modal-F1" class="order-overlay-wrapper">
-    <div class="config-card">
-        <div class="config-header">
-            <div class="close-x" onclick="closeModal('F1')">×</div>
-            <img class="thumb-img" src="assets/family-canvas.jpg">
-            <div>
-                <h3 style="margin:0; font-size:16px;">Family Studio Canvas</h3>
-                <span style="font-size:12px; color:#888;">SKU-F1</span>
+    <div id="modal-F1" class="order-overlay-wrapper">
+        <div class="config-card">
+            <div class="config-header">
+                <div class="close-x" onclick="closeModal('F1')">×</div>
+                <img class="thumb-img" src="assets/family-canvas.jpg">
+                <div>
+                    <h3 style="margin:0; font-size:16px;">Family Studio Canvas</h3>
+                    <span style="font-size:12px; color:#888;">SKU-F1</span>
+                </div>
+            </div>
+            <div class="config-body">
+                <span class="section-title">1. Select Format</span>
+                <div class="tier-grid"><!-- Family sizes --></div>
+            </div>
+            <div class="config-footer">
+                <button class="add-cart-btn" onclick="addToCart('F1')">ADD TO CART</button>
             </div>
         </div>
-        <div class="config-body">
-            <span class="section-title">1. Select Format</span>
-            <div class="tier-grid"><!-- Family sizes --></div>
-        </div>
-        <div class="config-footer">
-            <button class="add-cart-btn" onclick="addToCart('F1')">ADD TO CART</button>
-        </div>
     </div>
-</div>
 
-<!-- ========================================== -->
-<!-- CATEGORY B: RIGHT WALL GALLERIES (e.g., R12)-->
-<!-- ========================================== -->
-<div id="modal-R12" class="order-overlay-wrapper">
-    <div class="config-card">
-        <div class="config-header">
-            <div class="close-x" onclick="closeModal('R12')">×</div>
-            <img class="thumb-img" src="assets/split-panel.jpg">
-            <div>
-                <h3 style="margin:0; font-size:16px;">Split Panel Luxury Print</h3>
-                <span style="font-size:12px; color:#888;">SKU-R12</span>
+    <!-- ========================================== -->
+    <!-- CATEGORY B: RIGHT WALL GALLERIES (e.g., R12)-->
+    <!-- ========================================== -->
+    <div id="modal-R12" class="order-overlay-wrapper">
+        <div class="config-card">
+            <div class="config-header">
+                <div class="close-x" onclick="closeModal('R12')">×</div>
+                <img class="thumb-img" src="assets/split-panel.jpg">
+                <div>
+                    <h3 style="margin:0; font-size:16px;">Split Panel Luxury Print</h3>
+                    <span style="font-size:12px; color:#888;">SKU-R12</span>
+                </div>
+            </div>
+            <div class="config-body">
+                <span class="section-title">1. Select Premium Multi-Panel Format</span>
+                <div class="tier-grid"><!-- Premium split sizes --></div>
+            </div>
+            <div class="config-footer">
+                <button class="add-cart-btn" onclick="addToCart('R12')">ADD TO CART</button>
             </div>
         </div>
-        <div class="config-body">
-            <span class="section-title">1. Select Premium Multi-Panel Format</span>
-            <div class="tier-grid"><!-- Premium split sizes --></div>
-        </div>
-        <div class="config-footer">
-            <button class="add-cart-btn" onclick="addToCart('R12')">ADD TO CART</button>
-        </div>
     </div>
-</div>
 
     <!-- ========================================== -->
     <!-- RETAINED: YOUR ORIGINAL APP FOOTER         -->
@@ -96,7 +90,11 @@
         </div>
     </footer>
 
-    <!-- Your integrated logic pipeline execution script -->
+    <!-- ========================================== -->
+    <!-- 🚀 THE STRUCTURAL FIX BLOCK                 -->
+    <!-- Script loaders are moved down here so the HTML renders first! -->
+    <!-- ========================================== -->
+    <script type="text/javascript" src="https://jsdelivr.net"></script>
     <script src="script.js"></script>
 </body>
 </html>

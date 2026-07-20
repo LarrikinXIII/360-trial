@@ -1,212 +1,390 @@
 /* ==========================================================================
-   360 GALLERY VIRTUAL TOUR STRUCTURAL LAYOUT RULES
+   1. GLOBAL SYSTEM SETUP & MOBILE VIEW OVERRIDES
    ========================================================================== */
-
-/* 1. Global Document Setup */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    
-    /* 🚀 THE FIX: Completely locks the website container from shifting on mobile touch */
+    /* Locks the main browser page frame from scrolling or bouncing on touch swipes */
     overflow: hidden; 
     position: fixed;
-    touch-action: none; /* Prevents the mobile browser from hijacking swipes */
+    touch-action: none; 
+    background-color: #0b0f19;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 }
-#panorama-viewer {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    touch-action: pan-x pan-y; /* Tells the phone that touch motions belong ONLY to the 360 view */
-}
-/* 2. Header Layout Alignment */
+
+/* ==========================================================================
+   2. HEADER & FOOTER LAYOUT NAVIGATION STRIPS
+   ========================================================================== */
 .studio-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 60px;
-    background: rgba(20, 20, 20, 0.85);
-    backdrop-filter: blur(8px); /* Modern frosted-glass effect */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1f2937;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 24px;
-    z-index: 100; /* Stays locked comfortably above the moving 360 sphere canvas layer */
+    box-sizing: border-box;
+    z-index: 100; /* Stays anchored cleanly above the virtual room textures */
 }
 
-/* 3. Fullscreen 360 Canvas Viewer Frame Viewport */
-.virtual-tour-viewport {
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    z-index: 1; /* Sits below UI elements but forms the interactive window backdrop */
+.logo-text {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 0.5px;
 }
 
-#panorama-viewer {
-    width: 100%;
-    height: 100%;
+.menu-trigger {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
 }
 
-/* 4. Footer Layout Alignment */
 .studio-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     height: 40px;
-    background: rgba(20, 20, 20, 0.85);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid #1f2937;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 24px;
-    font-size: 12px;
-    color: #888;
+    box-sizing: border-box;
+    font-size: 11px;
+    color: #9ca3af;
     z-index: 100;
 }
 
 /* ==========================================================================
-   38 PROGRAMMATIC INVISIBLE HOTSPOT CLICK TARGET BOUNDS
+   3. FULLSCREEN 360 WebGL RECTANGULAR CANVAS ENGINE
    ========================================================================== */
+.virtual-tour-viewport {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+}
 
-/* Resets native library iconography icons to expose naked, interactive wall frames */
-/* Overrides the transparent standard look to expose the exact shapes of all 38 frames */
-/* This rule forces your transparent targets to show up instantly on load */
+#panorama-viewer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    touch-action: pan-x pan-y; /* Returns horizontal swiping controls to the 360 space context */
+}
+
+/* ==========================================================================
+   4. 38 INVISIBLE PROGRAMMATIC HOTSPOT DEBUG TARGET BOUNDS
+   ========================================================================== */
 .invisible-hotspot-target.pnm-hotspot.pnm-info {
-    /* Bright neon outline traces your active frame dimension boundaries */
-    background: rgba(34, 197, 94, 0.45) !important; 
+    /* 🚀 RADAR: Bright green transparent fill reveals target shapes instantly */
+    background: rgba(34, 197, 94, 0.35) !important; 
     border: 2px dashed #22c55e !important; 
     border-radius: 4px;
     cursor: pointer !important;
-    
-    /* Ensures touch responses instantly bypass image layers to fire the click functions */
     pointer-events: auto !important; 
-    transform: translate(-50%, -50%) !important;
+    transform: translate(-50%, -50%) !important; /* Anchors geometry exactly on coordinate centers */
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-/* Changes style profile color to neon pink when actively tapped or clicked */
+/* Switches outline profiles to pink when hovered or tapped on mobile screens */
 .invisible-hotspot-target.pnm-hotspot.pnm-info:active,
 .invisible-hotspot-target.pnm-hotspot.pnm-info:hover {
-    background: rgba(236, 72, 153, 0.6) !important;
+    background: rgba(236, 72, 153, 0.55) !important;
     border-color: #ec4899 !important;
 }
 
-/* Sizing profiles expanding outward symmetrically from center coordinates */
-.frame-sm-p { width: 45px;  height: 60px;  } /* Small Portrait Frame Profile Class */
-.frame-sm-l { width: 55px;  height: 40px;  } /* Small Landscape Frame Profile Class */
-.frame-md-p { width: 50px;  height: 65px;  } /* Medium Portrait Frame Profile Class */
-.frame-md-l { width: 75px;  height: 55px;  } /* Medium Landscape Frame Profile Class */
-.frame-lg-p { width: 75px;  height: 110px; } /* Large Portrait Frame Profile Class */
-.frame-lg-l { width: 100px; height: 75px;  } /* Large Landscape Frame Profile Class */
-.frame-xl-l { width: 90px;  height: 70px;  } /* Extra Wide Frame Profile Class */
-.frame-sq   { width: 50px;  height: 50px;  } /* Uniform Square Frame Profile Class */
+/* Symmetric Sizing Allocations for Specific Framework Matrix Keys */
+.frame-sm-p { width: 45px;  height: 60px;  }
+.frame-sm-l { width: 55px;  height: 40px;  }
+.frame-md-p { width: 50px;  height: 65px;  }
+.frame-md-l { width: 75px;  height: 55px;  }
+.frame-lg-p { width: 75px;  height: 110px; }
+.frame-lg-l { width: 100px; height: 75px;  }
+.frame-xl-l { width: 90px;  height: 70px;  }
+.frame-sq   { width: 50px;  height: 50px;  }
 
 /* ==========================================================================
-   POLAROID MODAL POPUP & CUSTOMIZATION TRANSITIONS
+   5. REUSED CONFIGURATOR DARK MODE MODAL OVERLAY WRAPPERS
    ========================================================================== */
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(10, 10, 10, 0.6); /* Softly dims the room view background on arrival */
-    backdrop-filter: blur(4px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 200; /* Overrides everything on the interface to prioritize the checkout card */
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-/* Simple visibility utility modifier matching your core script toggle functions */
-.modal-overlay.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none; /* Safely returns touch control gestures back to the panoramic tour */
-}
-
-.polaroid-card-wrapper {
-    background: #ffffff;
-    color: #111111;
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 420px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    position: relative;
-    transform: scale(1);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Energetic bounce reveal look */
-}
-
-.modal-overlay.hidden .polaroid-card-wrapper {
-    transform: scale(0.9); /* Shuffles slightly downward out of focal scale when hidden away */
-}
-
-.close-modal-btn {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: #666;
-    line-height: 1;
-    transition: color 0.2s;
-}
-
-.close-modal-btn:hover {
-    color: #a855f7; /* Violet accent hover update */
-}
-
-/* Base hidden wrapper state for all unique HTML modals */
 .order-overlay-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
     height: 100vh;
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(4px);
-    display: flex;
+    background: rgba(3, 7, 18, 0.85); /* Rich translucent gray shading backdrop */
+    backdrop-filter: blur(12px);       /* Frosting blur visual effect depth */
+    z-index: 99999;                    /* Forces overlay onto topmost screen glass plane surface */
+    display: flex; 
+    align-items: center; 
     justify-content: center;
-    align-items: center;
-    z-index: 99999;
-    
-    /* Kept hidden until the hotspot adds the active class */
-    opacity: 0;
+    opacity: 0; 
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* Instantly shows your hardcoded HTML element on the glass surface layer */
-.order-overlay-wrapper.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+/* 🚀 UNIVERSAL DISPLAY BRIDGE: Handles either style identifier smoothly */
+.order-overlay-wrapper.open,
+.order-overlay-wrapper.active { 
+    opacity: 1 !important; 
+    visibility: visible !important;
+    pointer-events: auto !important; 
 }
 
-/* Symmetrical desktop/mobile configurations card box */
 .config-card {
-    background: #ffffff;
-    color: #111111;
-    padding: 24px;
+    background: #111827; 
+    width: 90%; 
+    max-width: 420px; 
     border-radius: 12px;
-    width: 90%;
-    max-width: 420px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column;
+    max-height: 85vh; 
+    border: 1px solid #1f2937;        
+}
+
+/* Modal Content Header Configuration Components */
+.config-header {
+    padding: 20px; 
+    background: #1f2937; 
+    border-bottom: 1px solid #374151; 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
     position: relative;
+}
+
+.config-header h2, 
+.config-header h3, 
+.config-header div {
+    color: #ffffff;                    
+}
+
+.close-x {
+    position: absolute; 
+    top: 15px; 
+    right: 20px;
+    font-size: 28px; 
+    cursor: pointer; 
+    color: #ffffff; 
+    line-height: 20px; 
+    transition: color 0.2s ease;
+}
+.close-x:hover {
+    color: #ff4757;
+}
+
+.thumb-img { 
+    width: 50px; 
+    height: 50px; 
+    object-fit: cover; 
+    border-radius: 4px; 
+    border: 1px solid #374151; 
+}
+
+/* Modal Body Sizing Matrix Blocks */
+.config-body { 
+    padding: 25px; 
+    overflow-y: auto; 
+    color: #ffffff; 
+}
+
+.section-title {
+    font-size: 11px; 
+    font-weight: 800; 
+    color: #9333ea; /* Signature Brand Purple Accents */
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    margin-bottom: 12px; 
+    display: block;
+}
+
+/* Format Price Selection Cards Layout Details */
+.tier-grid { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 25px; 
+}
+
+.tier-card {
+    flex: 1; 
+    border: 1px solid #374151; 
+    padding: 12px 5px;
+    text-align: center; 
+    border-radius: 6px; 
+    cursor: pointer;
+    background: #1f2937;
+    transition: all 0.2s ease;
+}
+
+.tier-card.selected { 
+    border-color: #2563eb; 
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(147, 51, 234, 0.2)); 
+    box-shadow: 0 0 12px rgba(147, 51, 234, 0.25);
+}
+
+.tier-name { 
+    display: block; 
+    font-size: 11px; 
+    font-weight: bold; 
+    margin-bottom: 4px; 
+    color: #ffffff; 
+}
+
+.tier-price { 
+    font-size: 13px; 
+    color: #9333ea; 
+    font-weight: 600; 
+} 
+
+/* Reference Pictures Upload Component Nodes */
+.upload-row {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    background: #1f2937; 
+    padding: 10px 15px;
+    margin-bottom: 8px; 
+    border-radius: 6px; 
+    border: 1px solid #374151; 
+}
+
+.upload-label { 
+    font-size: 13px; 
+    font-weight: 500; 
+    color: #ffffff; 
+}
+
+.file-btn {
+    font-size: 11px; 
+    padding: 6px 12px; 
+    background: #374151;
+    border: 1px solid #4b5563; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    color: #ffffff;
+    transition: background 0.2s ease;
+}
+.file-btn:hover {
+    background: #4b5563;
+}
+
+.file-btn.done { 
+    background: linear-gradient(135deg, #2563eb, #9333ea); 
+    border: none;
+    color: #ffffff; 
+}
+
+/* Interactive Checkout Footers */
+.config-footer { 
+    padding: 15px 25px; 
+    border-top: 1px solid #374151; 
+    background: #111827; 
+}
+
+.add-cart-btn {
+    width: 100%; 
+    background: linear-gradient(135deg, #2563eb, #9333ea); 
+    color: #fff; 
+    padding: 15px;
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold;
+    font-size: 14px; 
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+    transition: opacity 0.2s ease;
+}
+.add-cart-btn:hover {
+    opacity: 0.95;
+}
+
+/* ==========================================================================
+   6. FILE UPLOADER UTILITIES & MEMBER ROW CONTROLS
+   ========================================================================== */
+.file-list {
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px;
+    margin-top: 8px; 
+    margin-bottom: 15px;
+}
+
+.file-chip {
+    background: #1f2937; 
+    border: 1px solid #374151;
+    padding: 6px 10px; 
+    border-radius: 4px;
+    font-size: 11px; 
+    color: #e5e7eb;
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.file-chip span {
+    max-width: 150px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+}
+
+.delete-file {
+    color: #ff4757; 
+    font-weight: bold; 
+    cursor: pointer;
+    background: rgba(255, 71, 87, 0.15);
+    width: 18px; 
+    height: 18px; 
+    border-radius: 50%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    line-height: 0; 
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+}
+.delete-file:hover { 
+    background: #ff4757; 
+    color: white; 
+}
+
+.add-member-btn {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #374151;
+    background: #1f2937;
+    color: #9ca3af;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+.add-member-btn:hover {
+    border-color: #2563eb;
+    color: #ffffff;
+    background: #1f2937;
 }

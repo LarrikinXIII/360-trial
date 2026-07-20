@@ -96,6 +96,40 @@ html, body {
 /* ==========================================================================
    4. 38 INVISIBLE PROGRAMMATIC HOTSPOT DEBUG TARGET BOUNDS
    ========================================================================== */
+
+.debug-hotspot{
+
+    width:40px !important;
+    height:40px !important;
+
+    background:rgba(255,0,0,.45) !important;
+
+    border:3px solid yellow !important;
+
+    border-radius:6px;
+
+    cursor:pointer !important;
+
+    pointer-events:auto !important;
+
+    z-index:99999 !important;
+
+    transform:translate(-50%,-50%) !important;
+
+    display:block !important;
+
+    opacity:1 !important;
+
+    visibility:visible !important;
+
+}
+
+.debug-hotspot:hover{
+
+    background:rgba(0,255,0,.65) !important;
+
+}
+
 /* 3. Elevate the invisible green targets to the highest clickable layer in the 3D room */
 .invisible-hotspot-target.pnm-hotspot.pnm-info {
     /* Bright semi-transparent neon green fill highlights the size of the target */

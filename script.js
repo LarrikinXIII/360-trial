@@ -81,15 +81,48 @@ viewer.on('load', function() {
             "cssClass": `invisible-hotspot-target ${frame.sizeClass}`,
             
             // Connect to our responsive center-view autofocus algorithm handler
-            "clickHandlerFunc": executeHotspotZoomFlow,
-            "clickHandlerArgs": { 
-                "targetSKU": frame.id.toUpperCase(), 
-                "coordPitch": frame.pitch, 
-                "coordYaw": frame.yaw 
+            "clickHandlerFunc": directHTMLModalLinker,
+            "clickHandlerArgs": { "targetKey": frame.id.toUpperCase(), "pt": frame.pitch, "yw": frame.yaw
             }
         });
     });
 });
+
+/**
+ * DIRECT ROUTER: Drives camera zoom and directly targets your unique HTML modal IDs
+ */
+function directHTMLModalLinker(event, args) {
+    // 1. Smoothly center-focus and zoom into the selected wall frame
+    viewer.lookAt(
+        args.pt, 
+        args.yw, 
+        38,    
+        1100,  
+        
+        // 2. Arrival Callback: Finds and opens the exact matching HTML modal div block
+        function() {
+            console.log(`Locking perspective. Activating HTML container: #modal-${args.targetKey}`);
+            
+            const targetHtmlModal = document.getElementById(`modal-${args.targetKey}`);
+            if (targetHtmlModal) {
+                targetHtmlModal.classList.add('active'); // Un-hides your exact custom hardcoded modal div
+            } else {
+                console.error(`Error: Could not find an HTML div with id="modal-${args.targetKey}" inside your index.html!`);
+            }
+        }
+    );
+}
+
+
+function closeModal(currentActiveKey) {
+    const targetHtmlModal = document.getElementById(`modal-${currentActiveKey}`);
+    if (targetHtmlModal) {
+        targetHtmlModal.classList.remove('active');
+    }
+
+    // Smoothly fly back out to the full wide room view
+    viewer.setHfov(85, 1000);
+}
 
 /**
  * 4. HOTSPOT CINEMATIC TRANSITION CONTROLLER

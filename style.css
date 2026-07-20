@@ -77,28 +77,24 @@ html, body {
 
 /* Resets native library iconography icons to expose naked, interactive wall frames */
 /* Overrides the transparent standard look to expose the exact shapes of all 38 frames */
+/* This rule forces your transparent targets to show up instantly on load */
 .invisible-hotspot-target.pnm-hotspot.pnm-info {
-    /* 🚀 VISUAL RADAR: Bright green tint reveals exactly where the hotspot box sits */
-    background: rgba(34, 197, 94, 0.35) !important; 
-    
-    /* 📐 CONTAINER BOUNDS: High-contrast dashed border tracing the frame sizing scales */
+    /* Bright neon outline traces your active frame dimension boundaries */
+    background: rgba(34, 197, 94, 0.45) !important; 
     border: 2px dashed #22c55e !important; 
     border-radius: 4px;
+    cursor: pointer !important;
     
-    /* Locks target origin directly centered over your specified Pitch and Yaw point values */
-    transform: translate(-50%, -50%) !important; 
-    transition: background 0.2s ease, border-color 0.2s ease;
+    /* Ensures touch responses instantly bypass image layers to fire the click functions */
+    pointer-events: auto !important; 
+    transform: translate(-50%, -50%) !important;
 }
 
-/* 🎯 INTERACTIVE HIGHLIGHT HOVER ACTIONS */
+/* Changes style profile color to neon pink when actively tapped or clicked */
+.invisible-hotspot-target.pnm-hotspot.pnm-info:active,
 .invisible-hotspot-target.pnm-hotspot.pnm-info:hover {
-    /* Changes cursor link behavior to a pointing hand icon on hover */
-    cursor: pointer !important; 
-    
-    /* Shifts indicator colors to hot pink when your thumb or cursor rests over it */
-    background: rgba(236, 72, 153, 0.5) !important; 
+    background: rgba(236, 72, 153, 0.6) !important;
     border-color: #ec4899 !important;
-    box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
 }
 
 /* Sizing profiles expanding outward symmetrically from center coordinates */

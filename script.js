@@ -53,13 +53,19 @@ const tourHotspotMatrix = [
 ];
 
 // 2. Initialize the programmatic WebGL 360 engine
+// 2. Initialize the programmatic WebGL 360 engine with fixed perspective controls
 const viewer = pannellum.viewer('panorama-viewer', {
     "type": "equirectangular",
-    "panorama": "avagallery.jpeg", // Ensure path matches your production asset panorama file name
+    "panorama": "avagallery.jpeg", 
     "autoLoad": true,
     "compass": false,
-    "showControls": false,     // Kept hidden to prioritize direct canvas gestures
-    "hotSpotDebug": false       // Set to true to print real-time click coordinates to console log
+    "showControls": false,     
+    "hotSpotDebug": false,
+    
+    /* 📐 PERSPECTIVE CORRECTION FIELDS */
+    "hfov": 60,       // 🚀 CRUCIAL: Lowers the wide-angle view from 100 to 60. This flattens the lens and restores true 90-degree corners!
+    "minHfov": 30,    // Sets the limit on how close a user can zoom in
+    "maxHfov": 75     // 🛑 STRICT LIMIT: Prevents the user from zooming out too far and causing that "squeezed" fish-eye distortion look again
 });
 
 // 3. Loop and inject hot zones when canvas finish initial load

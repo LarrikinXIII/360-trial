@@ -1,0 +1,154 @@
+/* ==========================================================================
+   360 GALLERY VIRTUAL TOUR STRUCTURAL LAYOUT RULES
+   ========================================================================== */
+
+/* 1. Global Document Setup */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevents the browser window from scrolling away from the room view */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #111;
+}
+
+/* 2. Header Layout Alignment */
+.studio-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(8px); /* Modern frosted-glass effect */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100; /* Stays locked comfortably above the moving 360 sphere canvas layer */
+}
+
+/* 3. Fullscreen 360 Canvas Viewer Frame Viewport */
+.virtual-tour-viewport {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    z-index: 1; /* Sits below UI elements but forms the interactive window backdrop */
+}
+
+#panorama-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+/* 4. Footer Layout Alignment */
+.studio-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 12px;
+    color: #888;
+    z-index: 100;
+}
+
+/* ==========================================================================
+   38 PROGRAMMATIC INVISIBLE HOTSPOT CLICK TARGET BOUNDS
+   ========================================================================== */
+
+/* Resets native library iconography icons to expose naked, interactive wall frames */
+.invisible-hotspot-target.pnm-hotspot.pnm-info {
+    background: rgba(255, 255, 255, 0.0) !important; /* Kept clear to highlight baked texture artwork */
+    border: 2px solid rgba(147, 51, 234, 0) !important; /* Hidden standard line configuration profile */
+    cursor: pointer;
+    transform: translate(-50%, -50%) !important; /* Critical: perfectly anchors the element on center Pitch/Yaw coordinates */
+    transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
+}
+
+/* Gentle violet interactive pulse effect when users scroll or tap near a wall frame node */
+.invisible-hotspot-target.pnm-hotspot.pnm-info:hover {
+    background: rgba(147, 51, 234, 0.12) !important; 
+    border-color: rgba(147, 51, 234, 0.5) !important; /* Signals frame selection target focus instantly */
+}
+
+/* Sizing profiles expanding outward symmetrically from center coordinates */
+.frame-sm-p { width: 45px;  height: 60px;  } /* Small Portrait Frame Profile Class */
+.frame-sm-l { width: 55px;  height: 40px;  } /* Small Landscape Frame Profile Class */
+.frame-md-p { width: 50px;  height: 65px;  } /* Medium Portrait Frame Profile Class */
+.frame-md-l { width: 75px;  height: 55px;  } /* Medium Landscape Frame Profile Class */
+.frame-lg-p { width: 75px;  height: 110px; } /* Large Portrait Frame Profile Class */
+.frame-lg-l { width: 100px; height: 75px;  } /* Large Landscape Frame Profile Class */
+.frame-xl-l { width: 90px;  height: 70px;  } /* Extra Wide Frame Profile Class */
+.frame-sq   { width: 50px;  height: 50px;  } /* Uniform Square Frame Profile Class */
+
+/* ==========================================================================
+   POLAROID MODAL POPUP & CUSTOMIZATION TRANSITIONS
+   ========================================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.6); /* Softly dims the room view background on arrival */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200; /* Overrides everything on the interface to prioritize the checkout card */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Simple visibility utility modifier matching your core script toggle functions */
+.modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Safely returns touch control gestures back to the panoramic tour */
+}
+
+.polaroid-card-wrapper {
+    background: #ffffff;
+    color: #111111;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transform: scale(1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Energetic bounce reveal look */
+}
+
+.modal-overlay.hidden .polaroid-card-wrapper {
+    transform: scale(0.9); /* Shuffles slightly downward out of focal scale when hidden away */
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.close-modal-btn:hover {
+    color: #a855f7; /* Violet accent hover update */
+}

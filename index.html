@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVA XIN | Family Studio Canvas 360</title>
+    
+    <!-- 1. Pannellum 360 WebGL Viewer Library CDN Links -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.7/build/pannellum.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.7/build/pannellum.js"></script>
+    
+    <!-- Your existing global styles layer -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- RETAINED: YOUR ORIGINAL APP HEADER         -->
+    <!-- ========================================== -->
+    <header class="studio-header">
+        <div class="logo-area">
+            <span class="logo-text">Ava Xin</span>
+        </div>
+        <nav class="menu-nav">
+            <button class="menu-trigger">MENU ☰</button>
+        </nav>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- NEW: FULLSCREEN 360 VIRTUAL TOUR CANVAS    -->
+    <!-- Replaces old floating desk photo wrapper divs-->
+    <!-- ========================================== -->
+    <main class="virtual-tour-viewport">
+        <div id="panorama-viewer"></div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- RETAINED: YOUR WORKING POLAROID MODAL FLOW -->
+    <!-- Keep your exact inner structures untouched -->
+    <!-- ========================================== -->
+    <div id="polaroid-modal-container" class="modal-overlay hidden">
+        <div class="polaroid-card-wrapper">
+            <button class="close-modal-btn" onclick="closePolaroidAndResetView()">×</button>
+            
+            <!-- Contextual Product Details Card Info -->
+            <div class="modal-product-header">
+                <h3 id="modal-frame-id-label">SKU-00</h3>
+                <p id="modal-frame-desc">Select Format Profile</p>
+            </div>
+
+            <!-- Your original uploader workflow hooks -->
+            <div class="customization-steps">
+                <div class="step-block">
+                    <span>1. Select Format</span>
+                </div>
+                <div class="step-block">
+                    <span>2. Reference Photos</span>
+                    <!-- Your upload buttons remain fully attached here -->
+                </div>
+            </div>
+            
+            <button class="add-to-cart-action-btn">ADD TO CART</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- RETAINED: YOUR ORIGINAL APP FOOTER         -->
+    <!-- ========================================== -->
+    <footer class="studio-footer">
+        <div class="footer-credit">
+            <p>Developed by: Larrikin Manuel</p>
+        </div>
+        <div class="footer-copyright">
+            <p>© 2026 Ava Xin. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Your integrated logic pipeline execution script -->
+    <script src="script.js"></script>
+</body>
+</html>

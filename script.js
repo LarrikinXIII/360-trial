@@ -137,6 +137,13 @@ function injectMetaAndZoomFlow(event, args) {
     );
 }
 
+console.log(args);
+
+
+console.log(
+    document.querySelectorAll(".pnm-hotspot").length
+);
+
 /**
  * 5. PERSPECTIVE RESET DOCK
  * Connects smoothly to your close action button: onclick="closeModal('F1')"

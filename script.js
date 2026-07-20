@@ -55,7 +55,7 @@ const tourHotspotMatrix = [
 // 2. Initialize the programmatic WebGL 360 engine
 const viewer = pannellum.viewer('panorama-viewer', {
     "type": "equirectangular",
-    "panorama": "avagallery.jpg", // Ensure path matches your production asset panorama file name
+    "panorama": "avagallery.jpeg", // Ensure path matches your production asset panorama file name
     "autoLoad": true,
     "compass": false,
     "showControls": false,     // Kept hidden to prioritize direct canvas gestures

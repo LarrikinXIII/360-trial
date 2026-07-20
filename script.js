@@ -1,12 +1,12 @@
 /**
  * AVA XIN | 360 Gallery Master Virtual Tour Engine
- * Production Matrix: 38 Structural Hotspots Aligned to Your Unique HTML Modals
+ * Complete 38-Hotspot Production Pipeline
  */
 
 // 1. Data Matrix containing your custom product configurations for all 38 hotspots
 const tourHotspotMatrix = [
     // ======= WINDOW WALL (F1 to F10) =======
-    { id: "f1",  pitch: 1.15, yaw: -14.7, sizeClass: "frame-sm-p" }, // Coordinates calibrated from your active console logs!
+    { id: "f1",  pitch: 1.15, yaw: -14.7, sizeClass: "frame-sm-p" }, 
     { id: "f2",  pitch: 16.0, yaw: -20.5, sizeClass: "frame-md-l" },
     { id: "f3",  pitch: -2.5,  yaw: -29.5, sizeClass: "frame-lg-p" },
     { id: "f4",  pitch: 2.0,  yaw: -19.0, sizeClass: "frame-sq"   },
@@ -59,9 +59,7 @@ const viewer = pannellum.viewer('panorama-viewer', {
     "autoLoad": true,
     "compass": false,
     "showControls": false,
-    "hotSpotDebug": true, // Kept active so you can gather remaining coordinates easily
-    
-    /* 📐 Perspective Correction Controls */
+    "hotSpotDebug": true, 
     "hfov": 60,       
     "minHfov": 30,    
     "maxHfov": 75     
@@ -78,24 +76,22 @@ viewer.on('load', function() {
             "yaw": frame.yaw,
             "type": "info",
             "cssClass": `invisible-hotspot-target ${frame.sizeClass}`,
-            
-            // Route triggers through our direct unique element router function
-            "clickHandlerFunc": directHTMLModalRouter,
+            "clickHandlerFunc": injectMetaAndZoomFlow,
             "clickHandlerArgs": { 
                 "targetKey": frame.id.toUpperCase(), 
                 "coordPitch": frame.pitch, 
-                "coordYaw": frame.yaw 
+                "coordYaw": frame.yaw
             }
         });
     });
 });
 
 /**
- * 4. DIRECT UNIQUE MODAL ROUTER
- * Drives camera focus and opens your exact hardcoded HTML modal IDs
+ * 4. HYBRID INTERCEPT CONTROLLER
+ * Handles smooth movement, sets textual values, and triggers the modal overlay class
  */
-function directHTMLModalRouter(event, args) {
-    console.log(`Locking camera focus on frame: [ ${args.targetKey} ]`);
+function injectMetaAndZoomFlow(event, args) {
+    console.log("User selected Node Target: [" + args.targetKey + "]. Focus sequence initiated...");
 
     // A. Perform cinematic center alignment screen snap zoom track
     viewer.lookAt(
@@ -104,32 +100,31 @@ function directHTMLModalRouter(event, args) {
         38,              
         1100,            
         
-        // B. ARRIVAL HANDOFF: Locates and displays the specific HTML container element
+        // B. ARRIVAL HANDOFF: Updates labels right on camera arrival
         function() {
-            console.log(`autofocus locked. Opening specific HTML block: #modal-${args.targetKey}`);
+            console.log("Autofocus locked. Opening specific HTML block: #modal-" + args.targetKey);
             
-            /* 🚀 THE INTEGRATION FIX: Links directly to your exact HTML container IDs! */
-            const targetHtmlModal = document.getElementById(`modal-${args.targetKey}`);
+            // Un-hides your modal using your exact pre-made CSS configuration state rules (.open)
+            const targetHtmlModal = document.getElementById("modal-" + args.targetKey);
             if (targetHtmlModal) {
-                targetHtmlModal.classList.add('open'); // REUSES YOUR DARK-MODE CSS: Triggers opacity fade
+                targetHtmlModal.classList.add('open'); 
             } else {
-                console.error(`Error: Could not find an HTML div with id="modal-${args.targetKey}" inside your markup file!`);
+                console.error("Error: Could not find an HTML div with id='modal-" + args.targetKey + "' inside your markup file!");
             }
         }
     );
 }
 
 /**
- * 5. CONNECTED PERSPECTIVE RESET DOCK
- * Reuses your pre-made modal attribute configurations: onclick="closeModal('F1')"
- * @param {string} activeModalKey - Passes the string ID signature to hide (e.g., 'F1', 'R12')
+ * 5. PERSPECTIVE RESET DOCK
+ * Connects smoothly to your close action button: onclick="closeModal('F1')"
  */
 function closeModal(activeModalKey) {
-    console.log(`Dismissing element: #modal-${activeModalKey}. Easing wide perspective lens...`);
+    console.log("Exiting template configuration panel. Resetting standard viewing field...");
     
-    const targetHtmlModal = document.getElementById(`modal-${activeModalKey}`);
+    const targetHtmlModal = document.getElementById("modal-" + activeModalKey);
     if (targetHtmlModal) {
-        targetHtmlModal.classList.remove('open'); // Closes layout overlay display transition smoothly
+        targetHtmlModal.classList.remove('open');
     }
 
     // Zoom out smoothly back to normal full-room wide perspective

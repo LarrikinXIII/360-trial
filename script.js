@@ -72,10 +72,19 @@ const viewer = pannellum.viewer('panorama-viewer', {
 });
 
 // 3. Loop and inject hot zones when canvas finish initial load
+// 3. Mount hotspots programmatically on canvas complete load
 viewer.on('load', function() {
-    console.log("WebGL environment fully assembled. Injecting 38 target containers...");
+    console.log("360 environment loaded. Injecting 38 target containers...");
     
     tourHotspotMatrix.forEach(function(frame) {
+        // 🚀 SAFESTEP INTERCEPT: If meta data hasn't been written yet, we auto-fill placeholders 
+        // to prevent JavaScript from crashing the loop!
+        const productMeta = frame.meta || { 
+            title: `Product Gallery Frame ${frame.id.toUpperCase()}`, 
+            sku: `SKU-${frame.id.toUpperCase()}`, 
+            thumb: "" 
+        };
+
         viewer.addHotSpot({
             "id": frame.id,
             "pitch": frame.pitch,
@@ -83,9 +92,13 @@ viewer.on('load', function() {
             "type": "info",
             "cssClass": `invisible-hotspot-target ${frame.sizeClass}`,
             
-            // Connect to our responsive center-view autofocus algorithm handler
-            "clickHandlerFunc": directHTMLModalLinker,
-            "clickHandlerArgs": { "targetKey": frame.id.toUpperCase(), "pt": frame.pitch, "yw": frame.yaw
+            // Connect to our responsive center-view autofocus handler
+            "clickHandlerFunc": injectMetaAndZoomFlow,
+            "clickHandlerArgs": { 
+                "frameId": frame.id,
+                "coordPitch": frame.pitch, 
+                "coordYaw": frame.yaw,
+                "productMeta": productMeta // Pass the verified fallback data
             }
         });
     });

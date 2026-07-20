@@ -61,6 +61,9 @@ const viewer = pannellum.viewer('panorama-viewer', {
     "compass": false,
     "showControls": false,     
     "hotSpotDebug": false,
+
+    /* 🚀 THE DEBUG FIX: This property must sit right here to log clicks correctly! */
+    "hotSpotDebug": true, 
     
     /* 📐 PERSPECTIVE CORRECTION FIELDS */
     "hfov": 60,       // 🚀 CRUCIAL: Lowers the wide-angle view from 100 to 60. This flattens the lens and restores true 90-degree corners!

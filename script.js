@@ -1,6 +1,6 @@
 /**
  * AVA XIN | 360 Gallery Core Engine
- * Task 1: Single Hotspot Main View Center Calibration Test
+ * Task 1: Single Center Hotspot Setup
  */
 
 const viewer = pannellum.viewer('panorama-viewer', {
@@ -19,12 +19,12 @@ const viewer = pannellum.viewer('panorama-viewer', {
 
 // Mount the test target EXACTLY in the center of the camera's initial view frame line
 viewer.on('load', function() {
-    console.log("360 background loaded. Mounting test target for R12 directly in front...");
+    console.log("360 background loaded. Mounting large green target for R12 directly in front...");
     
     viewer.addHotSpot({
         "id": "R12",
-        "pitch": 0.0,  // 🚀 CENTER: Perfectly level with the horizon view screen
-        "yaw": 0.0,    // 🚀 CENTER: Placed directly in the starting viewport center
+        "pitch": 0.0,  // Perfectly level on the horizon view
+        "yaw": 0.0,    // Placed directly in the starting viewport center
         "type": "info",
         "cssClass": "visible-debug-target test-frame-size",
         "clickHandlerFunc": launchTargetHTMLModal,

@@ -98,23 +98,26 @@ html, body {
    ========================================================================== */
 /* 3. Elevate the invisible green targets to the highest clickable layer in the 3D room */
 .invisible-hotspot-target.pnm-hotspot.pnm-info {
+    /* Bright semi-transparent neon green fill highlights the size of the target */
     background: rgba(34, 197, 94, 0.45) !important; 
+    
+    /* High-contrast dashed green outline traces the exact frame border dimensions */
     border: 2px dashed #22c55e !important; 
     border-radius: 4px;
     cursor: pointer !important;
     
-    /* 🚀 THE FIXED ANCHOR: Moves the hotspots directly underneath your finger touch layers! */
-    z-index: 50 !important; 
+    /* Forces touch events down to the highest interactive layer */
+    z-index: 9999 !important; 
     pointer-events: auto !important; 
     transform: translate(-50%, -50%) !important;
 }
-/* Switches outline profiles to pink when hovered or tapped on mobile screens */
+
+/* Turns the target neon pink when you hover your cursor or press on your phone screen */
 .invisible-hotspot-target.pnm-hotspot.pnm-info:active,
 .invisible-hotspot-target.pnm-hotspot.pnm-info:hover {
-    background: rgba(236, 72, 153, 0.55) !important;
+    background: rgba(236, 72, 153, 0.6) !important;
     border-color: #ec4899 !important;
 }
-
 /* Symmetric Sizing Allocations for Specific Framework Matrix Keys */
 .frame-sm-p { width: 45px;  height: 60px;  }
 .frame-sm-l { width: 55px;  height: 40px;  }

@@ -172,3 +172,45 @@ html, body {
 .close-modal-btn:hover {
     color: #a855f7; /* Violet accent hover update */
 }
+
+/* Base hidden wrapper state for all unique HTML modals */
+.order-overlay-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    
+    /* Kept hidden until the hotspot adds the active class */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Instantly shows your hardcoded HTML element on the glass surface layer */
+.order-overlay-wrapper.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Symmetrical desktop/mobile configurations card box */
+.config-card {
+    background: #ffffff;
+    color: #111111;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+}

@@ -1,69 +1,149 @@
 /* ==========================================================================
-   A. CORE ENGINE STRUCTURAL RESET & SCREEN TOUCH FILTERS
+   1. GLOBAL SYSTEM SETUP & MOBILE VIEW LOCKS
    ========================================================================== */
 html, body {
-    margin: 0; padding: 0; width: 100%; height: 100%;
-    overflow: hidden; position: fixed; touch-action: none; 
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+    position: fixed;
+    touch-action: none; 
     background-color: #0b0f19;
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.virtual-tour-viewport {
-    width: 100%; height: 100vh; position: relative; z-index: 1;
-}
-
-#panorama-viewer {
-    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-    touch-action: pan-x pan-y;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 }
 
 /* ==========================================================================
-   B. THE VISIBLE DEBUG HOTSPOT HIGHLIGHT LAYER
+   2. HEADER & FOOTER FIXED STRIPS
+   ========================================================================== */
+.studio-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1f2937;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.logo-text {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+.menu-trigger {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.studio-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid #1f2937;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    font-size: 11px;
+    color: #9ca3af;
+    z-index: 100;
+}
+
+/* ==========================================================================
+   3. FULLSCREEN 360 VIEWPORT CANVAS (Restores the screen visibility)
+   ========================================================================== */
+.virtual-tour-viewport {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    z-index: 5;
+    pointer-events: none; /* Allows pointer clicks to pass through layout columns */
+}
+
+#panorama-viewer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    pointer-events: auto !important; /* Unfreezes the 360 canvas interaction */
+    touch-action: pan-x pan-y; 
+}
+
+/* ==========================================================================
+   4. LARGE GREEN DEBUG TARGET (The Visible Hotspot Box)
    ========================================================================== */
 .visible-debug-target.pnm-hotspot.pnm-info {
-    /* 🚀 VISUAL TARGET: Bright translucent green overlay reveals exactly where the hotspot box sits */
-    background: rgba(34, 197, 94, 0.45) !important; 
+    /* 🚀 RADAR SHADING: Semi-transparent emerald green fill */
+    background: rgba(34, 197, 94, 0.5) !important; 
     
-    /* 📐 CONTAINER BOUNDS: High-contrast dashed green outline tracing the box limits */
-    border: 2px dashed #22c55e !important; 
-    border-radius: 4px;
+    /* 📐 CONTAINER BOUNDS: Bold dashed green outline border */
+    border: 3px dashed #22c55e !important; 
+    border-radius: 6px;
     
     /* Forces click reactions down to the highest interactive surface depth */
-    z-index: 9999 !important; 
+    z-index: 50 !important; 
     pointer-events: auto !important;
     transform: translate(-50%, -50%) !important;
 }
 
-/* Turns neon pink when your cursor rests over it or when tapped on mobile screens */
+/* Turns hot pink when your cursor hovers or when tapped on mobile screens */
 .visible-debug-target.pnm-hotspot.pnm-info:hover,
 .visible-debug-target.pnm-hotspot.pnm-info:active {
     cursor: pointer !important;
-    background: rgba(236, 72, 153, 0.6) !important;
+    background: rgba(236, 72, 153, 0.65) !important;
     border-color: #ec4899 !important;
 }
 
-/* Hardcoded Sizing Class Profile for our first single test frame target */
+/* 🚀 LARGE SQUARE ADJUSTMENT: Sets unmissable dimensions for the first test frame */
 .test-frame-size { 
-    width: 120px; 
-    height: 90px; 
+    width: 160px !important; 
+    height: 160px !important; 
 }
 
 /* ==========================================================================
-   C. PRE-MADE REUSED CONFIGURATOR OVERLAY TRANSITIONS
+   5. REUSED CONFIGURATOR DARK MODE MODAL OVERLAY WRAPPERS
    ========================================================================== */
 .order-overlay-wrapper {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
     background: rgba(3, 7, 18, 0.85); 
     backdrop-filter: blur(12px);       
-    z-index: 99999 !important; /* Higher layer index to sit cleanly over 3D zoom movements */
-    display: flex; align-items: center; justify-content: center;
-    
-    /* Kept hidden away until the active visibility modifier class is appended */
-    opacity: 0; visibility: hidden; pointer-events: none;
+    z-index: 99999 !important; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    opacity: 0; 
+    visibility: hidden;
+    pointer-events: none;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* Dynamic display trigger called via your script click linker functions */
 .order-overlay-wrapper.active { 
     opacity: 1 !important; 
     visibility: visible !important;

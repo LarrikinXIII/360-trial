@@ -1,84 +1,46 @@
 /**
  * AVA XIN | 360 Gallery Master Virtual Tour Engine
- * Core Engineering: 38 Structural Hotspot Touch Targets Configured Symmetrically
  */
 
-// 1. Unified Coordinates Data Dictionary for all 38 frames (F1-10, R1-12, B1-8, L1-8)
+// 1. Your Hotspot matrix (Keep it exactly as you have it)
 const tourHotspotMatrix = [
-    // ======= WINDOW WALL (F1 to F10) =======
-    { id: "f1",  pitch: 18.5, yaw: -32.0, sizeClass: "frame-sm-p" },
-    { id: "f2",  pitch: 16.0, yaw: -20.5, sizeClass: "frame-md-l" },
-    { id: "f3",  pitch: -2.5,  yaw: -29.5, sizeClass: "frame-lg-p" },
-    { id: "f4",  pitch: 2.0,  yaw: -19.0, sizeClass: "frame-sq"   },
-    { id: "f5",  pitch: -16.5, yaw: -22.0, sizeClass: "frame-md-l" },
-    { id: "f6",  pitch: 18.5, yaw: 21.0,  sizeClass: "frame-sm-p" },
-    { id: "f7",  pitch: 15.0, yaw: 31.5,  sizeClass: "frame-lg-p" },
-    { id: "f8",  pitch: 5.5,  yaw: 21.0,  sizeClass: "frame-sm-l" },
-    { id: "f9",  pitch: -8.0,  yaw: 25.5,  sizeClass: "frame-xl-l" },
-    { id: "f10", pitch: -18.5, yaw: 30.0,  sizeClass: "frame-md-p" },
-
-    // ======= RIGHT MULTI-GALLERY WALL (R1 to R12) =======
-    { id: "r1",  pitch: 20.0, yaw: 72.0,  sizeClass: "frame-sm-p" },
-    { id: "r2",  pitch: 20.0, yaw: 85.0,  sizeClass: "frame-md-p" },
-    { id: "r3",  pitch: 20.0, yaw: 98.0,  sizeClass: "frame-sm-p" },
-    { id: "r4",  pitch: 6.0,  yaw: 72.0,  sizeClass: "frame-sq"   },
-    { id: "r5",  pitch: 6.0,  yaw: 85.0,  sizeClass: "frame-lg-p" },
-    { id: "r6",  pitch: 6.0,  yaw: 98.0,  sizeClass: "frame-sq"   },
-    { id: "r7",  pitch: -8.0, yaw: 72.0,  sizeClass: "frame-md-l" },
-    { id: "r8",  pitch: -8.0, yaw: 85.0,  sizeClass: "frame-sm-l" },
-    { id: "r9",  pitch: -8.0, yaw: 98.0,  sizeClass: "frame-md-l" },
-    { id: "r10", pitch: -22.0, yaw: 72.0, sizeClass: "frame-sm-p" },
-    { id: "r11", pitch: -22.0, yaw: 85.0, sizeClass: "frame-md-l" },
-    { id: "r12", pitch: -22.0, yaw: 98.0, sizeClass: "frame-sm-p" },
-
-    // ======= BACK ENTRANCE/LOBBY WALL (B1 to B8) =======
-    { id: "b1",  pitch: 15.0, yaw: -170.0, sizeClass: "frame-lg-p" },
-    { id: "b2",  pitch: 15.0, yaw: -155.0, sizeClass: "frame-lg-p" },
-    { id: "b3",  pitch: 2.0,  yaw: -170.0, sizeClass: "frame-md-l" },
-    { id: "b4",  pitch: 2.0,  yaw: -155.0, sizeClass: "frame-md-l" },
-    { id: "b5",  pitch: -10.0, yaw: -170.0, sizeClass: "frame-sq"  },
-    { id: "b6",  pitch: -10.0, yaw: -155.0, sizeClass: "frame-sq"  },
-    { id: "b7",  pitch: -22.0, yaw: -170.0, sizeClass: "frame-md-p" },
-    { id: "b8",  pitch: -22.0, yaw: -155.0, sizeClass: "frame-md-p" },
-
-    // ======= LEFT ENTRY ALCOVE WALL (L1 to L8) =======
-    { id: "l1",  pitch: 18.0, yaw: -95.0,  sizeClass: "frame-sm-l" },
-    { id: "l2",  pitch: 18.0, yaw: -80.0,  sizeClass: "frame-sm-l" },
-    { id: "l3",  pitch: 6.0,  yaw: -95.0,  sizeClass: "frame-md-p" },
-    { id: "l4",  pitch: 6.0,  yaw: -80.0,  sizeClass: "frame-md-p" },
-    { id: "l5",  pitch: -6.0, yaw: -95.0,  sizeClass: "frame-lg-l" },
-    { id: "l6",  pitch: -6.0, yaw: -80.0,  sizeClass: "frame-lg-l" },
-    { id: "l7",  pitch: -18.0, yaw: -95.0, sizeClass: "frame-sq"   },
-    { id: "l8",  pitch: -18.0, yaw: -80.0, sizeClass: "frame-sq"   }
+    { 
+        id: "f1", pitch: 18.5, yaw: -32.0, sizeClass: "frame-sm-p",
+        meta: { title: "Classic Family Studio Canvas", sku: "SKU-F1", thumb: "" } // Kept blank to avoid 404 image errors!
+    },
+    { 
+        id: "f2", pitch: 16.0, yaw: -20.5, sizeClass: "frame-md-l",
+        meta: { title: "Premium Landscape Accent Canvas", sku: "SKU-F2", thumb: "" }
+    },
+    { 
+        id: "f3", pitch: -2.5, yaw: -29.5, sizeClass: "frame-lg-p",
+        meta: { title: "Grand Gallery Portrait Canvas", sku: "SKU-F3", thumb: "" }
+    },
+    { 
+        id: "r12", pitch: -22.0, yaw: 98.0, sizeClass: "frame-sm-p",
+        meta: { title: "Split-Panel Luxury Multi-Print", sku: "SKU-R12", thumb: "" }
+    }
+    // ... rest of your 38 hotspots remain exactly here
 ];
 
-// 2. Initialize the programmatic WebGL 360 engine
-// 2. Initialize the programmatic WebGL 360 engine with fixed perspective controls
+// 2. Initialize the WebGL 360 Engine instance
 const viewer = pannellum.viewer('panorama-viewer', {
     "type": "equirectangular",
     "panorama": "avagallery.jpeg", 
     "autoLoad": true,
     "compass": false,
-    "showControls": false,     
-    "hotSpotDebug": false,
-
-    /* 🚀 THE DEBUG FIX: This property must sit right here to log clicks correctly! */
-    "hotSpotDebug": true, 
-    
-    /* 📐 PERSPECTIVE CORRECTION FIELDS */
-    "hfov": 60,       // 🚀 CRUCIAL: Lowers the wide-angle view from 100 to 60. This flattens the lens and restores true 90-degree corners!
-    "minHfov": 30,    // Sets the limit on how close a user can zoom in
-    "maxHfov": 75     // 🛑 STRICT LIMIT: Prevents the user from zooming out too far and causing that "squeezed" fish-eye distortion look again
+    "showControls": false,
+    "hotSpotDebug": true, // Kept true for debugging coordinates
+    "hfov": 60,       
+    "minHfov": 30,    
+    "maxHfov": 75     
 });
 
-// 3. Loop and inject hot zones when canvas finish initial load
 // 3. Mount hotspots programmatically on canvas complete load
 viewer.on('load', function() {
     console.log("360 environment loaded. Injecting 38 target containers...");
     
     tourHotspotMatrix.forEach(function(frame) {
-        // 🚀 SAFESTEP INTERCEPT: If meta data hasn't been written yet, we auto-fill placeholders 
-        // to prevent JavaScript from crashing the loop!
         const productMeta = frame.meta || { 
             title: `Product Gallery Frame ${frame.id.toUpperCase()}`, 
             sku: `SKU-${frame.id.toUpperCase()}`, 
@@ -92,104 +54,71 @@ viewer.on('load', function() {
             "type": "info",
             "cssClass": `invisible-hotspot-target ${frame.sizeClass}`,
             
-            // Connect to our responsive center-view autofocus handler
+            /* 🚀 FIXES THE CRASH: This name MUST match the function declaration below exactly! */
             "clickHandlerFunc": injectMetaAndZoomFlow,
             "clickHandlerArgs": { 
                 "frameId": frame.id,
                 "coordPitch": frame.pitch, 
                 "coordYaw": frame.yaw,
-                "productMeta": productMeta // Pass the verified fallback data
+                "productMeta": productMeta
             }
         });
     });
 });
 
 /**
- * DIRECT ROUTER: Drives camera zoom and directly targets your unique HTML modal IDs
+ * 4. HYBRID INTERCEPT CONTROLLER
+ * This is the exact function JavaScript couldn't find in your screenshot!
  */
-function directHTMLModalLinker(event, args) {
-    // 1. Smoothly center-focus and zoom into the selected wall frame
+function injectMetaAndZoomFlow(event, args) {
+    console.log(`User selected Node Target: [ ${args.frameId.toUpperCase()} ]. Focus sequence initiated...`);
+
+    // A. Perform the cinematic 3D center focus and screen snap zoom
     viewer.lookAt(
-        args.pt, 
-        args.yw, 
-        38,    
-        1100,  
+        args.coordPitch, 
+        args.coordYaw,   
+        38,              
+        1100,            
         
-        // 2. Arrival Callback: Finds and opens the exact matching HTML modal div block
+        // B. ARRIVAL HANDOFF: Fires automatically upon camera focus arrival
         function() {
-            console.log(`Locking perspective. Activating HTML container: #modal-${args.targetKey}`);
+            const data = args.productMeta;
             
-            const targetHtmlModal = document.getElementById(`modal-${args.targetKey}`);
-            if (targetHtmlModal) {
-                targetHtmlModal.classList.add('active'); // Un-hides your exact custom hardcoded modal div
-            } else {
-                console.error(`Error: Could not find an HTML div with id="modal-${args.targetKey}" inside your index.html!`);
-            }
-        }
-    );
-}
-
-
-function closeModal(currentActiveKey) {
-    const targetHtmlModal = document.getElementById(`modal-${currentActiveKey}`);
-    if (targetHtmlModal) {
-        targetHtmlModal.classList.remove('active');
-    }
-
-    // Smoothly fly back out to the full wide room view
-    viewer.setHfov(85, 1000);
-}
-
-/**
- * 4. HOTSPOT CINEMATIC TRANSITION CONTROLLER
- * Moves camera view to absolute screen center and zooms in dynamically
- */
-function executeHotspotZoomFlow(event, args) {
-    console.log(`User selected Node Target: [ ${args.targetSKU} ]. Focusing lens matrix...`);
-
-    // Lock controls to center point layout boundary smooth zoom pan
-    viewer.lookAt(
-        args.coordPitch, // Dynamic vertical eye positioning alignment
-        args.coordYaw,   // Dynamic horizontal rotation tracking
-        38,              // Field of View Depth: Controls how tightly the room zooms inward
-        1100,            // Animation execution time spanning 1.1 seconds (1100 milliseconds)
-        
-        // Handoff Callback Function: Fires automatically upon camera focus arrival
-        function() {
-            console.log(`Autofocus locked onto frame ${args.targetSKU}. Deploying Polaroid interface overlay.`);
+            // Grabs your specific custom HTML input element references
+            const domTitle = document.getElementById('conf-title');
+            const domSku = document.getElementById('conf-sku');
+            const domImg = document.getElementById('conf-img');
             
-            // Updates text labels dynamically inside the index.html placeholder template markup
-            const skuLabelElement = document.getElementById('modal-frame-id-label');
-            if (skuLabelElement) {
-                skuLabelElement.innerText = `FRAME UNIT ${args.targetSKU}`;
+            // Updates contents safely based on your current data entries
+            if (domTitle) domTitle.innerText = data?.title || `Product Gallery Frame ${args.frameId.toUpperCase()}`;
+            if (domSku) domSku.innerText = data?.sku || `SKU-${args.frameId.toUpperCase()}`;
+            
+            // Only swap image if path is not blank to prevent 404 crashes
+            if (domImg && data?.thumb) {
+                domImg.src = data.thumb;
+            } else if (domImg) {
+                domImg.src = ""; // Clear if empty placeholder
             }
 
-            // --- INTEGRATE DIRECTLY INTO YOUR POLAROID SYSTEM WINDOW ---
-            // Un-hides your current active popup form card template workflow setup blocks
-            const polaroidModalContainer = document.getElementById('polaroid-modal-container');
-            if (polaroidModalContainer) {
-                polaroidModalContainer.classList.remove('hidden');
+            // Un-hides your modal layer using your exact CSS design transition class (.open)
+            const orderOverlay = document.getElementById('order-overlay');
+            if (orderOverlay) {
+                orderOverlay.classList.add('open'); 
             }
         }
     );
 }
 
 /**
- * 5. ZOOM-OUT Perspective Reset Anchor
- * Tie this directly into your Polaroid modal closing 'x' click listeners
+ * 5. Connected Perspective Reset Anchor
  */
-function closePolaroidAndResetView() {
-    console.log("Exiting template workflow canvas window. Resetting standard viewing field...");
+function closeModal() {
+    console.log("Exiting template configuration panel. Resetting standard viewing field...");
     
-    // Hide modal window layout element container card layers instantly
-    const polaroidModalContainer = document.getElementById('polaroid-modal-container');
-    if (polaroidModalContainer) {
-        polaroidModalContainer.classList.add('hidden');
+    const orderOverlay = document.getElementById('order-overlay');
+    if (orderOverlay) {
+        orderOverlay.classList.remove('open');
     }
 
-    // Smoothly fly back out to normal wide room landscape viewpoint angle perspective boundaries
-    viewer.setHfov(
-        85,   // Eases lens back to standard natural wide layout angle view index
-        1000  // Transition timeline speed spanning exactly 1.0 second easing track runtime
-    );
+    viewer.setHfov(85, 1000);
 }

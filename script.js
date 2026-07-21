@@ -1,73 +1,53 @@
-/**
- * AVA XIN | 360 Gallery Core View Engine
- * Task 1: Single Center Hotspot Router Setup
+ * AVA XIN | 360 Gallery Master Virtual Tour Engine
+ * Complete 38-Hotspot Production Pipeline
  */
 
-// 🚀 WINDOW WRAPPER LAYER: Halts initialization until all HTML markup layers render complete
-window.addEventListener('load', function() {
-    console.log("DOM nodes and background libraries ready. Spinning up WebGL engine...");
+const DEBUG_HOTSPOTS = true;
+// 1. Data Matrix containing your custom product configurations for all 38 hotspots
+const tourHotspotMatrix = [
+    // ======= WINDOW WALL (F1 to F10) =======
+@@ -68,14 +68,33 @@ const viewer = pannellum.viewer('panorama-viewer', {
+// 3. Mount hotspots programmatically on canvas complete load
+viewer.on('load', function() {
+    console.log("360 environment loaded. Injecting 38 target containers...");
 
-    // Initialize the programmatic Pannellum 360 viewer instance
-    const viewer = pannellum.viewer('panorama-viewer', {
-        "type": "equirectangular",
-        "panorama": "avagallery.jpeg", 
-        "autoLoad": true,
-        "compass": false,
-        "showControls": false,
-        "hotSpotDebug": false, // Deactivates the tiny white center crosshair (+) pointer
-        
-        /* 📐 Perspective Layout View Controls */
-        "hfov": 60,       // Fixed zoom level for clear 90-degree corner perspectives
-        "minHfov": 30,    
-        "maxHfov": 75     
-    });
+    viewer.addHotSpot({
+    pitch: 0,
+    yaw: 0,
+    type: "info",
+    text: "CENTER",
 
-    // Mount exactly ONE massive green radar hotspot right in your line of sight on view complete load
-    viewer.on('load', function() {
-        console.log("Background texture successfully compiled. Drawing green test target bounds...");
-        
+    cssClass: "debug-hotspot",
+
+    clickHandlerFunc: function(){
+        alert("Center hotspot works.");
+    }
+});
+
+    tourHotspotMatrix.forEach(function(frame) {
         viewer.addHotSpot({
-            "id": "R12",
-            "pitch": 0.0,  // Perfectly level on the horizon view line center
-            "yaw": 0.0,    // Placed directly in the starting viewport focal line center
+            "id": frame.id,
+            "pitch": frame.pitch,
+            "yaw": frame.yaw,
             "type": "info",
-            
-            // Reuses your debug overlay classes configured inside style.css
-            "cssClass": "visible-debug-target test-frame-size",
-            "clickHandlerFunc": launchTargetHTMLModal,
-            "clickHandlerArgs": { "targetId": "R12" }
+            "cssClass": `invisible-hotspot-target ${frame.sizeClass}`,
+            cssClass: DEBUG_HOTSPOTS
+    ? `debug-hotspot ${frame.sizeClass}`
+    : `invisible-hotspot-target ${frame.sizeClass}`,
+
+text: DEBUG_HOTSPOTS
+    ? frame.id.toUpperCase()
+    : "",
+            "clickHandlerFunc": injectMetaAndZoomFlow,
+            "clickHandlerArgs": { 
+                "targetKey": frame.id.toUpperCase(), 
+@@ -84,6 +103,9 @@ viewer.on('load', function() {
+            }
         });
     });
+
+        console.log("Finished creating hotspots.");
+
 });
 
 /**
- * Universal Click Router Engine
- * Automatically targets your explicit uppercase container element IDs
- */
-function launchTargetHTMLModal(event, args) {
-    console.log("Hotspot selected! Instantly activating HTML container element: #modal-" + args.targetId);
-    
-    /* 🚀 TARGETING BRIDGE: Finds id="modal-R12" exactly and un-hides your preset style code classes */
-    const matchingModal = document.getElementById("modal-" + args.targetId);
-    if (matchingModal) {
-        matchingModal.classList.add('open'); 
-        matchingModal.classList.add('active'); // Triggers your overlay background opacity transitions smoothly
-    } else {
-        console.error("Error: Could not find an HTML div with id='modal-" + args.targetId + "' inside your index.html!");
-    }
-}
-
-/**
- * Connected Modal Close Connector
- * Tied directly into your custom close buttons: onclick="closeModal('R12')"
- * @param {string} activeModalKey - The exact ID signature of the modal to clear (e.g., 'R12', 'F1')
- */
-function closeModal(activeModalKey) {
-    console.log("Dismissing modal element block: #modal-" + activeModalKey + ". Easing camera field width...");
-    
-    const targetHtmlModal = document.getElementById("modal-" + activeModalKey);
-    if (targetHtmlModal) {
-        targetHtmlModal.classList.remove('open');
-        targetHtmlModal.classList.remove('active'); // Safely handles either style class trigger removal
-    }
-}

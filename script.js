@@ -1,53 +1,31 @@
- * AVA XIN | 360 Gallery Master Virtual Tour Engine
- * Complete 38-Hotspot Production Pipeline
- */
+import { Viewer } from '@photo-sphere-viewer/core';
 
-const DEBUG_HOTSPOTS = true;
-// 1. Data Matrix containing your custom product configurations for all 38 hotspots
-const tourHotspotMatrix = [
-    // ======= WINDOW WALL (F1 to F10) =======
-@@ -68,14 +68,33 @@ const viewer = pannellum.viewer('panorama-viewer', {
-// 3. Mount hotspots programmatically on canvas complete load
-viewer.on('load', function() {
-    console.log("360 environment loaded. Injecting 38 target containers...");
+const viewer = new Viewer({
 
-    viewer.addHotSpot({
-    pitch: 0,
-    yaw: 0,
-    type: "info",
-    text: "CENTER",
+    container: document.querySelector('#viewer'),
 
-    cssClass: "debug-hotspot",
+    panorama: 'images/livingroom.jpg',
 
-    clickHandlerFunc: function(){
-        alert("Center hotspot works.");
-    }
-});
+    defaultYaw: 0,
 
-    tourHotspotMatrix.forEach(function(frame) {
-        viewer.addHotSpot({
-            "id": frame.id,
-            "pitch": frame.pitch,
-            "yaw": frame.yaw,
-            "type": "info",
-            "cssClass": `invisible-hotspot-target ${frame.sizeClass}`,
-            cssClass: DEBUG_HOTSPOTS
-    ? `debug-hotspot ${frame.sizeClass}`
-    : `invisible-hotspot-target ${frame.sizeClass}`,
+    defaultPitch: 0,
 
-text: DEBUG_HOTSPOTS
-    ? frame.id.toUpperCase()
-    : "",
-            "clickHandlerFunc": injectMetaAndZoomFlow,
-            "clickHandlerArgs": { 
-                "targetKey": frame.id.toUpperCase(), 
-@@ -84,6 +103,9 @@ viewer.on('load', function() {
-            }
-        });
-    });
+    defaultZoomLvl: 0,
 
-        console.log("Finished creating hotspots.");
+    mousewheel: true,
+
+    touchmoveTwoFingers: false,
+
+    navbar: [
+
+        'zoom',
+
+        'move',
+
+        'fullscreen'
+
+    ],
+
+    loadingImg: null
 
 });
-
-/**

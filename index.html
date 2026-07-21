@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360 Virtual Tour Viewer</title>
+    
+    <!-- Pannellum library CSS and JS CDN -->
+    <link rel="stylesheet" href="https://jsdelivr.net"/>
+    <script type="text/javascript" src="https://jsdelivr.net"></script>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>360 Tour</title>
-
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.css">
-
-<link rel="stylesheet" href="css/style.css">
-
+    <!-- Custom Exterior Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div id="viewer"></div>
+    <!-- 360 Panorama Viewer Element -->
+    <div id="panorama"></div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three/build/three.module.js",
-    "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.module.js"
-  }
-}
-</script>
+    <!-- Media Pop-up Modal -->
+    <div class="modal-overlay" id="mediaModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <h2 class="modal-title">TV Center Display</h2>
+            <p class="modal-subtext">This is a custom subtext area describing the television interface module. Below is a sample audio track acting as a dummy MP3 placeholder.</p>
+            
+            <!-- Dummy MP3 Audio Player -->
+            <audio controls id="modalAudio">
+                <source src="https://soundhelix.com" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
 
-<script type="module" src="js/app.js"></script>
-
+    <!-- Custom Exterior JavaScript Architecture -->
+    <script src="app.js"></script>
 </body>
 </html>

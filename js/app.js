@@ -1,31 +1,10 @@
 import { Viewer } from '@photo-sphere-viewer/core';
 
+console.log("App loaded");
+
 const viewer = new Viewer({
-
     container: document.querySelector('#viewer'),
-
-    panorama: 'images/livingroom.jpg',
-
-    defaultYaw: 0,
-
-    defaultPitch: 0,
-
-    defaultZoomLvl: 0,
-
-    mousewheel: true,
-
-    touchmoveTwoFingers: false,
-
-    navbar: [
-
-        'zoom',
-
-        'move',
-
-        'fullscreen'
-
-    ],
-
-    loadingImg: null
-
+    panorama: 'images/livingroom.jpg'
 });
+
+console.log(viewer);

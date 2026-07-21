@@ -1,176 +1,19 @@
-/* ==========================================================================
-   1. GLOBAL SYSTEM SETUP & MOBILE VIEW LOCKS
-   ========================================================================== */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; 
-    position: fixed;
-    touch-action: none; 
-    background-color: #0b0f19;
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-/* ==========================================================================
-   2. HEADER & FOOTER FIXED STRIPS
-   ========================================================================== */
-.studio-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background: rgba(17, 24, 39, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid #1f2937;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 24px;
-    box-sizing: border-box;
-    z-index: 100;
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
-.logo-text {
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 18px;
-    letter-spacing: 0.5px;
+#viewer{
+    width:100vw;
+    height:100vh;
 }
-
-.menu-trigger {
-    background: #1f2937;
-    border: 1px solid #374151;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.studio-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    background: rgba(17, 24, 39, 0.85);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid #1f2937;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 24px;
-    box-sizing: border-box;
-    font-size: 11px;
-    color: #9ca3af;
-    z-index: 100;
-}
-
-/* ==========================================================================
-   3. FULLSCREEN 360 VIEWPORT CANVAS (Restores the screen visibility)
-   ========================================================================== */
-.virtual-tour-viewport {
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    z-index: 5;
-    pointer-events: none; /* Allows pointer clicks to pass through layout columns */
-}
-
-#panorama-viewer {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    pointer-events: auto !important; /* Unfreezes the 360 canvas interaction */
-    touch-action: pan-x pan-y; 
-}
-
-/* ==========================================================================
-   4. LARGE GREEN DEBUG TARGET (The Visible Hotspot Box)
-   ========================================================================== */
-.visible-debug-target.pnm-hotspot.pnm-info {
-    /* 🚀 RADAR SHADING: Semi-transparent emerald green fill */
-    background: rgba(34, 197, 94, 0.5) !important; 
-    
-    /* 📐 CONTAINER BOUNDS: Bold dashed green outline border */
-    border: 3px dashed #22c55e !important; 
-    border-radius: 6px;
-    
-    /* Forces click reactions down to the highest interactive surface depth */
-    z-index: 50 !important; 
-    pointer-events: auto !important;
-    transform: translate(-50%, -50%) !important;
-}
-
-/* Turns hot pink when your cursor hovers or when tapped on mobile screens */
-.visible-debug-target.pnm-hotspot.pnm-info:hover,
-.visible-debug-target.pnm-hotspot.pnm-info:active {
-    cursor: pointer !important;
-    background: rgba(236, 72, 153, 0.65) !important;
-    border-color: #ec4899 !important;
-}
-
-/* 🚀 LARGE SQUARE ADJUSTMENT: Sets unmissable dimensions for the first test frame */
-.test-frame-size { 
-    width: 160px !important; 
-    height: 160px !important; 
-}
-
-/* ==========================================================================
-   5. REUSED CONFIGURATOR DARK MODE MODAL OVERLAY WRAPPERS
-   ========================================================================== */
-.order-overlay-wrapper {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100vw; 
-    height: 100vh;
-    background: rgba(3, 7, 18, 0.85); 
-    backdrop-filter: blur(12px);       
-    z-index: 99999 !important; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    opacity: 0; 
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.order-overlay-wrapper.active { 
-    opacity: 1 !important; 
-    visibility: visible !important;
-    pointer-events: auto !important; 
-}
-
-.config-card {
-    background: #111827; width: 90%; max-width: 420px; 
-    border-radius: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-    overflow: hidden; display: flex; flex-direction: column;
-    max-height: 85vh; border: 1px solid #1f2937;        
-}
-
-.config-header {
-    padding: 20px; background: #1f2937; border-bottom: 1px solid #374151; 
-    display: flex; align-items: center; gap: 15px; position: relative;
-}
-
-.config-header h2, .config-header h3, .config-header div { color: #ffffff; }
-
-.close-x {
-    position: absolute; top: 15px; right: 20px;
-    font-size: 28px; cursor: pointer; color: #ffffff; line-height: 20px; 
-}
-
-.thumb-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #374151; }
-.config-body { padding: 25px; overflow-y: auto; color: #ffffff; }
-.section-title { font-size: 11px; font-weight: 800; color: #9333ea; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: block; }
-.config-footer { padding: 15px 25px; border-top: 1px solid #374151; background: #111827; }
-.add-cart-btn { width: 100%; background: linear-gradient(135deg, #2563eb, #9333ea); color: #fff; padding: 15px; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3); }

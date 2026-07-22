@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>360 Virtual Tour Viewer</title>
     
-    <link rel="stylesheet" href="style.css">
+    <!-- Self-hosted core local styles -->
+    <link rel="stylesheet" href="./pannellum.css">
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
     <div id="panorama"></div>
 
+    <!-- Media Pop-up Modal Window -->
     <div class="modal-overlay" id="mediaModal">
         <div class="modal-content">
             <button class="close-btn" id="closeModal">&times;</button>
@@ -24,6 +27,8 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Self-hosted library engine first, then custom actions -->
+    <script src="./pannellum.js"></script>
+    <script src="./app.js"></script>
 </body>
 </html>

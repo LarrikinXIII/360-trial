@@ -56,7 +56,7 @@ function buildVirtualTourViewer() {
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
     const viewer = window.pannellum.viewer('panorama', {
         "type": "equirectangular",
-        "panorama": "livingroom.jpg", 
+        "panorama": "livingroom.png", 
         "autoLoad": true,
         "hfov": 110,
         "pitch": -0.8,

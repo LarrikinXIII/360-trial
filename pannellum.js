@@ -128,7 +128,6 @@
                 config.hotSpots.forEach(function(sp) {
                     if (!sp._node) return;
                     
-                    // Fixed mathematical formula to prevent floating when looking around
                     var hLon = (sp.yaw || 0) * Math.PI / 180;
                     var hLat = (sp.pitch || 0) * Math.PI / 180;
                     
@@ -140,19 +139,21 @@
                         var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
                         var aspect = canvas.width / canvas.height;
                         
-                        // Adding perspective matrix calculations to lock down the Y-axis
                         var screenX = cx + (x * f / aspect / z) * cx;
-                        var screenY = cy - (y * f / z) * cy;
+                        
+                        // CHANGED THIS MINUS TO A PLUS SIGN TO REVERSE THE INVERTED Y-AXIS DIRECTION:
+                        var screenY = cy + (y * f / z) * cy;
                         
                         sp._node.style.display = "block";
                         sp._node.style.left = screenX + "px";
                         sp._node.style.top = screenY + "px";
-                        sp._node.style.transform = "translate(-50%, -50%)"; // Anchors it securely
+                        sp._node.style.transform = "translate(-50%, -50%)"; 
                     } else {
                         sp._node.style.display = "none";
                     }
                 });
             }
+
 
 
             var isDragging = false, lastX, lastY;

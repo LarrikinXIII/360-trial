@@ -1,25 +1,27 @@
-console.log("[APP] Executing immediately...");
+window.addEventListener('pannellumLibraryReady', function() {
+    console.log("[APP] 3D virtual tour boot sequence activated...");
 
-if (window.pannellum) {
-    console.log("[APP] Pannellum engine found. Initializing canvas layout...");
-    
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // Launch viewer using clean local configurations
+    // Launch the official 3D Equirectangular Spherical Viewer
     const viewer = window.pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
         "autoLoad": true,
-        "hfov": 100,
-        "pitch": 0,    // Camera centers straight forward
-        "yaw": 0,      // Camera centers straight forward
+        "hfov": 110,
+        "pitch": -0.8,   // Camera starts facing the TV monitor screen right side up
+        "yaw": -0.2,    
         "hotSpots": [
             {
-                "pitch": -4.5,   // Perfectly locked to the TV vertical line in true 3D space
-                "yaw": -128.5,   // Positioned horizontally on the center TV glass panel on the left wall
+                "pitch": -5.2,   // Centered exactly on the TV monitor glass panel in true 3D space
+                "yaw": -4.8,     
                 "cssClass": "custom-hotspot",
+                "createTooltipFunc": function(hotSpotDiv, args) {
+                    hotSpotDiv.setAttribute("title", args);
+                },
+                "createTooltipArgs": "Open TV Media",
                 "clickHandlerFunc": function() {
                     modal.classList.add('active');
                 }
@@ -38,7 +40,4 @@ if (window.pannellum) {
             audioPlayer.pause();
         }
     });
-
-} else {
-    console.error("[APP ERROR] The window.pannellum object is missing entirely. Check index.html load order.");
-}
+});

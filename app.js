@@ -1,24 +1,22 @@
-// Wait until the official 3D engine script registers completely
 window.addEventListener('pannellumLibraryReady', function() {
-    console.log("[APP] Core engine ready. Constructing viewport matrix...");
+    console.log("[APP] Offline engine connected. Rendering 3D room context...");
 
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // Bootstrapping the official 3D Equirectangular Spherical Viewer
+    // Build standalone interactive viewport
     const viewer = pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
         "autoLoad": true,
-        "compass": false,
         "hfov": 110,
-        "pitch": -0.8,   // Camera starts facing the TV monitor screen
-        "yaw": -0.2,    
+        "pitch": 0,
+        "yaw": 0,
         "hotSpots": [
             {
-                "pitch": -5.2,   // Centered on the TV monitor glass panel in 3D space
-                "yaw": -4.8,     
+                "pitch": -2,    // Locks point directly onto the vertical center plane of the TV
+                "yaw": -38,     // Snaps it horizontally right onto the monitor screen
                 "cssClass": "custom-hotspot",
                 "createTooltipFunc": function(hotSpotDiv, args) {
                     hotSpotDiv.setAttribute("title", args);
@@ -31,7 +29,6 @@ window.addEventListener('pannellumLibraryReady', function() {
         ]
     });
 
-    // Handle closing interaction sequences cleanly
     closeBtn.addEventListener('click', function() {
         modal.classList.remove('active');
         audioPlayer.pause();

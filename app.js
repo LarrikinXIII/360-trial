@@ -12,14 +12,13 @@ if (window.pannellum) {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
         "autoLoad": true,
-        "hfov": 110,
-        "pitch": 0,
-        "yaw": 0,
-        "cors": "anonymous", // FORCE UNLOCK: Bypasses browser cross-origin white blocks
+        "hfov": 100,
+        "pitch": 0,    // Camera centers straight forward
+        "yaw": 0,      // Camera centers straight forward
         "hotSpots": [
             {
-                "pitch": 0,   
-                "yaw": 18,    
+                "pitch": -4.5,   // Perfectly locked to the TV vertical line in true 3D space
+                "yaw": -128.5,   // Positioned horizontally on the center TV glass panel on the left wall
                 "cssClass": "custom-hotspot",
                 "clickHandlerFunc": function() {
                     modal.classList.add('active');

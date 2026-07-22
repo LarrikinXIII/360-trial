@@ -23,18 +23,25 @@ html, body {
 }
 
 /* Create the fixed Parallax Background Window Layer */
-/* 3D Window Material Texture Layout Mapping */
+/* 3D Window Seam Layout Proportions */
 .window-rain-layer {
-    width: 320px;          /* Matches width of the window frame in 3D perspective grid */
-    height: 240px;         /* Matches height of the window frame in 3D perspective grid */
+    width: 140px;          /* Perfectly covers the vertical glass window strip width */
+    height: 380px;         /* Tall enough to trace from top window frame to couch ledge */
+    background-image: url('rain.gif'); /* Safely handles texture image injections natively */
     background-size: cover;
-    background-position: center;
-    opacity: 0.65;         /* Slightly transparent so it blends cleanly over the environment */
-    pointer-events: none;  /* Allows click drags to pass through smoothly */
-    border-radius: 4px;
-    mix-blend-mode: screen; /* Blends dark colors out so rain droplets look super realistic */
+    opacity: 0.70;         
+    pointer-events: none;  
+    mix-blend-mode: screen; 
 }
 
+/* Offset pixel alignment anchors for your two split panorama halves */
+.window-rain-layer.left-pane {
+    background-position: -50px center;
+}
+
+.window-rain-layer.right-pane {
+    background-position: 50px center;
+}
 /* Ensure the modal text box ignores the page pinch scale */
 .modal-overlay, .modal-content, textarea {
     touch-action: auto !important; 

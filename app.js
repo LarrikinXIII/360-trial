@@ -18,8 +18,8 @@ if (window.pannellum) {
         "yaw": 0,
         "hotSpots": [
             {
-                "pitch": 0,   // Balanced to align on the central plane
-                "yaw": 18,    // Calibrated horizontally for our custom offline viewport engine
+                "pitch": -5.0,  // Calibrated to align directly with the vertical face of the TV
+                "yaw": -30.0,   // Centered horizontally onto the screen glass area
                 "cssClass": "custom-hotspot",
                 "clickHandlerFunc": function() {
                     modal.classList.add('active');

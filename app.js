@@ -1,11 +1,14 @@
-window.addEventListener('pannellumLibraryReady', function() {
-    console.log("[APP] Stable local 3D engine detected. Launching virtual tour scene...");
+console.log("[APP] Executing immediately...");
 
+// We immediately check if the pannellum library is bound to the window object
+if (window.pannellum) {
+    console.log("[APP] Pannellum engine found. Initializing canvas layout...");
+    
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // Launch viewer using core WebGL engine mappings
+    // Launch viewer using clean local configurations
     const viewer = window.pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
@@ -15,8 +18,8 @@ window.addEventListener('pannellumLibraryReady', function() {
         "yaw": 0,
         "hotSpots": [
             {
-                "pitch": -0.1,  // Locked perfectly to the TV vertically
-                "yaw": -0.6,   // Locked perfectly to the TV horizontally
+                "pitch": 0,   // Balanced to align on the central plane
+                "yaw": 18,    // Calibrated horizontally for our custom offline viewport engine
                 "cssClass": "custom-hotspot",
                 "clickHandlerFunc": function() {
                     modal.classList.add('active');
@@ -25,6 +28,7 @@ window.addEventListener('pannellumLibraryReady', function() {
         ]
     });
 
+    // Wire up modal interaction listeners directly
     closeBtn.addEventListener('click', function() {
         modal.classList.remove('active');
         audioPlayer.pause();
@@ -36,4 +40,7 @@ window.addEventListener('pannellumLibraryReady', function() {
             audioPlayer.pause();
         }
     });
-});
+
+} else {
+    console.error("[APP ERROR] The window.pannellum object is missing entirely. Check index.html load order.");
+}

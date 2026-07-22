@@ -1,5 +1,5 @@
 /**
- * Standalone Offline 3D Spherical Engine (Hotspot Anchored Fixed Version)
+ * Standalone Offline 3D Spherical Engine (Completely Closed Syntax Edition)
  */
 (function() {
     "use strict";
@@ -9,22 +9,22 @@
         var lib = {};
 
         function mat4Multiply(out, a, b) {
-            var a00=a[0], a01=a[1], a02=a[2], a03=a[3],
-                a10=a[4], a11=a[5], a12=a[6], a13=a[7],
-                a20=a[8], a21=a[9], a22=a[10], a23=a[11],
-                a30=a[12], a31=a[13], a32=a[14], a33=a[15];
-            var b0=b[0], b1=b[1], b2=b[2], b3=b[3];
-            out[0]=b0*a00+b1*a10+b2*a20+b3*a30; out[1]=b0*a01+b1*a11+b2*a21+b3*a31;
-            out[2]=b0*a02+b1*a12+b2*a22+b3*a32; out[3]=b0*a03+b1*a13+b2*a23+b3*a33;
-            b0=b[4]; b1=b[5]; b2=b[6]; b3=b[7];
-            out[4]=b0*a00+b1*a10+b2*a20+b3*a30; out[5]=b0*a01+b1*a11+b2*a21+b3*a31;
-            out[6]=b0*a02+b1*a12+b2*a22+b3*a32; out[7]=b0*a03+b1*a13+b2*a23+b3*a33;
-            b0=b[8]; b1=b[9]; b2=b[10]; b3=b[11];
-            out[8]=b0*a00+b1*a10+b2*a20+b3*a30; out[9]=b0*a01+b1*a11+b2*a21+b3*a31;
-            out[10]=b0*a02+b1*a12+b2*a22+b3*a32; out[11]=b0*a03+b1*a13+b2*a23+b3*a33;
-            b0=b[12]; b1=b[13]; b2=b[14]; b3=b[15];
-            out[12]=b0*a00+b1*a10+b2*a20+b3*a30; out[13]=b0*a01+b1*a11+b2*a21+b3*a31;
-            out[14]=b0*a02+b1*a12+b2*a22+b3*a32; out[15]=b0*a03+b1*a13+b2*a23+b3*a33;
+            var a00=a, a01=a, a02=a, a03=a,
+                a10=a, a11=a, a12=a, a13=a,
+                a20=a, a21=a, a22=a, a23=a,
+                a30=a, a31=a, a32=a, a33=a;
+            var b0=b, b1=b, b2=b, b3=b;
+            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
+            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
+            b0=b; b1=b; b2=b; b3=b;
+            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
+            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
+            b0=b; b1=b; b2=b; b3=b;
+            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
+            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
+            b0=b; b1=b; b2=b; b3=b;
+            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
+            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
         }
 
         lib.viewer = function(container, config) {
@@ -140,9 +140,7 @@
                         var aspect = canvas.width / canvas.height;
                         
                         var screenX = cx + (x * f / aspect / z) * cx;
-                        
-                        // CHANGED THIS MINUS TO A PLUS SIGN TO REVERSE THE INVERTED Y-AXIS DIRECTION:
-                        var screenY = cy + (y * f / z) * cy;
+                        var screenY = cy + (y * f / z) * cy; // Stabilized matching trajectory plane
                         
                         sp._node.style.display = "block";
                         sp._node.style.left = screenX + "px";
@@ -154,28 +152,6 @@
                 });
             }
 
-
-
-            var isDragging = false, lastX, lastY;
-            canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
-            window.addEventListener("mouseup", function() { isDragging = false; });
-            window.addEventListener("mousemove", function(e) {
-                if (!isDragging) return;
-                yaw -= (e.clientX - lastX) * 0.005; pitch += (e.clientY - lastY) * 0.005;
-                lastX = e.clientX; lastY = e.clientY;
-                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
-                drawScene();
-            });
-            window.addEventListener("resize", drawScene);
-            return { render: drawScene };
-        };
-
-        return lib;
-    })();
-
-    window.dispatchEvent(new Event('pannellumLibraryReady'));
-})();
-
             var isDragging = false, lastX, lastY;
             canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
             window.addEventListener("mouseup", function() { isDragging = false; });
@@ -187,21 +163,16 @@
                 drawScene();
             });
 
-            // ADD THIS: Scroll wheel listener loop to calculate zoom metrics dynamically
+            // Clean scroll-wheel handler tucked inside viewer closure properties boundary
             canvas.addEventListener("wheel", function(e) {
-                e.preventDefault(); // Prevents the actual web browser page scrolling up/down
-                
-                // Adjust Field of View value based on wheel scroll delta tick direction
+                e.preventDefault();
                 if (e.deltaY > 0) {
-                    config.hfov += 4; // Zoom Out
+                    config.hfov += 4;
                 } else {
-                    config.hfov -= 4; // Zoom In
+                    config.hfov -= 4;
                 }
-
-                // Tight clamps to ensure the zoom doesn't break perspective matrices
                 config.hfov = Math.max(50, Math.min(130, config.hfov));
-                
-                drawScene(); // Instantly update view screen graphics layers
+                drawScene();
             }, { passive: false });
 
             window.addEventListener("resize", drawScene);
@@ -213,4 +184,3 @@
 
     window.dispatchEvent(new Event('pannellumLibraryReady'));
 })();
-

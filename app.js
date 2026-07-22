@@ -1,116 +1,140 @@
 window.addEventListener('load', function() {
-    console.log("[3D-ENGINE] Activating native spherical wrapping matrix...");
+    console.log("[3D-CYLINDER] Constructing immersive 360 panoramic wraparound bubble...");
 
     const viewer = document.getElementById('panorama');
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // 1. Establish the main 3D Viewport window frame
+    // 1. Configure the Main 3D Viewport window frame
     viewer.style.position = 'relative';
     viewer.style.overflow = 'hidden';
-    viewer.style.backgroundColor = '#111';
+    viewer.style.backgroundColor = '#000';
     viewer.style.width = '100vw';
     viewer.style.height = '100vh';
-    viewer.style.perspective = '600px'; // Creates the depth field of view lens look
+    viewer.style.perspective = '700px'; // Field of view depth lens matrix config
 
-    // 2. Build the 3D Sphere Cube-Map Environment Chamber
-    const scene3D = document.createElement('div');
-    scene3D.style.position = 'absolute';
-    scene3D.style.width = '100%';
-    scene3D.style.height = '100%';
-    scene3D.style.transformStyle = 'preserve-3d';
-    scene3D.style.transition = 'transform 0.1s ease-out';
-    viewer.appendChild(scene3D);
+    // 2. Build the central 3D Environment pivot hub room
+    const stage3D = document.createElement('div');
+    stage3D.style.position = 'absolute';
+    stage3D.style.width = '100%';
+    stage3D.style.height = '100%';
+    stage3D.style.transformStyle = 'preserve-3d';
+    stage3D.style.transition = 'transform 0.05s ease-out';
+    viewer.appendChild(stage3D);
 
-    // 3. Create the panoramic image panel strip wrapped into a cylinder shape
-    const panoSurface = document.createElement('div');
-    panoSurface.style.position = 'absolute';
-    panoSurface.style.width = '4000px'; // Massive panoramic resolution map surface width
-    panoSurface.style.height = '1000px';
-    panoSurface.style.top = '50%';
-    panoSurface.style.left = '50%';
-    panoSurface.style.backgroundImage = "url('livingroom.jpg')";
-    panoSurface.style.backgroundSize = '100% 100%';
-    panoSurface.style.transformOrigin = 'center center';
-    
-    // This curves the flat asset into a true 3D wraparound depth environment
-    panoSurface.style.transform = 'translate(-50%, -50%) translateZ(-800px)';
-    scene3D.appendChild(panoSurface);
+    // 3. Segment the single flat image asset into a real wrapped 3D cylinder
+    // We break the panorama into 12 distinct panels wrapped in a seamless 360 ring
+    const totalPanels = 12;
+    const panelWidth = 530; // Optimal panel tracking segment width pixel metrics
+    const cylinderRadius = Math.round((panelWidth / 2) / Math.tan(Math.PI / totalPanels)); // Distance from core pivot center
 
-    // 4. Clean coordinate maps for your TV and surrounding Gallery photo frames
-    const frameRegistry = [
-        { id: 'tv-center', x: 67.2, y: 45.5, title: 'Television Interface module' },
-        { id: 'frame-forest', x: 15.1, y: 22.5, title: 'Forest Pathway Photo Frame' },
-        { id: 'frame-beach', x: 15.3, y: 55.2, title: 'Beach Boardwalk Photo Frame' },
-        { id: 'frame-leaf', x: 35.8, y: 48.1, title: 'Green Monstera Leaf Frame' },
-        { id: 'frame-sunset', x: 86.9, y: 32.5, title: 'Ocean Sunset Right Frame' }
-    ];
+    for (let i = 0; i < totalPanels; i++) {
+        const panelDeg = i * (360 / totalPanels);
+        const slice = document.createElement('div');
+        
+        slice.style.position = 'absolute';
+        slice.style.width = panelWidth + 'px';
+        slice.style.height = '800px';
+        slice.style.top = '50%';
+        slice.style.left = '50%';
+        slice.style.marginTop = '-400px';
+        slice.style.marginLeft = -(panelWidth / 2) + 'px';
+        
+        // Map the panoramic background slice image texture onto each segment
+        slice.style.backgroundImage = "url('livingroom.jpg')";
+        slice.style.backgroundSize = `${totalPanels * 100}% 100%`;
+        slice.style.backgroundPosition = `${(i / (totalPanels - 1)) * 100}% 0%`;
+        slice.style.backfaceVisibility = 'hidden';
+        
+        // Distribute the panels perfectly into a circular wraparound ring shape
+        slice.style.transform = `rotateY(${-panelDeg}deg) translateZ(${cylinderRadius}px)`;
+        stage3D.appendChild(slice);
 
-    // 5. Place the interactive hotspot buttons directly onto the curved 3D image surface
-    frameRegistry.forEach(function(spot) {
+        // 4. Inject specific hotspots onto the panels matching their visible features
+        // Panel 2 contains the television monitor glass surface panel interface
+        if (i === 2) {
+            createHotspotNode(slice, "tv-center", 35, 52, "Television Display", modal);
+        }
+        // Panel 0 contains the forest picture frames cluster layout
+        if (i === 0) {
+            createHotspotNode(slice, "frame-forest", 62, 28, "Forest Pathway Frame", modal);
+            createHotspotNode(slice, "frame-beach", 63, 62, "Beach Boardwalk Frame", modal);
+        }
+        // Panel 1 contains the leaf frames close to the wall corners
+        if (i === 1) {
+            createHotspotNode(slice, "frame-leaf", 45, 54, "Green Monstera Leaf Frame", modal);
+        }
+        // Panel 3 contains the sunset framing array on the right-hand wall
+        if (i === 3) {
+            createHotspotNode(slice, "frame-sunset", 48, 38, "Ocean Sunset Right Frame", modal);
+        }
+    }
+
+    // Hotspot generator utility structure helper function
+    function createHotspotNode(parentPanel, id, pctX, pctY, frameTitle, modalWindow) {
         const pin = document.createElement('div');
         pin.className = 'custom-hotspot';
-        pin.id = spot.id;
+        pin.id = id;
         pin.style.position = 'absolute';
-        pin.style.left = spot.x + '%';
-        pin.style.top = spot.y + '%';
+        pin.style.left = pctX + '%';
+        pin.style.top = pctY + '%';
         pin.style.transform = 'translate(-50%, -50%)';
-        pin.setAttribute('title', spot.title);
+        pin.setAttribute('title', frameTitle);
 
         pin.addEventListener('click', function(e) {
-            e.stopPropagation(); // Stops camera panning engine clicks from firing
-            console.log("[VIEWPORT] Active Selection: " + spot.title);
-            document.querySelector('.modal-title').textContent = spot.title;
-            modal.classList.add('active');
+            e.stopPropagation(); // Stops camera panning events from triggering
+            console.log("[CYLINDER] Opened: " + frameTitle);
+            document.querySelector('.modal-title').textContent = frameTitle;
+            modalWindow.classList.add('active');
         });
 
-        panoSurface.appendChild(pin);
-    });
+        parentPanel.appendChild(pin);
+    }
 
-    // 6. 3D Camera tracking variables
-    let isPanning = false;
+    // 5. Camera tracking state logic controllers
+    let isDragging = false;
     let baseMouseX = 0, baseMouseY = 0;
-    let cameraRotationY = -45; // Starts camera facing toward the TV center console
+    let cameraRotationY = -62; // Starts looking directly forward at the TV console unit
     let cameraRotationX = 0;
 
-    // Set up the initial camera angle view matrix positioning loop
-    scene3D.style.transform = `rotateX(${cameraRotationX}deg) rotateY(${cameraRotationY}deg)`;
+    // Trigger starting angle setup position parameters
+    stage3D.style.transform = `translateZ(0px) rotateX(${cameraRotationX}deg) rotateY(${cameraRotationY}deg)`;
 
-    // 7. Core 3D Navigation Drag-to-Pan Event Loop Mechanics
+    // 6. Navigation Drag-to-Pan 360 Environment Loop Event Handlers
     viewer.addEventListener('mousedown', function(e) {
-        isPanning = true;
+        isDragging = true;
         viewer.style.cursor = 'grabbing';
         baseMouseX = e.clientX;
         baseMouseY = e.clientY;
     });
 
     window.addEventListener('mouseup', function() {
-        isPanning = false;
+        isDragging = false;
         viewer.style.cursor = 'grab';
     });
 
     window.addEventListener('mousemove', function(e) {
-        if (!isPanning) return;
+        if (!isDragging) return;
 
-        const distanceDeltaX = e.clientX - baseMouseX;
-        const distanceDeltaY = e.clientY - baseMouseY;
+        const deltaX = e.clientX - baseMouseX;
+        const deltaY = e.clientY - baseMouseY;
 
         baseMouseX = e.clientX;
         baseMouseY = e.clientY;
 
-        // Modifies the 3D rotation angles smoothly as you drag across the canvas viewport
-        cameraRotationY += distanceDeltaX * 0.15;
-        cameraRotationX -= distanceDeltaY * 0.15;
+        // Modifies view rotation vectors as you drag inside the 360 bubble container
+        cameraRotationY += deltaX * 0.2;
+        cameraRotationX -= deltaY * 0.2;
 
-        // Establish look parameters to prevent flipping entirely upside down
-        cameraRotationX = Math.max(-45, Math.min(45, cameraRotationX));
+        // Clamp camera vertical tilt range so it doesn't flip completely upside down
+        cameraRotationX = Math.max(-25, Math.min(25, cameraRotationX));
 
-        // Render the true spherical immersive 3D translation changes
-        scene3D.style.transform = `rotateX(${cameraRotationX}deg) rotateY(${cameraRotationY}deg)`;
+        // Render the smooth immersive look matrix changes instantly
+        stage3D.style.transform = `translateZ(0px) rotateX(${cameraRotationX}deg) rotateY(${cameraRotationY}deg)`;
     });
 
-    // 8. Pop-up window modal exit routines
+    // 7. Pop-up panel modal window exit click tracking listeners
     closeBtn.addEventListener('click', function() {
         modal.classList.remove('active');
         audioPlayer.pause();

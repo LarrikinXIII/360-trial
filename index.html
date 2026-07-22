@@ -4,26 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>360 Virtual Tour Viewer</title>
-    
-    <link rel="stylesheet" href="./pannellum.css">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
     <div id="panorama"></div>
 
-    <!-- Media Pop-up Modal -->
+    <!-- Media Pop-up Modal Window Panel Interface -->
     <div class="modal-overlay" id="mediaModal">
         <div class="modal-content">
             <button class="close-btn" id="closeModal">&times;</button>
+            
             <h2 class="modal-title">TV Center Display</h2>
-            
-            <!-- Beautiful Dynamic Picsum Placeholder Image -->
-            <img src="https://picsum.photos/400/400?random=3" alt="Modal Feature" style="width:100%; border-radius:8px; margin-bottom:15px; display:block;">
-            
+            <img src="https://picsum.photos" alt="Modal Feature" style="width:100%; border-radius:8px; margin-bottom:15px; display:block;">
             <p class="modal-subtext">This is a custom subtext area describing the television interface module. Below is a sample audio track acting as a dummy MP3 placeholder.</p>
             
-            <!-- Dummy MP3 Audio Player -->
+            <!-- Custom Data Text Area Note Field -->
+            <textarea placeholder="Type your custom notes here..." style="width: 100%; height: 75px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 15px; font-family: inherit; resize: none; box-sizing: border-box;"></textarea>
+
             <audio controls id="modalAudio">
                 <source src="https://codesandbox.io" type="audio/mpeg">
                 Your browser does not support the audio element.
@@ -31,8 +29,6 @@
         </div>
     </div>
 
-    <!-- Adding ?v=2 forces the browser to completely clear its cache -->
-    <script src="./pannellum.js?v=2"></script>
-    <script src="./app.js?v=2"></script>
+    <script src="./app.js"></script>
 </body>
 </html>

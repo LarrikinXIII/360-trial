@@ -1,24 +1,22 @@
-// Wait for the 3D engine injection sequence to complete successfully
-window.addEventListener('pannellumReady', function() {
-    console.log("Pannellum 3D context detected. Constructing viewport...");
+window.addEventListener('load', function() {
+    console.log("Initializing local 3D viewer context.");
 
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // Initialize the true 3D Equirectangular Spherical Viewer
+    // Create viewer from local custom standalone scope configuration
     const viewer = pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
         "autoLoad": true,
-        "compass": false,
         "hfov": 110,
-        "pitch": -0.8,
-        "yaw": -0.2,
+        "pitch": 0,
+        "yaw": 0,
         "hotSpots": [
             {
-                "pitch": -5.0,  // Fine-tuned to center exactly on the physical TV screen in 3D space
-                "yaw": -4.5,    
+                "pitch": 0,    // Perfectly centered coordinates inside the webgl environment viewport
+                "yaw": -30,    
                 "cssClass": "custom-hotspot",
                 "createTooltipFunc": function(hotSpotDiv, args) {
                     hotSpotDiv.setAttribute("title", args);
@@ -31,7 +29,6 @@ window.addEventListener('pannellumReady', function() {
         ]
     });
 
-    // Modal Interaction Event Triggers
     closeBtn.addEventListener('click', function() {
         modal.classList.remove('active');
         audioPlayer.pause();

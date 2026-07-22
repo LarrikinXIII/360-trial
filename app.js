@@ -77,7 +77,7 @@ function buildVirtualTourViewer() {
                 "cssClass": "window-rain-layer", // Targeted CSS name
                 "createTooltipFunc": function(hotSpotDiv) {
                     // This function runs on boot to inject our rain animation natively into 3D space
-                    hotSpotDiv.style.backgroundImage = "url('leaves.gif')"; // Your rain/leaf animation filename
+                    hotSpotDiv.style.backgroundImage = "url('rain.gif')"; // Your rain/leaf animation filename
                 }
             }
         ]

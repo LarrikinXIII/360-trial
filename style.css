@@ -11,20 +11,27 @@ html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 360 Viewer Container */
+/* Enable the container to show hidden layers sitting directly underneath it */
 #panorama {
-    width: 100vw;
-    height: 100vh;
-    display: block;
-    background-color: #000;
-    
-    /* CRITICAL FOR PHONES: Stops the phone web browser from blocking custom finger swipes */
-    touch-action: none; 
+    background: transparent !important;
+    position: relative;
+    z-index: 2;
 }
 
-/* Ensure the canvas element inside follows the rule */
 #panorama canvas {
-    touch-action: none;
+    background: transparent !important;
+}
+
+/* Create the fixed Parallax Background Window Layer */
+.parallax-window-view {
+    position: absolute;
+    top: 18%;       /* Aligned to sit directly behind the window frame boundaries */
+    left: 20%;      /* Adjust these metrics depending on mobile layout viewframes */
+    width: 53%;
+    height: 48%;
+    z-index: 5;     /* Drops the asset safely behind your transparent panorama */
+    object-fit: cover;
+    pointer-events: none;
 }
 
 /* Ensure the modal text box ignores the page pinch scale */

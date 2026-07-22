@@ -1,61 +1,50 @@
-console.log("[APP] Cubemap architecture initializing...");
+console.log("[APP] App file loaded successfully. Syncing with local 3D engine...");
 
-// Check if the script can initialize the layout directly
+// If the library loaded instantly, initialize right away
 if (window.pannellum) {
-    initCubemapTour();
+    buildVirtualTourViewer();
 } else {
-    window.addEventListener('pannellumLibraryReady', initCubemapTour);
+    // Otherwise, wait for the event hook signature trigger
+    window.addEventListener('pannellumLibraryReady', buildVirtualTourViewer);
 }
 
-function initCubemapTour() {
+function buildVirtualTourViewer() {
+    console.log("[APP] 3D virtual tour sequence activated.");
+
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // Initialize Pannellum using 6 distinct flat cubic faces
+    // Launch the official 3D Equirectangular Spherical Viewer
     const viewer = window.pannellum.viewer('panorama', {
-        "type": "cubemap",
-        "cubeMap": [
-            "front.jpg",  // Front view square asset face mapping
-            "right.jpg",  // Right view square asset face mapping
-            "back.jpg",   // Back view square asset face mapping
-            "left.jpg",   // Left view square asset face mapping
-            "top.jpg",    // Top/Ceiling view square asset face mapping
-            "bottom.jpg"  // Bottom/Floor view square asset face mapping
-        ],
+        "type": "equirectangular",
+        "panorama": "livingroom.jpg", 
         "autoLoad": true,
-        "hfov": 100,
-        "pitch": 0,
-        "yaw": 0,
+        "hfov": 110,
+        "pitch": -0.8,   // Camera starts facing the TV monitor screen
+        "yaw": -0.2,    
         "hotSpots": [
             {
-                "pitch": -5.0,  // Exact vertical degree angle matching the TV placement
-                "yaw": -45.0,   // Exact horizontal degree angle matching the TV placement
+                "pitch": -5.2,   // Centered exactly on the TV monitor glass panel in true 3D space
+                "yaw": -4.8,     
                 "cssClass": "custom-hotspot",
-                "createTooltipFunc": function(hotSpotDiv, args) {
-                    hotSpotDiv.setAttribute("title", args);
-                },
-                "createTooltipArgs": "Open TV Media",
                 "clickHandlerFunc": function() {
-                    console.log("[APP] Hotspot selected. Activating media popup layer.");
-                    if (modal) modal.classList.add('active');
+                    modal.classList.add('active');
                 }
             }
         ]
     });
 
-    // Handle closing interaction frameworks cleanly
-    if (closeBtn && modal) {
-        closeBtn.addEventListener('click', function() {
-            modal.classList.remove('active');
-            if (audioPlayer) audioPlayer.pause();
-        });
+    // Close button interactions
+    closeBtn.addEventListener('click', function() {
+        modal.classList.remove('active');
+        audioPlayer.pause();
+    });
 
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-                if (audioPlayer) audioPlayer.pause();
-            }
-        });
-    }
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            audioPlayer.pause();
+        }
+    });
 }

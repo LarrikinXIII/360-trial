@@ -35,6 +35,17 @@
         </div>
     </div>
 
+        <!-- 1. Background Music Audio Engine (Muted + Looping for Security) -->
+    <audio id="globalAmbientAudio" loop muted>
+        <source src="https://codesandbox.io" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- 2. Interactive Global Floating Mute/Unmute Control Toggle Control -->
+    <button id="globalAudioToggle" class="floating-audio-btn" title="Toggle Background Music">
+        🔊 Music On
+    </button>
+    
     <script src="./pannellum.js"></script>
     <script src="./app.js"></script>
 </body>

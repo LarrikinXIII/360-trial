@@ -7,7 +7,7 @@ const audioPlayer = document.getElementById('modalAudio');
 const viewer = pannellum.viewer('panorama', {
     "type": "equirectangular",
     // NOTE: Replace this URL path with your local path or hosted link to the room image
-    "panorama": "https://ibb.co", 
+    "panorama": "livingroom.jpg", 
     "autoLoad": true,
     "compass": false,
     "hfov": 110,

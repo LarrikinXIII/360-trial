@@ -165,20 +165,29 @@ window.pannellum = (function() {
             var cx = canvas.width / 2, cy = canvas.height / 2;
             config.hotSpots.forEach(function(sp) {
                 if (!sp._node) return;
+                
+                // Convert angles into radian matrix paths
                 var hLon = (sp.yaw || 0) * Math.PI / 180;
                 var hLat = (sp.pitch || 0) * Math.PI / 180;
+                
+                // Absolute rotation vectors tracking
                 var x = Math.cos(hLat) * Math.sin(hLon - yaw);
                 var y = Math.sin(hLat) * Math.cos(pitch) - Math.cos(hLat) * Math.sin(pitch) * Math.cos(hLon - yaw);
                 var z = Math.sin(hLat) * Math.sin(pitch) + Math.cos(hLat) * Math.cos(pitch) * Math.cos(hLon - yaw);
 
+                // Ensure node remains invisible if it rotates completely behind the camera lens
                 if (z > 0) {
                     var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
                     var aspect = canvas.width / canvas.height;
+                    
+                    // Center screen matrix projection offset fixes
                     var scrX = cx + (x * f / aspect / z) * cx;
                     var scrY = cy - (y * f / z) * cy;
+                    
                     sp._node.style.display = "block";
                     sp._node.style.left = scrX + "px";
                     sp._node.style.top = scrY + "px";
+                    sp._node.style.transform = "translate(-50%, -50%)"; // Keeps marker anchored dead center
                 } else {
                     sp._node.style.display = "none";
                 }

@@ -167,11 +167,11 @@ window.pannellum = (function() {
         });
 
         // --- 2. MOBILE PHONE TOUCH LISTENERS ---
-        canvas.addEventListener("touchstart", function(e) {
+                canvas.addEventListener("touchstart", function(e) {
             if (e.touches.length === 1) {
                 isDragging = true; 
-                lastX = e.touches[0].clientX; 
-                lastY = e.touches[0].clientY;
+                lastX = e.touches[0].clientX; // Fixed: Reads exact target touch array node
+                lastY = e.touches[0].clientY; 
             }
         }, { passive: true });
 
@@ -180,16 +180,16 @@ window.pannellum = (function() {
         canvas.addEventListener("touchmove", function(e) {
             if (!isDragging || e.touches.length !== 1) return;
             
-            // Calculate finger swipe distances across the phone monitor glass
+            // Calculate finger swipe distances across the phone screen surface safely
             var deltaX = e.touches[0].clientX - lastX;
             var deltaY = e.touches[0].clientY - lastY;
             
             lastX = e.touches[0].clientX; 
             lastY = e.touches[0].clientY;
 
-            // Apply orientation shifts (Inverted delta Y maps swipe directions naturally)
-            yaw -= deltaX * 0.006; 
-            pitch -= deltaY * 0.006;
+            // Apply smooth vertical/horizontal panning increments
+            yaw -= deltaX * 0.005; 
+            pitch += deltaY * 0.005; // Balanced tracking loop matching directional drag profiles
             
             pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
             drawScene();

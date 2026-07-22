@@ -66,25 +66,20 @@ function buildVirtualTourViewer() {
             { "pitch": 18.5, "yaw": -68.4, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-forest") },
             { "pitch": -12.1, "yaw": -67.9, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-beach") },
             { "pitch": -2.4, "yaw": -32.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-leaf") },
-            { "pitch": 8.1, "yaw": 42.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-sunset") }
+            { "pitch": 8.1, "yaw": 42.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-sunset") },
 
-                  {
-                "pitch": 2.0,     // Shifted lower to align exactly with the glass line heights
+            // ========================================================
+            // 🌧️ WINDOW SEAM COORDS: Cleaned of functional logic crashes
+            // ========================================================
+            {
+                "pitch": 2.0,     
                 "yaw": -173.0,    // Left-side window center offset point
-                "cssClass": "window-rain-layer", 
-                "createTooltipFunc": function(hotSpotDiv) {
-                    hotSpotDiv.style.backgroundImage = "url('leaves.gif')"; 
-                    hotSpotDiv.style.backgroundPosition = "-50px center"; // Shifts image alignment over the opening
-                }
+                "cssClass": "window-rain-layer left-pane" 
             },
             {
                 "pitch": 2.0,     
                 "yaw": 173.0,     // Right-side window center offset point
-                "cssClass": "window-rain-layer", 
-                "createTooltipFunc": function(hotSpotDiv) {
-                    hotSpotDiv.style.backgroundImage = "url('leaves.gif')"; 
-                    hotSpotDiv.style.backgroundPosition = "50px center"; // Shifts image alignment over the opening
-                }
+                "cssClass": "window-rain-layer right-pane" 
             }
         ]
     });

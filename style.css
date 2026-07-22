@@ -132,3 +132,38 @@ audio {
     margin-top: 10px;
     outline: none;
 }
+
+/* Floating Global Music Control Button Styles */
+.floating-audio-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999; /* Positions it floating safely above the 360 viewer canvas */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 10px 16px;
+    border-radius: 30px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.floating-audio-btn:hover {
+    transform: scale(1.05);
+    background: #ffffff;
+}
+
+/* Dim button appearance when audio track is muted */
+.floating-audio-btn.is-muted {
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-color: transparent;
+}

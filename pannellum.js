@@ -92,10 +92,14 @@ window.pannellum = (function() {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
-        var texture = gl.createTexture();
+              var texture = gl.createTexture();
         var img = new Image();
         img.onload = function() {
             gl.bindTexture(gl.TEXTURE_2D, texture);
+            
+            // ADD THIS SINGLE LINE BELOW TO FLIP THE IMAGE RIGHT SIDE UP:
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

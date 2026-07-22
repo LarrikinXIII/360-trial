@@ -1,22 +1,21 @@
 /**
- * Standalone Offline Stable Panorama Engine Layout Builder
+ * Standalone Immersive 360 Spherical Engine Viewer Component
  */
 (function() {
     "use strict";
-    console.log("[LOCAL-ENGINE] Synthesizing pure local 3D rendering context...");
+    console.log("[LOCAL-ENGINE] Synthesizing pure 360 spherical canvas context...");
 
     window.pannellum = (function() {
         var lib = {};
 
         lib.viewer = function(container, config) {
             var el = typeof container === "string" ? document.getElementById(container) : container;
-            if (!el) throw new Error("Target canvas container missing.");
+            if (!el) throw new Error("Target view container missing.");
             
             el.innerHTML = "";
             el.style.position = "relative";
             el.style.overflow = "hidden";
 
-            // Create background canvas render projection surface
             var canvas = document.createElement("canvas");
             canvas.style.width = "100%"; canvas.style.height = "100%";
             canvas.style.display = "block";
@@ -25,7 +24,6 @@
             var ctx = canvas.getContext("2d");
             var img = new Image();
             
-            // Camera position variables matching global navigation properties
             var pitch = config.pitch || 0;
             var yaw = config.yaw || 0;
             var hfov = config.hfov || 110;
@@ -40,25 +38,78 @@
 
                 var w = canvas.width = canvas.clientWidth;
                 var h = canvas.height = canvas.clientHeight;
+                if (w === 0 || h === 0) return;
 
-                ctx.clearRect(0, 0, w, h);
+                // Create a blank image buffer data layer to reproject pixels into a 3D bubble
+                var imgData = ctx.createImageData(w, h);
+                var data = imgData.data;
 
-                // Calculate horizontal slicing parameters based on current camera pan angle
-                var scrollX = ((yaw * 5) % w);
-                if (scrollX < 0) scrollX += w;
+                // Calculate Field of View math constraints
+                var fovRad = (hfov * Math.PI) / 180;
+                var dist = (w / 2) / Math.tan(fovRad / 2);
 
-                // Adjust vertical translation offset tracking properties
-                var scrollY = (pitch * 5) + (h / 2) - (img.height / 2);
+                var rYaw = (yaw * Math.PI) / 180;
+                var rPitch = (pitch * Math.PI) / 180;
 
-                // Render looping background landscape image layers
-                ctx.drawImage(img, -scrollX, scrollY, w, h);
-                ctx.drawImage(img, w - scrollX, scrollY, w, h);
-                ctx.drawImage(img, -w - scrollX, scrollY, w, h);
+                var cosP = Math.cos(rPitch), sinP = Math.sin(rPitch);
+                var cosY = Math.cos(rYaw), sinY = Math.sin(rYaw);
 
-                updateHotspots(w, h, scrollX, scrollY);
+                var pW = img.width;
+                var pH = img.height;
+
+                // Create a temporary canvas tracking point to query original unwarped image pixels securely
+                var srcCanvas = document.createElement("canvas");
+                srcCanvas.width = pW; srcCanvas.height = pH;
+                var srcCtx = srcCanvas.getContext("2d");
+                srcCtx.drawImage(img, 0, 0);
+                var srcData = srcCtx.getImageData(0, 0, pW, pH).data;
+
+                // Core Spherical Trigonometric Projection Loop
+                // Loops through every pixel on the screen and warps it onto a 3D sphere coordinate plane
+                for (var y = 0; y < h; y++) {
+                    var dy = y - h / 2;
+                    for (var x = 0; x < w; x++) {
+                        var dx = x - w / 2;
+
+                        // Calculate 3D Ray vector angles pointing out from the screen plane
+                        var nx = dx;
+                        var ny = dy;
+                        var nz = dist;
+
+                        // Rotate camera vertically (Pitch axis tracking)
+                        var y1 = ny * cosP - nz * sinP;
+                        var z1 = ny * sinP + nz * cosP;
+
+                        // Rotate camera horizontally (Yaw axis tracking)
+                        var x2 = nx * cosY - z1 * sinY;
+                        var z2 = nx * sinY + z1 * cosY;
+
+                        // Calculate spherical latitude and longitude coordinates mapping match locks
+                        var lon = Math.atan2(x2, z2);
+                        var lat = Math.atan2(y1, Math.sqrt(x2 * x2 + z2 * z2));
+
+                        // Convert coordinates into image pixel dimensions indexes
+                        var u = Math.floor(((lon + Math.PI) / (2 * Math.PI)) * pW);
+                        var v = Math.floor(((Math.PI / 2 - lat) / Math.PI) * pH);
+
+                        // Clamp values to keep calculations inside bounds
+                        if (u < 0) u = 0; if (u >= pW) u = pW - 1;
+                        if (v < 0) v = 0; if (v >= pH) v = pH - 1;
+
+                        var destIdx = (y * w + x) * 4;
+                        var srcIdx = (v * pW + u) * 4;
+
+                        data[destIdx] = srcData[srcIdx];
+                        data[destIdx + 1] = srcData[srcIdx + 1];
+                        data[destIdx + 2] = srcData[srcIdx + 2];
+                        data[destIdx + 3] = 255;
+                    }
+                }
+
+                ctx.putImageData(imgData, 0, 0);
+                updateHotspots(w, h, fovRad, dist, rYaw, rPitch);
             }
 
-            // Create interface overlay division panel layer to host hotspot elements
             var uiContainer = document.createElement("div");
             uiContainer.style.position = "absolute"; uiContainer.style.top = "0"; uiContainer.style.left = "0";
             uiContainer.style.width = "100%"; uiContainer.style.height = "100%";
@@ -76,57 +127,66 @@
                 });
             }
 
-            function updateHotspots(w, h, scrollX, scrollY) {
+            function updateHotspots(w, h, fovRad, dist, rYaw, rPitch) {
                 if (!config.hotSpots) return;
+                var cx = w / 2, cy = h / 2;
+
                 config.hotSpots.forEach(function(sp) {
                     if (!sp._node) return;
 
-                    // Standard horizontal lock calculations 
-                    var targetX = (w / 2) + (sp.yaw * 5) - (yaw * 5);
-                    
-                    // FIXED: Corrected directional sign mapping to eliminate inverted movement bugs
-                    var targetY = (h / 2) - (sp.pitch * 5) + (pitch * 5);
+                    // Convert hotspot coordinates to radians
+                    var hLon = (sp.yaw * Math.PI) / 180;
+                    var hLat = (sp.pitch * Math.PI) / 180;
 
-                    // Ensure coordinates wrap around naturally when panning in circles
-                    while (targetX < 0) targetX += w;
-                    while (targetX > w) targetX -= w;
+                    // Project the hotspot vectors into 3D camera tracking rotation matrices
+                    var x = Math.cos(hLat) * Math.sin(hLon - rYaw);
+                    var y = Math.sin(hLat) * Math.cos(rPitch) - Math.cos(hLat) * Math.sin(rPitch) * Math.cos(hLon - rYaw);
+                    var z = Math.sin(hLat) * Math.sin(rPitch) + Math.cos(hLat) * Math.cos(rPitch) * Math.cos(hLon - rYaw);
 
-                    sp._node.style.display = "block";
-                    sp._node.style.left = targetX + "px";
-                    sp._node.style.top = targetY + "px";
-                    sp._node.style.transform = "translate(-50%, -50%)";
+                    // If the node is in front of the camera, calculate its position on screen
+                    if (z > 0) {
+                        var screenX = cx + (x * dist) / z;
+                        var screenY = cy - (y * dist) / z; // Fixed vertical movement tracking direction
+
+                        if (screenX >= 0 && screenX <= w && screenY >= 0 && screenY <= h) {
+                            sp._node.style.display = "block";
+                            sp._node.style.left = screenX + "px";
+                            sp._node.style.top = screenY + "px";
+                            sp._node.style.transform = "translate(-50%, -50%)";
+                            return;
+                        }
+                    }
+                    sp._node.style.display = "none";
                 });
             }
 
-            // Navigation Drag-to-Pan interactive controller event listeners
             var isDragging = false, lastX, lastY;
             canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
             window.addEventListener("mouseup", function() { isDragging = false; });
             window.addEventListener("mousemove", function(e) {
                 if (!isDragging) return;
                 
-                var deltaX = e.clientX - lastX;
-                var deltaY = e.clientY - lastY;
+                var dx = e.clientX - lastX;
+                var dy = e.clientY - lastY;
                 
                 lastX = e.clientX; lastY = e.clientY;
 
-                // Increments parameters correctly matching standard drag directions
-                yaw += deltaX * 0.5;
-                pitch += deltaY * 0.5;
+                // Calibrate dragging speed multipliers for smooth panning
+                yaw -= dx * 0.15;
+                pitch += dy * 0.15;
 
-                pitch = Math.max(-80, Math.min(80, pitch));
+                pitch = Math.max(-85, Math.min(85, pitch));
                 drawScene();
             });
 
-            // Interactive scroll-wheel field of view zoom handler loop
             canvas.addEventListener("wheel", function(e) {
                 e.preventDefault();
                 if (e.deltaY > 0) {
-                    hfov += 4;
+                    hfov += 5;
                 } else {
-                    hfov -= 4;
+                    hfov -= 5;
                 }
-                hfov = Math.max(50, Math.min(130, hfov));
+                hfov = Math.max(40, Math.min(120, hfov));
                 drawScene();
             }, { passive: false });
 

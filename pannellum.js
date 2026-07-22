@@ -180,4 +180,4 @@ window.pannellum = (function() {
 })();
 
 window.dispatchEvent(new Event('pannellumLibraryReady'));
-})();
+

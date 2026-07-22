@@ -99,7 +99,6 @@ function buildVirtualTourViewer() {
             modalAudio.load();
         }
 
-        if (modalNotes) modalNotes.value = ""; 
         if (modal) modal.classList.add('active');
     }
 

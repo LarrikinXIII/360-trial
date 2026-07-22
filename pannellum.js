@@ -140,7 +140,7 @@
                         var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
                         var aspect = canvas.width / canvas.height;
                         
-                        // Locks calculations perfectly on the horizontal tracking plane
+                        // Adding perspective matrix calculations to lock down the Y-axis
                         var screenX = cx + (x * f / aspect / z) * cx;
                         var screenY = cy - (y * f / z) * cy;
                         
@@ -153,6 +153,7 @@
                     }
                 });
             }
+
 
             var isDragging = false, lastX, lastY;
             canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });

@@ -150,8 +150,13 @@ window.pannellum = (function() {
             });
         }
 
+       // Universal Touch & High-DPI Desktop/Mobile Track Engine
         var isDragging = false, lastX, lastY;
-        canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+        
+        // --- 1. DESKTOP MOUSE LISTENERS ---
+        canvas.addEventListener("mousedown", function(e) { 
+            isDragging = true; lastX = e.clientX; lastY = e.clientY; 
+        });
         window.addEventListener("mouseup", function() { isDragging = false; });
         window.addEventListener("mousemove", function(e) {
             if (!isDragging) return;
@@ -161,18 +166,52 @@ window.pannellum = (function() {
             drawScene();
         });
 
+        // --- 2. MOBILE PHONE TOUCH LISTENERS ---
+        canvas.addEventListener("touchstart", function(e) {
+            if (e.touches.length === 1) {
+                isDragging = true; 
+                lastX = e.touches[0].clientX; 
+                lastY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        window.addEventListener("touchend", function() { isDragging = false; });
+        
+        canvas.addEventListener("touchmove", function(e) {
+            if (!isDragging || e.touches.length !== 1) return;
+            
+            // Calculate finger swipe distances across the phone monitor glass
+            var deltaX = e.touches[0].clientX - lastX;
+            var deltaY = e.touches[0].clientY - lastY;
+            
+            lastX = e.touches[0].clientX; 
+            lastY = e.touches[0].clientY;
+
+            // Apply orientation shifts (Inverted delta Y maps swipe directions naturally)
+            yaw -= deltaX * 0.006; 
+            pitch -= deltaY * 0.006;
+            
+            pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+            drawScene();
+        }, { passive: true });
+
+        // --- 3. UNIVERSAL SCROLL & ZOOM CONTROLS ---
         canvas.addEventListener("wheel", function(e) {
             e.preventDefault();
-            if (e.deltaY > 0) {
-                config.hfov += 4;
-            } else {
-                config.hfov -= 4;
-            }
+            if (e.deltaY > 0) { config.hfov += 4; } else { config.hfov -= 4; }
             config.hfov = Math.max(50, Math.min(130, config.hfov));
             drawScene();
         }, { passive: false });
 
-        window.addEventListener("resize", drawScene);
+        // --- 4. HIGH-DPI DEVICE RESOLUTION RETINA OVERRIDE MODIFIERS ---
+        window.addEventListener("resize", function() {
+            // Adjusts internal canvas coordinates on mobile screens automatically
+            var dpr = window.devicePixelRatio || 1;
+            canvas.width = canvas.clientWidth * dpr;
+            canvas.height = canvas.clientHeight * dpr;
+            drawScene();
+        });
+        
         return { render: drawScene };
     };
 
@@ -180,4 +219,3 @@ window.pannellum = (function() {
 })();
 
 window.dispatchEvent(new Event('pannellumLibraryReady'));
-

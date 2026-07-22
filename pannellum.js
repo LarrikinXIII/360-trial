@@ -84,14 +84,14 @@
                         var x2 = nx * cosY - z1 * sinY;
                         var z2 = nx * sinY + z1 * cosY;
 
-                        // Calculate spherical latitude and longitude coordinates mapping match locks
+              // FIND LINE 90-91 INSIDE THE LOOP:
                         var lon = Math.atan2(x2, z2);
                         var lat = Math.atan2(y1, Math.sqrt(x2 * x2 + z2 * z2));
 
-                        // Convert coordinates into image pixel dimensions indexes
+                        // CHANGE THE "v" CALCULATION TO THIS TO FLIP IT RIGHT-SIDE UP:
                         var u = Math.floor(((lon + Math.PI) / (2 * Math.PI)) * pW);
-                        var v = Math.floor(((Math.PI / 2 - lat) / Math.PI) * pH);
-
+                        var v = Math.floor(((lat + Math.PI / 2) / Math.PI) * pH);
+                        
                         // Clamp values to keep calculations inside bounds
                         if (u < 0) u = 0; if (u >= pW) u = pW - 1;
                         if (v < 0) v = 0; if (v >= pH) v = pH - 1;

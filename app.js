@@ -15,7 +15,6 @@ function buildVirtualTourViewer() {
     const modalTitle = document.getElementById('modalTitle');
     const modalSubtext = document.getElementById('modalSubtext');
     const modalImage = document.getElementById('modalImage');
-    const modalNotes = document.getElementById('modalNotes');
     const audioSource = document.getElementById('audioSource');
 
     const globalAudio = document.getElementById('globalAmbientAudio');

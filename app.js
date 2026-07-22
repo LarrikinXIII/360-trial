@@ -4,19 +4,19 @@ const closeBtn = document.getElementById('closeModal');
 const audioPlayer = document.getElementById('modalAudio');
 
 // Initialize Pannellum 360 Viewer
+// Initialize Pannellum 360 Viewer
 const viewer = pannellum.viewer('panorama', {
     "type": "equirectangular",
-    // NOTE: Replace this URL path with your local path or hosted link to the room image
-    "panorama": "livingroom.jpg", 
+    "panorama": "livingroom.jpg", // Points directly to your local file in the root
     "autoLoad": true,
     "compass": false,
     "hfov": 110,
-    "pitch": 0,
-    "yaw": 0,
+    "pitch": -0.8,
+    "yaw": -0.2,
     "hotSpots": [
         {
-            "pitch": -0.8, // Centered vertically on the TV screen
-            "yaw": -0.2,   // Centered horizontally on the TV screen
+            "pitch": -0.8, 
+            "yaw": -0.2,   
             "cssClass": "custom-hotspot",
             "createTooltipFunc": hotspotTooltip,
             "createTooltipArgs": "Open TV Media",

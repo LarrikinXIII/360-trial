@@ -1,56 +1,60 @@
+console.log("[APP] Executing virtual tour control modules...");
+
+if (window.pannellum) {
+    buildVirtualTourViewer();
+} else {
+    window.addEventListener('pannellumLibraryReady', buildVirtualTourViewer);
+}
+
 function buildVirtualTourViewer() {
-    console.log("[APP] Multi-frame 3D virtual tour sequence activated.");
+    console.log("[APP] Core engine validated. Syncing elements...");
 
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
-    const modalAudio = document.getElementById('modalAudio'); // Hotspot modal player
+    const modalAudio = document.getElementById('modalAudio'); 
     const modalTitle = document.getElementById('modalTitle');
     const modalSubtext = document.getElementById('modalSubtext');
     const modalImage = document.getElementById('modalImage');
+    const modalNotes = document.getElementById('modalNotes');
+    const audioSource = document.getElementById('audioSource');
 
-    // NEW SELECTORS: Global Background Music Assets 
     const globalAudio = document.getElementById('globalAmbientAudio');
     const globalAudioToggle = document.getElementById('globalAudioToggle');
 
-    // Automatically trigger playing sequence in muted state right away
+    // Start background music loop in muted state
     if (globalAudio) {
-        globalAudio.play().catch(err => console.log("Muted autoplay tracking sequence active. Waiting for interaction."));
+        globalAudio.play().catch(() => console.log("Waiting for user tap to activate audio..."));
     }
 
-    // --- AUTOMATIC UNMUTE UNLOCK ON FIRST USER INTERACTION TAPS ---
+    // Unmute background music automatically on first drag or click interaction
     function unlockGlobalAutoplay() {
         if (globalAudio && globalAudio.muted) {
             globalAudio.muted = false;
-            globalAudio.volume = 0.4; // Comfort levels background volume settings (40%)
+            globalAudio.volume = 0.4;
             globalAudio.play();
             if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊 Music On";
         }
-        // Remove tracking listeners so it doesn't fire over and over when clicking items
         window.removeEventListener('click', unlockGlobalAutoplay);
         window.removeEventListener('touchstart', unlockGlobalAutoplay);
     }
     window.addEventListener('click', unlockGlobalAutoplay);
     window.addEventListener('touchstart', unlockGlobalAutoplay);
 
-    // --- MANUAL FLOATING BUTTON TOGGLE CLICK HANDLER ---
     if (globalAudioToggle && globalAudio) {
         globalAudioToggle.addEventListener('click', function(e) {
-            e.stopPropagation(); // Stops event cascading into other layer nodes
-            
+            e.stopPropagation();
             if (globalAudio.muted || globalAudio.paused) {
                 globalAudio.muted = false;
                 globalAudio.play();
                 globalAudioToggle.innerHTML = "🔊 Music On";
-                globalAudioToggle.classList.remove('is-muted');
             } else {
                 globalAudio.muted = true;
                 globalAudioToggle.innerHTML = "🔇 Music Off";
-                globalAudioToggle.classList.add('is-muted');
             }
         });
     }
 
-    // Launch the official 3D Equirectangular Spherical Viewer
+    // Launch the stable 3D Equirectangular Spherical Viewer canvas
     const viewer = window.pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
@@ -67,46 +71,54 @@ function buildVirtualTourViewer() {
         ]
     });
 
+    // Central local file mapping configuration registry dictionary layout
     const frameContentRegistry = {
-        "tv-center": { title: "Television Media Center", image: "https://picsum.photos", subtext: "Main monitor screen portal array display.", audio: "https://codesandbox.io" },
-        "frame-forest": { title: "Forest Pathway Art Piece", image: "https://picsum.photos", subtext: "High-accent custom forest photography canvas artwork.", audio: "https://soundhelix.com" },
-        "frame-beach": { title: "Beach Boardwalk Art Piece", image: "https://picsum.photos", subtext: "Lower-accent coastline boardwalk layout frame print piece.", audio: "https://soundhelix.com" },
-        "frame-leaf": { title: "Green Monstera Leaf Art", image: "https://picsum.photos", subtext: "Botanical green plant accent canvas print.", audio: "https://soundhelix.com" },
-        "frame-sunset": { title: "Ocean Sunset Art Piece", image: "https://picsum.photos", subtext: "Horizontal sunset seascape photography frame.", audio: "https://soundhelix.com" }
+        "tv-center": { title: "Television Media Center", image: "tv-screen.jpg", subtext: "Main monitor screen portal array display.", audio: "tv-audio.mp3" },
+        "frame-forest": { title: "Forest Pathway Art Piece", image: "forest-art.jpg", subtext: "High-accent custom forest photography canvas artwork.", audio: "forest-song.mp3" },
+        "frame-beach": { title: "Beach Boardwalk Art Piece", image: "beach-art.jpg", subtext: "Lower-accent coastline boardwalk layout frame print piece.", audio: "beach-song.mp3" },
+        "frame-leaf": { title: "Green Monstera Leaf Art", image: "leaf-art.jpg", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "frame-sunset": { title: "Ocean Sunset Art Piece", image: "sunset-art.jpg", subtext: "Horizontal sunset seascape photography frame.", audio: "sunset-song.mp3" }
     };
 
     function openSpecificModal(frameId) {
         const data = frameContentRegistry[frameId];
         if (!data) return;
 
-        // When opening a hotspot modal player, lower ambient music volume down automatically to 10%
         if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.1;
 
-        modalTitle.textContent = data.title;
-        modalSubtext.textContent = data.subtext;
-        modalImage.src = data.image;
+        if (modalTitle) modalTitle.textContent = data.title;
+        if (modalSubtext) modalSubtext.textContent = data.subtext;
+        
+        if (modalImage && data.image) {
+            modalImage.src = data.image;
+            modalImage.style.display = "block";
+        }
 
-        modalAudio.pause();
-        const audioSource = document.getElementById('audioSource');
-        if (audioSource) audioSource.src = data.audio;
-        modalAudio.load();
+        if (modalAudio && audioSource) {
+            modalAudio.pause();
+            audioSource.src = data.audio;
+            modalAudio.load();
+        }
 
+        if (modalNotes) modalNotes.value = ""; 
         if (modal) modal.classList.add('active');
     }
 
-    // Close button modal cleanup loop sequences
-    closeBtn.addEventListener('click', function() { 
-        modal.classList.remove('active'); 
-        modalAudio.pause(); 
-        // Restore background global audio back to normal 40% volume settings on exit
-        if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
-    });
-    
-    modal.addEventListener('click', function(e) { 
-        if (e.target === modal) { 
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', function() { 
             modal.classList.remove('active'); 
-            modalAudio.pause(); 
+            if (modalAudio) modalAudio.pause(); 
             if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
-        } 
-    });
+        });
+    }
+    
+    if (modal) {
+        modal.addEventListener('click', function(e) { 
+            if (e.target === modal) { 
+                modal.classList.remove('active'); 
+                if (modalAudio) modalAudio.pause(); 
+                if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+            } 
+        });
+    }
 }

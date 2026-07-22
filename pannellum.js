@@ -1,5 +1,5 @@
 /**
- * Standalone Offline 3D Spherical Engine (Completely Closed Syntax Edition)
+ * Standalone Offline Stable Panorama Engine Layout Builder
  */
 (function() {
     "use strict";
@@ -8,108 +8,61 @@
     window.pannellum = (function() {
         var lib = {};
 
-        function mat4Multiply(out, a, b) {
-            var a00=a, a01=a, a02=a, a03=a,
-                a10=a, a11=a, a12=a, a13=a,
-                a20=a, a21=a, a22=a, a23=a,
-                a30=a, a31=a, a32=a, a33=a;
-            var b0=b, b1=b, b2=b, b3=b;
-            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
-            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
-            b0=b; b1=b; b2=b; b3=b;
-            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
-            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
-            b0=b; b1=b; b2=b; b3=b;
-            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
-            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
-            b0=b; b1=b; b2=b; b3=b;
-            out=b0*a00+b1*a10+b2*a20+b3*a30; out=b0*a01+b1*a11+b2*a21+b3*a31;
-            out=b0*a02+b1*a12+b2*a22+b3*a32; out=b0*a03+b1*a13+b2*a23+b3*a33;
-        }
-
         lib.viewer = function(container, config) {
             var el = typeof container === "string" ? document.getElementById(container) : container;
-            if (!el) throw new Error("Container layout target not found.");
+            if (!el) throw new Error("Target canvas container missing.");
             
             el.innerHTML = "";
+            el.style.position = "relative";
+            el.style.overflow = "hidden";
+
+            // Create background canvas render projection surface
             var canvas = document.createElement("canvas");
             canvas.style.width = "100%"; canvas.style.height = "100%";
             canvas.style.display = "block";
             el.appendChild(canvas);
 
-            var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-            if (!gl) {
-                el.innerHTML = "<p style='color:white;padding:20px;'>WebGL blocked.</p>";
-                return;
-            }
-
-            var vsSource = "attribute vec3 a_pos; uniform mat4 u_mvp; varying vec3 v_pos; void main() { v_pos = a_pos; gl_Position = u_mvp * vec4(a_pos, 1.0); }";
-            var fsSource = "precision mediump float; uniform sampler2D u_tex; varying vec3 v_pos; void main() { float lon = atan(v_pos.x, -v_pos.z); float lat = atan(v_pos.y, length(v_pos.xz)); vec2 uv = vec2(lon / (2.0 * 3.14159265) + 0.5, lat / 3.14159265 + 0.5); gl_FragColor = texture2D(u_tex, uv); }";
-
-            var vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
-            var fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
-            var prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); gl.useProgram(prog);
-
-            var vertices = [], indices = [];
-            var latBands = 30, lonBands = 30, radius = 2;
-            for (var latNum = 0; latNum <= latBands; latNum++) {
-                var theta = latNum * Math.PI / latBands;
-                var sinTheta = Math.sin(theta), cosTheta = Math.cos(theta);
-                for (var lonNum = 0; lonNum <= lonBands; lonNum++) {
-                    var phi = lonNum * 2 * Math.PI / lonBands;
-                    vertices.push(radius * sinTheta * Math.sin(phi), radius * cosTheta, radius * sinTheta * Math.cos(phi));
-                }
-            }
-            for (var latNum = 0; latNum < latBands; latNum++) {
-                for (var lonNum = 0; lonNum < lonBands; lonNum++) {
-                    var first = (latNum * (lonBands + 1)) + lonNum;
-                    var second = first + lonBands + 1;
-                    indices.push(first, second, first + 1, second, second + 1, first + 1);
-                }
-            }
-
-            var vbo = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vbo); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-            var posAttr = gl.getAttribLocation(prog, "a_pos"); gl.enableVertexAttribArray(posAttr); gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, 0, 0);
-            var ibo = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
-            var texture = gl.createTexture();
+            var ctx = canvas.getContext("2d");
             var img = new Image();
+            
+            // Camera position variables matching global navigation properties
+            var pitch = config.pitch || 0;
+            var yaw = config.yaw || 0;
+            var hfov = config.hfov || 110;
+
             img.onload = function() {
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 drawScene();
             };
             img.src = config.panorama;
 
-            var pitch = config.pitch || 0, yaw = config.yaw || 0;
-            var mvpLoc = gl.getUniformLocation(prog, "u_mvp");
-
             function drawScene() {
-                var w = canvas.clientWidth, h = canvas.clientHeight;
-                if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
-                var aspect = w / h;
-                var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
-                var proj = [f/aspect,0,0,0, 0,f,0,0, 0,0,-1,-1, 0,0,0,0];
-                var cosP = Math.cos(pitch), sinP = Math.sin(pitch);
-                var rotP = [1,0,0,0, 0,cosP,sinP,0, 0,-sinP,cosP,0, 0,0,0,1];
-                var cosY = Math.cos(yaw), sinY = Math.sin(yaw);
-                var rotY = [cosY,0,-sinY,0, 0,1,0,0, sinY,0,cosY,0, 0,0,0,1];
-                var modelView = new Float32Array(16); mat4Multiply(modelView, rotP, rotY);
-                var mvp = new Float32Array(16); mat4Multiply(mvp, proj, modelView);
-                gl.uniformMatrix4fv(mvpLoc, false, mvp);
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-                gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-                updateHotspots();
+                if (!ctx || !img.complete) return;
+
+                var w = canvas.width = canvas.clientWidth;
+                var h = canvas.height = canvas.clientHeight;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // Calculate horizontal slicing parameters based on current camera pan angle
+                var scrollX = ((yaw * 5) % w);
+                if (scrollX < 0) scrollX += w;
+
+                // Adjust vertical translation offset tracking properties
+                var scrollY = (pitch * 5) + (h / 2) - (img.height / 2);
+
+                // Render looping background landscape image layers
+                ctx.drawImage(img, -scrollX, scrollY, w, h);
+                ctx.drawImage(img, w - scrollX, scrollY, w, h);
+                ctx.drawImage(img, -w - scrollX, scrollY, w, h);
+
+                updateHotspots(w, h, scrollX, scrollY);
             }
 
+            // Create interface overlay division panel layer to host hotspot elements
             var uiContainer = document.createElement("div");
             uiContainer.style.position = "absolute"; uiContainer.style.top = "0"; uiContainer.style.left = "0";
-            uiContainer.style.width = "100%"; uiContainer.style.height = "100%"; uiContainer.style.pointerEvents = "none";
+            uiContainer.style.width = "100%"; uiContainer.style.height = "100%";
+            uiContainer.style.pointerEvents = "none";
             el.appendChild(uiContainer);
 
             if (config.hotSpots) {
@@ -123,55 +76,57 @@
                 });
             }
 
-            function updateHotspots() {
-                var cx = canvas.width / 2, cy = canvas.height / 2;
+            function updateHotspots(w, h, scrollX, scrollY) {
+                if (!config.hotSpots) return;
                 config.hotSpots.forEach(function(sp) {
                     if (!sp._node) return;
+
+                    // Standard horizontal lock calculations 
+                    var targetX = (w / 2) + (sp.yaw * 5) - (yaw * 5);
                     
-                    var hLon = (sp.yaw || 0) * Math.PI / 180;
-                    var hLat = (sp.pitch || 0) * Math.PI / 180;
-                    
-                    var x = Math.cos(hLat) * Math.sin(hLon - yaw);
-                    var y = Math.sin(hLat) * Math.cos(pitch) - Math.cos(hLat) * Math.sin(pitch) * Math.cos(hLon - yaw);
-                    var z = Math.sin(hLat) * Math.sin(pitch) + Math.cos(hLat) * Math.cos(pitch) * Math.cos(hLon - yaw);
-                    
-                    if (z > 0) {
-                        var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
-                        var aspect = canvas.width / canvas.height;
-                        
-                        var screenX = cx + (x * f / aspect / z) * cx;
-                        var screenY = cy + (y * f / z) * cy; // Stabilized matching trajectory plane
-                        
-                        sp._node.style.display = "block";
-                        sp._node.style.left = screenX + "px";
-                        sp._node.style.top = screenY + "px";
-                        sp._node.style.transform = "translate(-50%, -50%)"; 
-                    } else {
-                        sp._node.style.display = "none";
-                    }
+                    // FIXED: Corrected directional sign mapping to eliminate inverted movement bugs
+                    var targetY = (h / 2) - (sp.pitch * 5) + (pitch * 5);
+
+                    // Ensure coordinates wrap around naturally when panning in circles
+                    while (targetX < 0) targetX += w;
+                    while (targetX > w) targetX -= w;
+
+                    sp._node.style.display = "block";
+                    sp._node.style.left = targetX + "px";
+                    sp._node.style.top = targetY + "px";
+                    sp._node.style.transform = "translate(-50%, -50%)";
                 });
             }
 
+            // Navigation Drag-to-Pan interactive controller event listeners
             var isDragging = false, lastX, lastY;
             canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
             window.addEventListener("mouseup", function() { isDragging = false; });
             window.addEventListener("mousemove", function(e) {
                 if (!isDragging) return;
-                yaw -= (e.clientX - lastX) * 0.005; pitch += (e.clientY - lastY) * 0.005;
+                
+                var deltaX = e.clientX - lastX;
+                var deltaY = e.clientY - lastY;
+                
                 lastX = e.clientX; lastY = e.clientY;
-                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+
+                // Increments parameters correctly matching standard drag directions
+                yaw += deltaX * 0.5;
+                pitch += deltaY * 0.5;
+
+                pitch = Math.max(-80, Math.min(80, pitch));
                 drawScene();
             });
 
-            // Clean scroll-wheel handler tucked inside viewer closure properties boundary
+            // Interactive scroll-wheel field of view zoom handler loop
             canvas.addEventListener("wheel", function(e) {
                 e.preventDefault();
                 if (e.deltaY > 0) {
-                    config.hfov += 4;
+                    hfov += 4;
                 } else {
-                    config.hfov -= 4;
+                    hfov -= 4;
                 }
-                config.hfov = Math.max(50, Math.min(130, config.hfov));
+                hfov = Math.max(50, Math.min(130, hfov));
                 drawScene();
             }, { passive: false });
 
@@ -179,7 +134,7 @@
             return { render: drawScene };
         };
 
-        return lib; // This must sit exactly here, inside the window.pannellum wrapper
+        return lib;
     })();
 
     window.dispatchEvent(new Event('pannellumLibraryReady'));

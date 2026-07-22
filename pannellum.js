@@ -1,22 +1,166 @@
 /**
- * Offline-Safe Self-Contained 3D Engine
+ * Standalone Offline 3D Spherical Engine Layout Builder
  */
 (function() {
     "use strict";
-    console.log("[LOCAL-ENGINE] Decoding standalone 3D engine components...");
+    console.log("[LOCAL-ENGINE] Synthesizing pure local 3D rendering context...");
 
-    // This is the official Pannellum 2.5.6 minified engine compressed into an offline-safe text block
-    const engineBase64 = "ZXhwb3J0IHsgdmlld2VyIH0gZnJvbSAiLi9hcHAiO3dpbmRvdy5wYW5uZWxsdW09ZnVuY3Rpb24oZSx0KXt1c2Ugc3RyaWN0OyJmdW5jdGlvbiI9PXR5cGVvZiBkZWZpbmUmJmRlZmluZS5hbWQ/ZGVmaW5lKFtdLHQpOiJvYmplY3QiPT10eXBlb2YgZXhwb3J0cz9tb2R1bGUuZXhwb3J0cz10KCk6ZS5wYW5uZWxsdW09dCgpfSh0aGlzLGZ1bmN0aW9uKCl7dXNlIHN0cmljdDtmdW5jdGlvbiBlKHQsdSl7cmV0dXJuIHQuc2V0KHUpLHR9ZnVuY3Rpb24gdCh0KXZhciB1PXRoaXMsZT1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKTtlLmNsYXNzTmFtZT0icG5tLWNvbnRhaW5lciIsdC5hcHBlbmRDaGlsZChlKTt2YXIgbj1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKTtuLmNsYXNzTmFtZT0icG5tLXJlbmRlci1jb250YWluZXIiLGUuYXBwZW5kQ2hpbGQobik7dmFyIGk9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCIoImRpdiIpO2kuY2xhc3NOYW1lPSJwbm0tdWkiLGUuYXBwZW5kQ2hpbGQoaSk7dmFyIG8scyxhLGwsYyxkLGYsaCxtLHA主动LHIsbyxzLGEsbCxhPU1hdGguUEksbD0xODAvYSxjPWEvMTgwO2Z1bmN0aW9uIGQoKXt2YXIgdD1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKTt0LmNsYXNzTmFtZT0icG5tLWxvYWQtYm94IixpLmFwcGVuZENoaWxkKHQpLG89ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCIoImRpdiIpLG8uY2xhc3NOYW1lPSJwbm0tbGFkaW5nLW1zZyIsby5pbm5lckhUTUw9IkxvYWRpbmcgUGFub3JhbWEuLi4iLHQuYXBwZW5kQ2hpbGQoby力をHMscz1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKSxzLmNsYXNzTmFtZT0icG5tLWxvYWQtYmFyIix0LmFwcGVuZENoaWxkKHMpLGE9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCIoImRpdiIpLGEuY2xhc3NOYW1lPSJwbm0tbG9hZC1iYXItZmlsbCIscy5hcHBlbmRDaGlsZChhKX1mdW5jdGlvbiBmKCl7aS5yZW1vdmVDaGlsZChkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCIucG5tLWxvYWQtYm94IikpLG89bnVsbCxzPW51bGwsYT1udWxsfXUudmlld2VyPWZ1bmN0aW9uKHQsZSl7dmFyIG4saTsgaWYoInN0cmluZyI9PXR5cGVvZiB0JiYodD1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCh0KSksIXQpdGhyb3cgbmV3IEVycm9yKCJUYXJnZXQgZWxlbWVudCBub3QgZm91bmQuIik7cmV0dXJuIGQoKSxoPWV8fHt9LG09e30scD17dHlwZToiZXF1aXJlY3Rhbmd1bGFyIixwYW5vcmFtYToibGl2aW5ncm9vbS5qcGciLGF1dG9Mb2FkOiEwLGhmb3Y6MTEwLHBpdGNoOi0uOCx5YXc6LS4yLGhvdFNwb3RzOltdfSxPYmplY3Qua2V5cyhwKS5mb3JFYWNoKGZ1bmN0aW9uKHQpe21bdF09aC5oYXNPd25Qcm9wZXJ0eSh0KT9oW3RdOnBbdF19KSxnPWxpYnBhbm5lbGx1bS5yZW5kZXJlcihuKSx2PW0ucGFub3JhbWEsbS5hdXRvTG9hZD9nLmluaXQodmIsbS50eXBlLGZ1bmN0aW9uKHQpe3Q/KG49bS5ob3RTcG90cyxpPW0ucGl0Y2gsbz1tLnlhdyxzPW0uaGZvdisnJyxnLnNldEZvdihzKSxnLnNldFBvc2UoaSxvKSxmKCksZnVuY3Rpb24oKXtpZihuJiZuLmxlbmd0aD4wKXtuLmZvckVhY2goZnVuY3Rpb24oZSl7dmFyIHQ9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCIoImRpdiIpO3QuY2xhc3NOYW1lPWUuY3NzQ2xhc3N8fCJwbm0taG90c3BvdCIsdC5zdHlsZS5wb3NpdGlvbj0iYWJzb2x1dGUiLGkuYXBwZW5kQ2hpbGQodCksZS5jcmVhdGVUb29sdGlwRnVuYyYmZS5jcmVhdGVUb29sdGlwRnVuYyh0LGUuY3JlYXRlVG9vbHRpcEFyZ3MpLGUuY2xpY2tIYW5kbGVyRnVuYyYmdC5hZGRFdmVudExpc3RlbmVyKCJjbGljayIsZS5jbGlja0hhbmRsZXJGdW5jKTt2YXIgbj1lLnBpdGNoLHI9ZS55YXc7ZnVuY3Rpb24gbygpe3ZhciBlPWcuZ2V0UGl4ZWxDb29yZHMobixyKTtlPyhlLng9ZS54L3dpbmRvdy5kZXZpY2VQaXhlbFJhdGlvLGUueT1lLnkvd2luZG93LmRldmljZVBpeGVsUmF0aW8sZS54Pj0wJiZlLng8PXQuY2xpZW50V2lkdGgmJmUueT49MCYmZS55PD10LmNsaWVudEhlaWdodD8odC5zdHlsZS5kaXNwbGF5PSJibG9jayIsdC5zdHlsZS5sZWZ0PWUueC10LmNsaWVudFXpZHRoLzIrInB4Iix0LnN0eWxlLnRvcD1lLnktdC5jbGllbnRIZWlnaHQvMisicHgiKTp0LnN0eWxlLmRpc3BsYXk9Im5vbmUiKTp0LnN0eWxlLmRpc3BsYXk9Im5vbmUifWcuYWRkVXBkYXRlQ2FsbGJhY2sobyl9KX19KCksZy5yZW5kZXIoKSxmdW5jdGlvbiB0KCl7cmVxdWVzdEFuaW1hdGlvbkZyYW1lKHQpLGcucmVuZGVyKCl9KCkpOihpLmlubmVySFRNTD0iRXJyb3IgbG9hZGluZyAzNjAgaW1hZ2UuIixzLnN0eWxlLmRpc3BsYXk9Im5vbmUiKX0pLGV9fTtyZXR1cm4gdX0oKSxmdW5jdGlvbigpe3ZhciB0PXt9O3JldHVybiB0LnJlbmRlcmVyPWZ1bmN0aW9uKGUpe3ZhciB1LG4saSxvLHMsYSxsLGM9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgiY2FudmFzIik7Yy5zdHlsZS53aWR0aD0iMTAwJSIsYy5zdHlsZS5oZWlnaHQ9IjEwMCUiLGUuYXBwZW5kQ2hpbGQoYyk7dmFyIGQ9Yy5nZXRDb250ZXh0KCJ3ZWJnbCIpfHxjLmdldENvbnRleHQoImV4cGVyaW1lbnRhbC13ZWJnbCIpO3JldHVybntpbml0OmZ1bmN0aW9uKHQsZSxuKXt1PXQsbj1lLGk9bmV3IEltYWdlLGkuY3Jvc3NPcmlnaW49ImFub255bW91cyIsaS5vbmxvYWQ9ZnVuY3Rpb24oKXshZnVuY3Rpb24oKXtvPWQuY3JlYXRlVGV4dHVyZSgpLGQuYmluZFRleHR1cmUoZC5URVhUVVJFXzJELG8pLGQucGl4ZWxTdG9yZWkoZC5VTlBBQ0tfRkxJUF9ZX1dFQkdMLCEwKSxkLnRleEltYWdlMkQoZC5URVhUVVJFXzJELDAsZC5SR0JBLGQuUkdCQSxkLlVOU0lHTkVEX0JZVEUsaSksZC50ZXhQYXJhbWV0ZXJpKGQuVEVYVFVSRV8yRCxkLlRYVFVSRV9NQUdfRklMVEVSLGQuTElORUFSKCxkLnRleFBhcmFtZXRlcmooZC5URVhUVVJFXzJELG0uVFhUVVJFX01JTl9GSUxURVIsZC5MSU5FQVIpLGQudGV4UGFyYW1ldGVyaShkLlRYVFVSRV8yRCxkLlRYVFVSRV9XUkFQX1MsZC5DTEFNUF9UT19FREdFKSxkLnRleFBhcmFtZXRlcmkoZC5URVhUVVJFXzJELGQuVFhUVVJFX1dSQVBfVCxkLkNTEFNQX1RPX0VER0UpO3ZhciB0PWQuY3JlYXRlU2hhZGVyKGQuVkVSVEVYX1NIQURFUik7ZC5zaGFkZXJTb3VyY2UodCwiYXR0cmlidXRlIHZlYzMgYV9wb3M7IHVuaWZvcm0gbWF0NCB1X212cDsgdmFyeWluZyB2ZWMzIHZfcG9zOyB2b2lkIG1haW4oKSB7IHZfcG9zID0gYV9wb3M7IGdsX1Bvc2l0aW9uID0gdV9tdnAgKiB2ZWM0KGFfcG9zLCAxLjApOyB9IiksZC5jb21waWxlU2hhZGVyKHQpO3ZhciBlPWQuY3JlYXRlU2hhZGVyKGQuRlJBR01FTlRfU0hBREVSKTtkLnNoYWRlclNvdXJjZShlLCJwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDsgdW5pZm9ybSBzYW1wbGVyMkQgdV90ZXg7IHZhcnlpbmcgdmVjMyB2X3Bvczsgdm9pZCBtYWluKCkgeyBmbG9hdCBsb24gPSBhdGFuKHZfcG9zLngsIC12X3Bvcy56KTsgZmxvYXQgbGF0ID0gYXRhbih2X3Bvcy55LCBsZW5ndGgodl9wb3MueHopKTsgdmVjMiB1diA9IHZlYzIobG9uIC8gKDIuMCAqIDMuMTQxNTkyNjUpICsgMC41LCBsYXQgLyAzLjE0MTU5MjY1ICsgMC41KTsgZ2xfRnJhZ0NvbG9yID0gdGV4dHVyZTJEKHVfdGV4LCB1dik7IH0iKSxkLmNvbXBpbGVTaGFkZXIoZSk7cz1kLmNyZWF0ZVByb2dyYW0oKSxkLmF0dGFjaFNoYWRlcihzLHQpLGQuYXR0YWNoU2hhZGVyKHMsZSksZC5saW5rUHJvZ3JhbShzKSxkLnVzZVByb2dyYW0ocyk7dmFyIG49ZC5jcmVhdGVCdWZmZXIoKTtkLmJpbmRCdWZmZXIoZC5BUlJBWV9CVUZGRVIsbik7Zm9yKHZhciBpPVtdLHI9W10sbz0zMCxhPTMwLGw9MixjPTA7Yzw9bztjKyspe3ZhciBmPWMqTWF0aC5QSS9vLGg9TWF0aC5zaW4oZiksPU1hdGguY29zKGYpO2Zvcih2YXIgbT0wO208PWE7bSsrKXt2YXIgcD1tKjIqTWF0aC5QSS9hLGc9TWF0aC5zaW4ocCksdj1NYXRoLmNvcyhwKTtpLnB1c2gobCpoKmdsbCpoKnYsMCwxbCpoKnYpfX1mb3IodmFyYyA9IDA7YyA8IG87YysrKXtmb3IodmFyIG0gPSAwO20gPCBhO20rKyl7dmFyIHk9YyooYSsxKSttLHc9eSthKzE7ci5wdXNoKHksdyx5KzEsdyx3KzEseSsxKX19ZC5idWZmZXJEYXRhKGQuQVJSQVlfQlVGRkVSLG5ldyBGbG9hdDMyQXJyYXkoaSksZC5TVEFUSUNfRFJBVyk7dmFyIG09ZC5nZXRBdHRyaWJMb2NhdGlvbihzLCJhX3BvcyIpO2QuZW5hYmxlVmVydGV4QXR0cmliQXJyYXkobSksZC52ZXJ0ZXhBdHRyaWJQb2ludGVyKG0sMyxkLkZMT0FULCExLDAsMCk7dmFyIHA9ZC5jcmVhdGVCdWZmZXIoKTtkLmJpbmRCdWZmZXIoZC5FTEVNRU5UX0FSUkFZX0JVRkZFUixwKSxkLmJ1ZmZlckRhdGEoZC5FTEVNRU5UX0FSUkFZX0JVRkZFUixuZXcgVWludDE2QXJyYXkociksZC5TVEFUSUNfRFJBVyk7bD1bXSxhPTB9KCksbighMCl9LGkub25lcnJvcj1mdW5jdGlvbigpe24oITEpfSxpLnNyYz10fSxzZXRGb3Y6ZnVuY3Rpb24odCl7ZCYmKGQudXNlUHJvZ3JhbShzKSxkLnVuaWZvcm0xZihkLmdldFVuaWZvcm1Mb2NhdGlvbihzLCJ1X2ZvdiIpLHQpKX0sc2V0UG9zZTpmdW5jdGlvbih0LGUpe2QmJihkLnVzZVByb2dyYW0ocyksZC51bmlmb3JtMmYoZC5nZXRVbmlmb3JtTG9Y2F0aW9uKHMsInVfcG9zZSIpLHQsZSkpfSxhZGRVcGRhdGVDYWxsYmFjazpmdW5jdGlvbih0KXtsLnB1c2godCl9LGdldFBpeGVsQ29vcmRzOmZ1bmN0aW9uKHQsZSl7dmFyIG49Yy5jbGllbnRXaWR0aCxpPWMuY2xpZW50SGVpZ2h0O3JldHVybnt4Om4vMisoZVsxNSkseTppLzItKHQqMTUpfX0scmVuZGVyOmZ1bmN0aW9uKCl7ZCYmKGQuY2xlYXIoZC5DT0xPUl9CVUZGRVJfQklUKSxkLmRyYXdBcnJheXMoZC5UUklBTkdMRVMsMCw2KSxsLmZvckVhY2goZnVuY3Rpb24odCl7dCgpfSkpfX19fSgpO3dpbmRvdy5saWJwYW5uZWxsdW09dH0p";
+    window.pannellum = (function() {
+        var lib = {};
 
-    // Dynamic self-contained browser injection method
-    const decodedScript = atob(engineBase64);
-    const inlineScriptElement = document.createElement("script");
-    inlineScriptElement.type = "text/javascript";
-    inlineScriptElement.text = decodedScript;
-    
-    document.head.appendChild(inlineScriptElement);
-    console.log("[LOCAL-ENGINE] 3D Core fully synthesized locally.");
-    
-    // Alert app.js that the environment is verified and complete
+        function mat4Multiply(out, a, b) {
+            var a00=a[0], a01=a[1], a02=a[2], a03=a[3],
+                a10=a[4], a11=a[5], a12=a[6], a13=a[7],
+                a20=a[8], a21=a[9], a22=a[10],a23=a[11],
+                a30=a[12],a31=a[13],a32=a[14],a33=a[15];
+            var b0=b[0], b1=b[1], b2=b[2], b3=b[3];
+            out[0]=b0*a00+b1*a10+b2*a20+b3*a30; out[1]=b0*a01+b1*a11+b2*a21+b3*a31;
+            out[2]=b0*a02+b1*a12+b2*a22+b3*a32; out[3]=b0*a03+b1*a13+b2*a23+b3*a33;
+            b0=b[4]; b1=b[5]; b2=b[6]; b3=b[7];
+            out[4]=b0*a00+b1*a10+b2*a20+b3*a30; out[5]=b0*a01+b1*a11+b2*a21+b3*a31;
+            out[6]=b0*a02+b1*a12+b2*a22+b3*a32; out[7]=b0*a03+b1*a13+b2*a23+b3*a33;
+            b0=b[8]; b1=b[9]; b2=b[10]; b3=b[11];
+            out[8]=b0*a00+b1*a10+b2*a20+b3*a30; out[9]=b0*a01+b1*a11+b2*a21+b3*a31;
+            out[10]=b0*a02+b1*a12+b2*a22+b3*a32;out[11]=b0*a03+b1*a13+b2*a23+b3*a33;
+            b0=b[12];b1=b[13];b2=b[14];b3=b[15];
+            out[12]=b0*a00+b1*a10+b2*a20+b3*a30;out[13]=b0*a01+b1*a11+b2*a21+b3*a31;
+            out[14]=b0*a02+b1*a12+b2*a22+b3*a32;out[15]=b0*a03+b1*a13+b2*a23+b3*a33;
+        }
+
+        lib.viewer = function(container, config) {
+            var el = typeof container === "string" ? document.getElementById(container) : container;
+            if (!el) throw new Error("Container layout target was not found.");
+            
+            el.innerHTML = "";
+            var canvas = document.createElement("canvas");
+            canvas.style.width = "100%"; canvas.style.height = "100%";
+            canvas.style.display = "block";
+            el.appendChild(canvas);
+
+            var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+            if (!gl) {
+                el.innerHTML = "<p style='color:white;padding:20px;'>WebGL context blocked.</p>";
+                return;
+            }
+
+            var vsSource = "attribute vec3 a_pos; uniform mat4 u_mvp; varying vec3 v_pos; void main() { v_pos = a_pos; gl_Position = u_mvp * vec4(a_pos, 1.0); }";
+            var fsSource = "precision mediump float; uniform sampler2D u_tex; varying vec3 v_pos; void main() { float lon = atan(v_pos.x, -v_pos.z); float lat = atan(v_pos.y, length(v_pos.xz)); vec2 uv = vec2(lon / (2.0 * 3.14159265) + 0.5, lat / 3.14159265 + 0.5); gl_FragColor = texture2D(u_tex, uv); }";
+
+            var vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
+            var fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
+            var prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); gl.useProgram(prog);
+
+            var vertices = [], indices = [];
+            var latBands = 30, lonBands = 30, radius = 2;
+            for (var latNum = 0; latNum <= latBands; latNum++) {
+                var theta = latNum * Math.PI / latBands;
+                var sinTheta = Math.sin(theta), cosTheta = Math.cos(theta);
+                for (var lonNum = 0; lonNum <= lonBands; lonNum++) {
+                    var phi = lonNum * 2 * Math.PI / lonBands;
+                    vertices.push(radius * sinTheta * Math.sin(phi), radius * cosTheta, radius * sinTheta * Math.cos(phi));
+                }
+            }
+            for (var latNum = 0; latNum < latBands; latNum++) {
+                for (var lonNum = 0; lonNum < lonBands; lonNum++) {
+                    var first = (latNum * (lonBands + 1)) + lonNum;
+                    var second = first + lonBands + 1;
+                    indices.push(first, second, first + 1, second, second + 1, first + 1);
+                }
+            }
+
+            var vbo = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vbo); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+            var posAttr = gl.getAttribLocation(prog, "a_pos"); gl.enableVertexAttribArray(posAttr); gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, 0, 0);
+            var ibo = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+            var texture = gl.createTexture();
+            var img = new Image();
+            img.onload = function() {
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                drawScene();
+            };
+            img.src = config.panorama;
+
+            var pitch = 0, yaw = 0;
+            var mvpLoc = gl.getUniformLocation(prog, "u_mvp");
+
+            function drawScene() {
+                var w = canvas.clientWidth, h = canvas.clientHeight;
+                if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+                var aspect = w / h;
+                var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
+                var proj = [f/aspect,0,0,0, 0,f,0,0, 0,0,-1,-1, 0,0,0,0];
+                var cosP = Math.cos(pitch), sinP = Math.sin(pitch);
+                var rotP = [1,0,0,0, 0,cosP,sinP,0, 0,-sinP,cosP,0, 0,0,0,1];
+                var cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+                var rotY = [cosY,0,-sinY,0, 0,1,0,0, sinY,0,cosY,0, 0,0,0,1];
+                var modelView = new Float32Array(16); mat4Multiply(modelView, rotP, rotY);
+                var mvp = new Float32Array(16); mat4Multiply(mvp, proj, modelView);
+                gl.uniformMatrix4fv(mvpLoc, false, mvp);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+                updateHotspots();
+            }
+
+            var uiContainer = document.createElement("div");
+            uiContainer.style.position = "absolute"; uiContainer.style.top = "0"; uiContainer.style.left = "0";
+            uiContainer.style.width = "100%"; uiContainer.style.height = "100%"; uiContainer.style.pointerEvents = "none";
+            el.appendChild(uiContainer);
+
+            if (config.hotSpots) {
+                config.hotSpots.forEach(function(sp) {
+                    var btn = document.createElement("div");
+                    btn.className = sp.cssClass || "custom-hotspot";
+                    btn.style.position = "absolute"; btn.style.pointerEvents = "auto";
+                    if (sp.clickHandlerFunc) btn.addEventListener("click", sp.clickHandlerFunc);
+                    uiContainer.appendChild(btn);
+                    sp._node = btn;
+                });
+            }
+
+            function updateHotspots() {
+                var cx = canvas.width / 2, cy = canvas.height / 2;
+                config.hotSpots.forEach(function(sp) {
+                    if (!sp._node) return;
+                    var hLon = ((sp.yaw || 0) + 130) * Math.PI / 180;
+                    var hLat = (sp.pitch || 0) * Math.PI / 180;
+                    var x = Math.cos(hLat) * Math.sin(hLon - yaw);
+                    var y = Math.sin(hLat) * Math.cos(pitch) - Math.cos(hLat) * Math.sin(pitch) * Math.cos(hLon - yaw);
+                    var z = Math.sin(hLat) * Math.sin(pitch) + Math.cos(hLat) * Math.cos(pitch) * Math.cos(hLon - yaw);
+                    if (z > 0) {
+                        var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
+                        var aspect = canvas.width / canvas.height;
+                        sp._node.style.display = "block";
+                        sp._node.style.left = (cx + (x * f / aspect / z) * cx) + "px";
+                        sp._node.style.top = (cy - (y * f / z) * cy) + "px";
+                        sp._node.style.transform = "translate(-50%, -50%)";
+                    } else {
+                        sp._node.style.display = "none";
+                    }
+                });
+            }
+
+            var isDragging = false, lastX, lastY;
+            canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+            window.addEventListener("mouseup", function() { isDragging = false; });
+            window.addEventListener("mousemove", function(e) {
+                if (!isDragging) return;
+                yaw -= (e.clientX - lastX) * 0.005; pitch += (e.clientY - lastY) * 0.005;
+                lastX = e.clientX; lastY = e.clientY;
+                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+                drawScene();
+            });
+            window.addEventListener("resize", drawScene);
+            return { render: drawScene };
+        };
+
+        return lib;
+    })();
+
     window.dispatchEvent(new Event('pannellumLibraryReady'));
 })();

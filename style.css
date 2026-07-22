@@ -18,15 +18,18 @@ html, body {
     display: block;
     background-color: #000;
     
-    /* CRITICAL FOR PHONES: Prevents the mobile browser from blocking custom touch swipes */
+    /* CRITICAL FOR PHONES: Stops the phone web browser from blocking custom finger swipes */
     touch-action: none; 
 }
 
-/* Ensure canvas takes full mobile layout proportion */
+/* Ensure the canvas element inside follows the rule */
 #panorama canvas {
-    width: 100%;
-    height: 100%;
     touch-action: none;
+}
+
+/* Ensure the modal text box ignores the page pinch scale */
+.modal-overlay, .modal-content, textarea {
+    touch-action: auto !important; 
 }
 
 /* Custom Glowing Hotspot Style */

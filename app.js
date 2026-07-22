@@ -1,6 +1,5 @@
 console.log("[APP] Executing immediately...");
 
-// We immediately check if the pannellum library is bound to the window object
 if (window.pannellum) {
     console.log("[APP] Pannellum engine found. Initializing canvas layout...");
     
@@ -16,10 +15,11 @@ if (window.pannellum) {
         "hfov": 110,
         "pitch": 0,
         "yaw": 0,
+        "cors": "anonymous", // FORCE UNLOCK: Bypasses browser cross-origin white blocks
         "hotSpots": [
             {
-                "pitch": -5.0,  // Calibrated to align directly with the vertical face of the TV
-                "yaw": -30.0,   // Centered horizontally onto the screen glass area
+                "pitch": 0,   
+                "yaw": 18,    
                 "cssClass": "custom-hotspot",
                 "clickHandlerFunc": function() {
                     modal.classList.add('active');
@@ -28,7 +28,6 @@ if (window.pannellum) {
         ]
     });
 
-    // Wire up modal interaction listeners directly
     closeBtn.addEventListener('click', function() {
         modal.classList.remove('active');
         audioPlayer.pause();

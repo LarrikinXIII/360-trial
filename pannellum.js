@@ -1,5 +1,5 @@
 /**
- * Standalone Production-Ready 3D Engine Injector
+ * Standalone Production-Ready 3D Engine Injector Mirror
  */
 (function() {
     "use strict";
@@ -8,7 +8,7 @@
     const scriptTag = document.createElement("script");
     scriptTag.type = "text/javascript";
     
-    // Using an alternative open source endpoint to completely bypass your network cdn blocks
+    // Using an alternative open source endpoint to completely bypass your network blocks
     scriptTag.src = "https://gitmirror.com";
 
     scriptTag.onload = function() {

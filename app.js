@@ -68,16 +68,22 @@ function buildVirtualTourViewer() {
             { "pitch": -2.4, "yaw": -32.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-leaf") },
             { "pitch": 8.1, "yaw": 42.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-sunset") }
 
-            // ==========================================
-            // 🌧️ ADD THIS: 3D Projected Window Material Layer
-            // ==========================================
-            {
-                "pitch": 4.5,     // Centered vertically on the glass pane area
-                "yaw": 35.2,      // Centered horizontally on the window opening
-                "cssClass": "window-rain-layer", // Targeted CSS name
+                  {
+                "pitch": 2.0,     // Shifted lower to align exactly with the glass line heights
+                "yaw": -173.0,    // Left-side window center offset point
+                "cssClass": "window-rain-layer", 
                 "createTooltipFunc": function(hotSpotDiv) {
-                    // This function runs on boot to inject our rain animation natively into 3D space
-                    hotSpotDiv.style.backgroundImage = "url('rain.gif')"; // Your rain/leaf animation filename
+                    hotSpotDiv.style.backgroundImage = "url('leaves.gif')"; 
+                    hotSpotDiv.style.backgroundPosition = "-50px center"; // Shifts image alignment over the opening
+                }
+            },
+            {
+                "pitch": 2.0,     
+                "yaw": 173.0,     // Right-side window center offset point
+                "cssClass": "window-rain-layer", 
+                "createTooltipFunc": function(hotSpotDiv) {
+                    hotSpotDiv.style.backgroundImage = "url('leaves.gif')"; 
+                    hotSpotDiv.style.backgroundPosition = "50px center"; // Shifts image alignment over the opening
                 }
             }
         ]

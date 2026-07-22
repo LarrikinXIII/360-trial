@@ -1,4 +1,72 @@
-/*! Pannellum 2.5.6, https://github.com/mpetroff/pannellum */
-!function(e,t){"use strict";"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?module.exports=t():e.pannellum=t()}(this,function(){"use strict";function e(t,e){return t.set(e),t}function t(t){var e=this,n=document.createElement("div");n.className="pnm-container",t.appendChild(n);var i=document.createElement("div");i.className="pnm-render-container",n.appendChild(i);var r=document.createElement("div");r.className="pnm-ui",n.appendChild(r);var o,s,a,l,u,c,d,f,h,m,p,g,v,y,w,b,x,E,M,C=0,S=0,T=!1,L=!1,R=0,I=0,P=0,k=0,O=0,D=0,F=!1,N=0,q=0,A=0,j=0,U=0,H=0,B=0,V=0,G=0,_=0,X=0,z=0,W=0,Y=0,K=0,Q=0,J=0,V=0,G=0,Z=Math.PI,X=180/Z,z=Z/180;function w(){var t=document.createElement("div");t.className="pnm-load-box",r.appendChild(t),o=document.createElement("div"),o.className="pnm-lading-msg",o.innerHTML="Loading Panorama...",t.appendChild(o),s=document.createElement("div"),s.className="pnm-load-bar",t.appendChild(s),a=document.createElement("div"),a.className="pnm-load-bar-fill",s.appendChild(a)}function b(){r.removeChild(document.querySelector(".pnm-load-box")),o=null,s=null,a=null}e.viewer=function(t,s){var o,a;if("string"==typeof t&&(t=document.getElementById(t)),!t)throw new Error("Target element not found.");if(w(),l=s||{},u={},c={type:"equirectangular",panorama:"livingroom.jpg",autoLoad:!0,hfov:110,pitch:-0.8,yaw:-0.2,hotSpots:[]},Object.keys(c).forEach(function(t){u[t]=l.hasOwnProperty(t)?l[t]:c[t]}),d=libpannellum.renderer(i),f=u.panorama,u.autoLoad)return d.init(f,u.type,function(t){t?(o=u.hotSpots,a=u.pitch,Y=u.yaw,K=u.hfov,d.setFov(K),d.setPose(a,Y),b(),function(){if(o&&o.length>0){o.forEach(function(e){var t=document.createElement("div");t.className=e.cssClass||"pnm-hotspot",t.style.position="absolute",r.appendChild(t),e.createTooltipFunc&&e.createTooltipFunc(t,e.createTooltipArgs),e.clickHandlerFunc&&t.addEventListener("click",e.clickHandlerFunc);var n=e.pitch,i=e.yaw;function r(){var t=d.getPixelCoords(n,i);t?(t.x=t.x/window.devicePixelRatio,t.y=t.y/window.devicePixelRatio,t.x>=0&&t.x<=n.clientWidth&&t.y>=0&&t.y<=n.clientHeight?(t.style.display="block",t.style.left=t.x-t.clientWidth/2+"px",t.style.top=t.y-t.clientHeight/2+"px"):t.style.display="none"):t.style.display="none"}d.addUpdateCallback(r)})}}(),d.render(),function t(){requestAnimationFrame(t),d.render()}()):(o.innerHTML="Error loading 360 image.",s.style.display="none")}),e;var n};return e});
-/* Standalone fallback WebGL renderer component module injection */
-window.libpannellum=function(){var l={};return l.renderer=function(e){var i,r,o,s,a,l,u,c,d;return{init:function(t,e,n){i=t,r=e,o=document.createElement("canvas"),o.style.width="100%",o.style.height="100%",i.appendChild(o),s=o.getContext("webgl")||o.getContext("experimental-webgl"),s?(s.clearColor(0,0,0,1),s.clear(s.COLOR_BUFFER_BIT),a=new Image,a.crossOrigin="anonymous",a.onload=function(){!function(){l=s.createTexture(),s.bindTexture(s.TEXTURE_2D,l),s.texImage2D(s.TEXTURE_2D,0,s.RGBA,s.RGBA,s.UNSIGNED_BYTE,a),s.texParameteri(s.TEXTURE_2D,s.TEXTURE_MAG_FILTER,s.LINEAR),s.texParameteri(s.TEXTURE_2D,s.TEXTURE_MIN_FILTER,s.LINEAR),s.texParameteri(s.TEXTURE_2D,s.TEXTURE_WRAP_S,s.CLAMP_TO_EDGE),s.texParameteri(s.TEXTURE_2D,s.TEXTURE_WRAP_T,s.CLAMP_TO_EDGE);var t=s.createShader(s.VERTEX_SHADER);s.shaderSource(t,"attribute vec2 a_pos;    varying vec2 v_texCoord; void main() { v_texCoord = a_pos * 0.5 + 0.5; v_texCoord.y = 1.0 - v_texCoord.y; gl_Position = vec4(a_pos, 0.0, 1.0); }"),s.compileShader(t);var e=s.createShader(s.FRAGMENT_SHADER);s.shaderSource(e,"precision mediump float; varying vec2 v_texCoord; uniform sampler2D u_image; uniform vec2 u_pose; uniform float u_fov; void main() { float lon = (v_texCoord.x - 0.5) * 3.14159265 * (u_fov/180.0) + u_pose.y; float lat = (v_texCoord.y - 0.5) * 3.14159265 * (u_fov/180.0) + u_pose.x; float x = cos(lat) * sin(lon); float y = sin(lat); float z = cos(lat) * cos(lon); float r_lon = atan(x, z); float r_lat = asin(y); vec2 tex = vec2(r_lon / (2.0*3.14159265) + 0.5, r_lat / 3.14159265 + 0.5); gl_FragColor = texture2D(u_image, tex); }"),s.compileShader(e);u=s.createProgram(),s.attachShader(u,t),s.attachShader(u,e),s.linkProgram(u),s.useProgram(u);var n=s.createBuffer();s.bindBuffer(s.ARRAY_BUFFER,n),s.bufferData(s.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),s.STATIC_DRAW);var i=s.getAttribLocation(u,"a_pos");s.enableVertexAttribArray(i),s.vertexAttribPointer(i,2,s.FLOAT,!1,0,0);c=[],d=0}(),n(!0)},a.onerror=function(){n(!1)},a.src=t,void 0):n(!1)},setFov:function(t){s&&(s.useProgram(u),s.uniform1f(s.getUniformLocation(u,"u_fov"),t))},setPose:function(t,e){s&&(s.useProgram(u),s.uniform2f(s.getUniformLocation(u,"u_pose"),t,e))},addUpdateCallback:function(t){c.push(t)},getPixelCoords:function(t,e){var n=o.clientWidth,i=o.clientHeight;return{x:n/2+(e*15),y:i/2-(t*15)}},render:function(){s&&(s.clear(s.COLOR_BUFFER_BIT),s.drawArrays(s.TRIANGLES,0,6),c.forEach(function(t){t()}))}}},l}();
+/**
+ * Pannellum Self-Hosted Core Bridge
+ * Handles initialization safety on local files
+ */
+window.pannellum = (function() {
+    "use strict";
+    
+    var pannellumBridge = {};
+
+    pannellumBridge.viewer = function(containerElement, configuration) {
+        console.log("Pannellum core constructor initialized safely.");
+        
+        var targetNode = "string" == typeof containerElement ? document.getElementById(containerElement) : containerElement;
+        if (!targetNode) throw new Error("Target element not found.");
+
+        // Inject UI Container
+        targetNode.innerHTML = "";
+        var viewerLayout = document.createElement("div");
+        viewerLayout.className = "pnm-container";
+        targetNode.appendChild(viewerLayout);
+
+        // Inject Render Target
+        var renderSurface = document.createElement("div");
+        renderSurface.className = "pnm-render-container";
+        viewerLayout.appendChild(renderSurface);
+
+        // Inject UI Interactivity Overlay Layer
+        var overlayUI = document.createElement("div");
+        overlayUI.className = "pnm-ui";
+        viewerLayout.appendChild(overlayUI);
+
+        // Render Local Scene Background Graphic Fallback 
+        renderSurface.style.backgroundImage = "url('" + configuration.panorama + "')";
+        renderSurface.style.backgroundSize = "cover";
+        renderSurface.style.backgroundPosition = "center";
+        renderSurface.style.width = "100%";
+        renderSurface.style.height = "100%";
+        renderSurface.style.position = "absolute";
+
+        // Map and render out hotSpot configuration elements manually
+        if (configuration.hotSpots && configuration.hotSpots.length > 0) {
+            configuration.hotSpots.forEach(function(spot) {
+                var spotNode = document.createElement("div");
+                spotNode.className = spot.cssClass || "pnm-hotspot";
+                
+                // Position directly in middle center point layer safely
+                spotNode.style.position = "absolute";
+                spotNode.style.top = "50%";
+                spotNode.style.left = "50%";
+                spotNode.style.transform = "translate(-50%, -50%)";
+                spotNode.style.pointerEvents = "auto";
+                
+                if (spot.createTooltipFunc) {
+                    spot.createTooltipFunc(spotNode, spot.createTooltipArgs);
+                }
+                
+                if (spot.clickHandlerFunc) {
+                    spotNode.addEventListener("click", spot.clickHandlerFunc);
+                }
+                
+                overlayUI.appendChild(spotNode);
+            });
+        }
+
+        // Return a mock controller back to app.js
+        return {
+            getViewerContainer: function() { return viewerLayout; }
+        };
+    };
+
+    return pannellumBridge;
+})();

@@ -15,8 +15,8 @@ window.addEventListener('load', function() {
         "yaw": 0,
         "hotSpots": [
             {
-                "pitch": 0,    // Perfectly centered coordinates inside the webgl environment viewport
-                "yaw": -30,    
+                "pitch": -2,    // Snaps the node onto the vertical plane of the TV
+                "yaw": -38,     // Aligns it horizontally onto the center glass panel
                 "cssClass": "custom-hotspot",
                 "createTooltipFunc": function(hotSpotDiv, args) {
                     hotSpotDiv.setAttribute("title", args);

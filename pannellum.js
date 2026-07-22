@@ -166,33 +166,58 @@ window.pannellum = (function() {
             drawScene();
         });
 
-        // --- 2. MOBILE PHONE TOUCH LISTENERS ---
-                canvas.addEventListener("touchstart", function(e) {
+        // --- 2. MOBILE PHONE TOUCH LISTENERS (PANNING & PINCH-TO-ZOOM) ---
+        var initialPinchDistance = null;
+
+        canvas.addEventListener("touchstart", function(e) {
             if (e.touches.length === 1) {
                 isDragging = true; 
-                lastX = e.touches[0].clientX; // Fixed: Reads exact target touch array node
-                lastY = e.touches[0].clientY; 
+                lastX = e.touches[0].clientX; 
+                lastY = e.touches[0].clientY;
+                initialPinchDistance = null;
+            } else if (e.touches.length === 2) {
+                isDragging = false; // Stop dragging when pitching/zooming
+                // Measures space between finger 0 and finger 1
+                var dx = e.touches[0].clientX - e.touches[1].clientX;
+                var dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
             }
         }, { passive: true });
 
-        window.addEventListener("touchend", function() { isDragging = false; });
+        window.addEventListener("touchend", function() { 
+            isDragging = false; 
+            initialPinchDistance = null; 
+        });
         
         canvas.addEventListener("touchmove", function(e) {
-            if (!isDragging || e.touches.length !== 1) return;
-            
-            // Calculate finger swipe distances across the phone screen surface safely
-            var deltaX = e.touches[0].clientX - lastX;
-            var deltaY = e.touches[0].clientY - lastY;
-            
-            lastX = e.touches[0].clientX; 
-            lastY = e.touches[0].clientY;
+            // One finger controls looking around
+            if (e.touches.length === 1 && isDragging) {
+                var deltaX = e.touches[0].clientX - lastX;
+                var deltaY = e.touches[0].clientY - lastY;
+                
+                lastX = e.touches[0].clientX; 
+                lastY = e.touches[0].clientY;
 
-            // Apply smooth vertical/horizontal panning increments
-            yaw -= deltaX * 0.005; 
-            pitch += deltaY * 0.005; // Balanced tracking loop matching directional drag profiles
-            
-            pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
-            drawScene();
+                yaw -= deltaX * 0.005; 
+                pitch += deltaY * 0.005; 
+                
+                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+                drawScene();
+            } 
+            // Two fingers control pinching to zoom
+            else if (e.touches.length === 2) {
+                var dx = e.touches[0].clientX - e.touches[1].clientX;
+                var dy = e.touches[0].clientY - e.touches[1].clientY;
+                var currentPinchDistance = Math.sqrt(dx * dx + dy * dy);
+
+                if (initialPinchDistance) {
+                    var pinchChange = currentPinchDistance - initialPinchDistance;
+                    config.hfov -= pinchChange * 0.15; // Adjusts 3D Field of View
+                    config.hfov = Math.max(50, Math.min(130, config.hfov));
+                    drawScene();
+                }
+                initialPinchDistance = currentPinchDistance;
+            }
         }, { passive: true });
 
         // --- 3. UNIVERSAL SCROLL & ZOOM CONTROLS ---

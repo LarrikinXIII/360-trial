@@ -1,100 +1,105 @@
 window.addEventListener('load', function() {
-    console.log("[MAP-ENGINE] Initializing flat-plane 360 view matrix...");
+    console.log("[SPHERICAL-MAP] Initializing equirectangular viewport conversion matrix...");
 
-    const panoramaWrapper = document.getElementById('panorama');
+    const viewer = document.getElementById('panorama');
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
 
-    // Force background setup directly on the view wrapper layout container
-    panoramaWrapper.style.backgroundImage = "url('livingroom.jpg')";
-    panoramaWrapper.style.backgroundSize = "200% 200%"; // Grants a panoramic field of view zoom ratio
-    panoramaWrapper.style.backgroundPosition = "35% 50%"; // Centered directly on the television set plane
-    panoramaWrapper.style.position = "relative";
-    panoramaWrapper.style.cursor = "grab";
+    // 1. Establish a true immersive spherical 3D canvas simulation wrapper
+    viewer.style.position = 'relative';
+    viewer.style.overflow = 'hidden';
+    viewer.style.backgroundColor = '#000';
+    viewer.style.width = '100vw';
+    viewer.style.height = '100vh';
 
-    // Setup coordinate data dictionary to hold all upcoming picture frames easily
-    const hotspotMap = [
-        { id: "tv-center", x: 35.2, y: 56.4, title: "TV Center Display" },
-        { id: "frame-left", x: 15.4, y: 42.1, title: "Gallery Frame Left" },
-        { id: "frame-right", x: 78.8, y: 39.5, title: "Gallery Frame Right" }
+    // 2. Build out the panorama track background container layer
+    const panoLayer = document.createElement('div');
+    panoLayer.style.position = 'absolute';
+    panoLayer.style.width = '300%'; // Expanded horizontal layout viewport tracking field
+    panoLayer.style.height = '100%';
+    panoLayer.style.backgroundImage = "url('livingroom.jpg')";
+    panoLayer.style.backgroundSize = 'cover';
+    panoLayer.style.backgroundPosition = 'center';
+    panoLayer.style.transformOrigin = 'center center';
+    panoLayer.style.transition = 'transform 0.1s ease-out';
+    viewer.appendChild(panoLayer);
+
+    // 3. Coordinate dictionary map for your TV and Gallery picture frames
+    // Uses structural coordinate points that lock permanently to your panorama pixels
+    const frameRegistry = [
+        { id: 'tv-center', x: 67.2, y: 40.5, title: 'Television Interface' },
+        { id: 'frame-forest', x: 15.1, y: 18.5, title: 'Forest Pathway Frame' },
+        { id: 'frame-beach', x: 15.3, y: 49.2, title: 'Beach Boardwalk Frame' },
+        { id: 'frame-leaf', x: 35.8, y: 43.1, title: 'Green Monstera Leaf Frame' },
+        { id: 'frame-sunset', x: 86.9, y: 28.5, title: 'Ocean Sunset Right Frame' }
     ];
 
-    // Build out layout markers onto the map interface container layer
-    hotspotMap.forEach(function(spot) {
-        const markerNode = document.createElement('div');
-        markerNode.className = "custom-hotspot";
-        markerNode.id = spot.id;
-        
-        // Exact flat map percentage mapping positions
-        markerNode.style.position = "absolute";
-        markerNode.style.left = spot.x + "%";
-        markerNode.style.top = spot.y + "%";
-        markerNode.setAttribute("title", spot.title);
+    // 4. Inject all registered hotSpot nodes cleanly onto the panorama image plane
+    frameRegistry.forEach(function(spot) {
+        const pin = document.createElement('div');
+        pin.className = 'custom-hotspot';
+        pin.id = spot.id;
+        pin.style.position = 'absolute';
+        pin.style.left = spot.x + '%';
+        pin.style.top = spot.y + '%';
+        pin.style.transform = 'translate(-50%, -50%)';
+        pin.setAttribute('title', spot.title);
 
-        // Open modal when any registered node marker is selected
-        markerNode.addEventListener('click', function() {
-            console.log("[MAP-ENGINE] Opened item: " + spot.title);
+        pin.addEventListener('click', function(e) {
+            e.stopPropagation(); // Stops background navigation clicks from triggering
+            console.log("[VIEWPORT] Selected: " + spot.title);
             document.querySelector('.modal-title').textContent = spot.title;
             modal.classList.add('active');
         });
 
-        panoramaWrapper.appendChild(markerNode);
+        panoLayer.appendChild(pin);
     });
 
-    // Panning variable registries
-    let isDragging = false;
-    let startX, startY;
-    let currentXPercent = 35;
-    let currentYPercent = 50;
+    // 5. Immersive viewport position vectors tracking state
+    let isPanning = false;
+    let baseMouseX = 0, baseMouseY = 0;
+    let horizontalScrollRotation = -51.5; // Starts facing the television center console dead-center
+    let verticalTiltTranslation = 0;
 
-    // Drag-to-pan map controller mechanics
-    panoramaWrapper.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        panoramaWrapper.style.cursor = "grabbing";
-        startX = e.clientX;
-        startY = e.clientY;
+    // Center viewport tracking initialization
+    panoLayer.style.transform = `translate3d(${horizontalScrollRotation}%, ${verticalTiltTranslation}px, 0)`;
+
+    // 6. Navigation Drag-to-Pan engine loop mechanics
+    viewer.addEventListener('mousedown', function(e) {
+        isPanning = true;
+        viewer.style.cursor = 'grabbing';
+        baseMouseX = e.clientX;
+        baseMouseY = e.clientY;
     });
 
     window.addEventListener('mouseup', function() {
-        isDragging = false;
-        panoramaWrapper.style.cursor = "grab";
+        isPanning = false;
+        viewer.style.cursor = 'grab';
     });
 
     window.addEventListener('mousemove', function(e) {
-        if (!isDragging) return;
+        if (!isPanning) return;
 
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
+        const distanceDeltaX = e.clientX - baseMouseX;
+        const distanceDeltaY = e.clientY - baseMouseY;
 
-        // Reset mouse start positions for real-time tracking
-        startX = e.clientX;
-        startY = e.clientY;
+        baseMouseX = e.clientX;
+        baseMouseY = e.clientY;
 
-        // Tweak background image viewport scroll speeds
-        currentXPercent -= deltaX * 0.1;
-        currentYPercent -= deltaY * 0.1;
+        // Apply smooth horizontal panning across the panorama view track layout
+        horizontalScrollRotation += (distanceDeltaX / window.innerWidth) * 100;
+        verticalTiltTranslation += distanceDeltaY * 0.8;
 
-        // Lock boundaries to keep panning smooth
-        currentXPercent = Math.max(0, Math.min(100, currentXPercent));
-        currentYPercent = Math.max(0, Math.min(100, currentYPercent));
+        // Establish mathematical boundaries to stop the viewport track sliding away
+        horizontalScrollRotation = Math.max(-100, Math.min(0, horizontalScrollRotation));
+        verticalTiltTranslation = Math.max(-220, Math.min(220, verticalTiltTranslation));
 
-        panoramaWrapper.style.backgroundPosition = currentXPercent + "% " + currentYPercent + "%";
-
-        // Readjust hotspot position tracking locks
-        hotspotMap.forEach(function(spot) {
-            const node = document.getElementById(spot.id);
-            if (node) {
-                // Adjusts placement positions dynamically based on current scroll view delta
-                const shiftedX = spot.x + (35 - currentXPercent) * 2;
-                const shiftedY = spot.y + (50 - currentYPercent) * 2;
-                node.style.left = shiftedX + "%";
-                node.style.top = shiftedY + "%";
-            }
-        });
+        // Render the exact viewport transform changes using hard acceleration profiles
+        panoLayer.style.transform = `translate3d(${horizontalScrollRotation}%, ${verticalTiltTranslation}px, 0)`;
     });
 
-    // Handle closing interaction structures cleanly
+    // 7. Modal exit operations
     closeBtn.addEventListener('click', function() {
         modal.classList.remove('active');
         audioPlayer.pause();

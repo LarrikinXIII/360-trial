@@ -60,7 +60,7 @@ function buildVirtualTourViewer() {
         "autoLoad": true,
         "hfov": 100,
         "pitch": 0,
-        "yaw": 0,    
+        "yaw": 190,    
         "hotSpots": [
             { "pitch": -2.4, "yaw": 0, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("tv-center") },
             { "pitch": -20, "yaw": -107.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L1") },
@@ -76,7 +76,13 @@ function buildVirtualTourViewer() {
             { "pitch": -10.3, "yaw": -31.2, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("F1") },
             { "pitch": -10.6, "yaw": 31.3, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("F2") },
             { "pitch": -10, "yaw": 146, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("B1") },
-            { "pitch": -10, "yaw": -145, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("B2") }
+            { "pitch": -10, "yaw": -145, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("B2") },
+            { "pitch": -10, "yaw": 67, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R1") },
+            { "pitch": -20, "yaw": 89, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R2") },
+            { "pitch": -1, "yaw": 89, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R3") },
+            { "pitch": -16, "yaw": 107, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R4") },
+            { "pitch": 2.2, "yaw": 107, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R5") },
+            { "pitch": -8, "yaw": 122, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R6") }
         ]
     });
 
@@ -97,6 +103,12 @@ function buildVirtualTourViewer() {
         "F2": { title: "F2", image: "https://picsum.photos/300/400?random=3", subtext: "Lower-accent coastline boardwalk layout frame print piece.", audio: "beach-song.mp3" },
         "B1": { title: "B1", image: "https://picsum.photos/300/400?random=4", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "B2": { title: "B2", image: "https://picsum.photos/300/400?random=6", subtext: "Horizontal sunset seascape photography frame.", audio: "sunset-song.mp3" },
+        "R1": { title: "R1", image: "https://picsum.photos/300/400?random=5", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "R2": { title: "R2", image: "https://picsum.photos/300/400?random=6", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "R3": { title: "R3", image: "https://picsum.photos/300/400?random=7", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "R4": { title: "R4", image: "https://picsum.photos/300/400?random=8", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "R5": { title: "R5", image: "https://picsum.photos/300/400?random=9", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "R6": { title: "R6", image: "https://picsum.photos/300/400?random=10", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" }
     };
 
     function openSpecificModal(frameId) {

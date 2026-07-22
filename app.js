@@ -56,7 +56,7 @@ function buildVirtualTourViewer() {
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
     const viewer = window.pannellum.viewer('panorama', {
         "type": "equirectangular",
-        "panorama": "livingroom.png", 
+        "panorama": "livingroom.jpg", 
         "autoLoad": true,
         "hfov": 110,
         "pitch": -0.8,
@@ -74,11 +74,11 @@ function buildVirtualTourViewer() {
 
     // Central local file mapping configuration registry dictionary layout
     const frameContentRegistry = {
-        "tv-center": { title: "Television Media Center", image: "tv-screen.jpg", subtext: "Main monitor screen portal array display.", audio: "tv-audio.mp3" },
-        "frame-forest": { title: "Forest Pathway Art Piece", image: "forest-art.jpg", subtext: "High-accent custom forest photography canvas artwork.", audio: "forest-song.mp3" },
-        "frame-beach": { title: "Beach Boardwalk Art Piece", image: "beach-art.jpg", subtext: "Lower-accent coastline boardwalk layout frame print piece.", audio: "beach-song.mp3" },
-        "frame-leaf": { title: "Green Monstera Leaf Art", image: "leaf-art.jpg", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
-        "frame-sunset": { title: "Ocean Sunset Art Piece", image: "sunset-art.jpg", subtext: "Horizontal sunset seascape photography frame.", audio: "sunset-song.mp3" }
+        "tv-center": { title: "Television Media Center", image: "https://picsum.photos/400/400?random=2", subtext: "Main monitor screen portal array display.", audio: "tv-audio.mp3" },
+        "frame-forest": { title: "Forest Pathway Art Piece", image: "https://picsum.photos/400/400?random=3", subtext: "High-accent custom forest photography canvas artwork.", audio: "forest-song.mp3" },
+        "frame-beach": { title: "Beach Boardwalk Art Piece", image: "https://picsum.photos/400/400?random=5", subtext: "Lower-accent coastline boardwalk layout frame print piece.", audio: "beach-song.mp3" },
+        "frame-leaf": { title: "Green Monstera Leaf Art", image: "https://picsum.photos/400/400?random=6", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
+        "frame-sunset": { title: "Ocean Sunset Art Piece", image: "https://picsum.photos/400/400?random=4", subtext: "Horizontal sunset seascape photography frame.", audio: "sunset-song.mp3" }
     };
 
     function openSpecificModal(frameId) {

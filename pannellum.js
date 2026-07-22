@@ -1,13 +1,10 @@
-import { viewer } from "./app";
-
 /**
- * Pannellum 2.5.6 3D Core Engine - Part 1
+ * Pannellum 2.5.6 3D Core Engine
  */
 window.pannellum = (function() {
     "use strict";
     var lib = {};
 
-    // Core WebGL Math & Matrix Utilities
     function mat4Identity(m) {
         m[0]=1; m[1]=0; m[2]=0; m[3]=0;
         m[4]=0; m[5]=1; m[6]=0; m[7]=0;
@@ -41,7 +38,6 @@ window.pannellum = (function() {
         el.style.backgroundColor = "#000";
         el.style.overflow = "hidden";
 
-        // Create canvas renderer viewport surface
         var canvas = document.createElement("canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
@@ -54,7 +50,6 @@ window.pannellum = (function() {
             return;
         }
 
-        // WebGL Pipeline Shader Setup strings
         var vsSource = "attribute vec3 a_pos; uniform mat4 u_mvp; varying vec3 v_pos; void main() { v_pos = a_pos; gl_Position = u_mvp * vec4(a_pos, 1.0); }";
         var fsSource = "precision mediump float; uniform sampler2D u_tex; varying vec3 v_pos; void main() { float lon = atan(v_pos.x, -v_pos.z); float lat = atan(v_pos.y, length(v_pos.xz)); vec2 uv = vec2(lon / (2.0 * 3.14159265) + 0.5, lat / 3.14159265 + 0.5); gl_FragColor = texture2D(u_tex, uv); }";
 
@@ -67,7 +62,6 @@ window.pannellum = (function() {
         gl.attachShader(prog, vs); gl.attachShader(prog, fs);
         gl.linkProgram(prog); gl.useProgram(prog);
 
-        // Map safe sphere coordinates grid mapping geometry arrays
         var vertices = [], indices = [];
         var latBands = 30, lonBands = 30, radius = 2;
         for (var latNum = 0; latNum <= latBands; latNum++) {
@@ -98,7 +92,6 @@ window.pannellum = (function() {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
-        // Bind image into active texture buffer logic
         var texture = gl.createTexture();
         var img = new Image();
         img.onload = function() {
@@ -112,7 +105,6 @@ window.pannellum = (function() {
         };
         img.src = config.panorama;
 
-                // Panning telemetry coordinates track setup
         var pitch = config.pitch || 0, yaw = config.yaw || 0;
         var mvpLoc = gl.getUniformLocation(prog, "u_mvp");
 
@@ -128,7 +120,6 @@ window.pannellum = (function() {
             var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
             var proj = [f/aspect,0,0,0, 0,f,0,0, 0,0,-1,-1, 0,0,0,0];
 
-            // Rotation transformation matrices calculations
             var cosP = Math.cos(pitch), sinP = Math.sin(pitch);
             var rotP = [1,0,0,0, 0,cosP,sinP,0, 0,-sinP,cosP,0, 0,0,0,1];
             var cosY = Math.cos(yaw), sinY = Math.sin(yaw);
@@ -145,7 +136,6 @@ window.pannellum = (function() {
             updateHotspots();
         }
 
-        // Setup custom modal hotspots interface elements container
         var uiContainer = document.createElement("div");
         uiContainer.style.position = "absolute";
         uiContainer.style.top = "0"; uiContainer.style.left = "0";
@@ -191,7 +181,6 @@ window.pannellum = (function() {
             });
         }
 
-        // Drag-to-pan click capture controller handlers
         var isDragging = false, lastX, lastY;
         canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
         window.addEventListener("mouseup", function() { isDragging = false; });
@@ -210,4 +199,3 @@ window.pannellum = (function() {
 
     return lib;
 })();
-

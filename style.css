@@ -34,17 +34,18 @@ html, body {
 
 /* Custom Glowing Hotspot Style */
 .custom-hotspot {
-    height: 26px;
-    width: 26px;
-    background: rgba(255, 255, 255, 0.4);
+    height: 24px;
+    width: 25px;
+     background: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    border: 2px solid #fff;
+    border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), inset 0 0 5px #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease;
+    animation: pulsateGlow 2s infinite ease-in-out;
 }
 
 .custom-hotspot::after {
@@ -57,42 +58,52 @@ html, body {
 
 .custom-hotspot:hover {
     transform: scale(1.2);
-    background: rgba(255, 255, 255, 0.7);
+    background: #ffffff;
+    box-shadow: 0 0 15px #ffffff;
 }
+
+/*@keyframes pulsateGlow {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 15px rgba(255,255,255,0.9); }
+    100% { transform: scale(0.95); opacity: 0.7; }
+} */
 
 /* Modal Window Styles */
 .modal-overlay {
-    display: none; 
     position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px); /* Frost-blur filter background accent layer */
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s ease;
+    z-index: 1000;
 }
 
 .modal-overlay.active {
-    display: flex;
     opacity: 1;
+    pointer-events: auto;
 }
 
+
 .modal-content {
-    background-color: #ffffff;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     padding: 30px;
-    border-radius: 12px;
-    max-width: 450px;
+    border-radius: 16px;
     width: 90%;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    max-width: 440px;
     position: relative;
-    transform: translateY(-20px);
-    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
 }
+
 
 .modal-overlay.active .modal-content {
     transform: translateY(0);
@@ -100,14 +111,11 @@ html, body {
 
 .close-btn {
     position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #888;
+    top: 15px; right: 15px;
+    background: none; border: none;
+    font-size: 1.8rem; color: #555;
     cursor: pointer;
-    border: none;
-    background: none;
+    transition: color 0.2s ease;
 }
 
 .close-btn:hover {

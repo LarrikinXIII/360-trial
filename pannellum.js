@@ -175,3 +175,42 @@
 
     window.dispatchEvent(new Event('pannellumLibraryReady'));
 })();
+
+            var isDragging = false, lastX, lastY;
+            canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+            window.addEventListener("mouseup", function() { isDragging = false; });
+            window.addEventListener("mousemove", function(e) {
+                if (!isDragging) return;
+                yaw -= (e.clientX - lastX) * 0.005; pitch += (e.clientY - lastY) * 0.005;
+                lastX = e.clientX; lastY = e.clientY;
+                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+                drawScene();
+            });
+
+            // ADD THIS: Scroll wheel listener loop to calculate zoom metrics dynamically
+            canvas.addEventListener("wheel", function(e) {
+                e.preventDefault(); // Prevents the actual web browser page scrolling up/down
+                
+                // Adjust Field of View value based on wheel scroll delta tick direction
+                if (e.deltaY > 0) {
+                    config.hfov += 4; // Zoom Out
+                } else {
+                    config.hfov -= 4; // Zoom In
+                }
+
+                // Tight clamps to ensure the zoom doesn't break perspective matrices
+                config.hfov = Math.max(50, Math.min(130, config.hfov));
+                
+                drawScene(); // Instantly update view screen graphics layers
+            }, { passive: false });
+
+            window.addEventListener("resize", drawScene);
+            return { render: drawScene };
+        };
+
+        return lib;
+    })();
+
+    window.dispatchEvent(new Event('pannellumLibraryReady'));
+})();
+

@@ -1,4 +1,4 @@
-console.log("[APP] App file loaded successfully. Syncing with local 3D engine...");
+console.log("[APP] Multi-Frame Modal Architecture Engine Initializing...");
 
 if (window.pannellum) {
     buildVirtualTourViewer();
@@ -7,83 +7,100 @@ if (window.pannellum) {
 }
 
 function buildVirtualTourViewer() {
-    console.log("[APP] Multi-frame 3D virtual tour sequence activated.");
+    console.log("[APP] Core engine verified. Injecting coordinate registry targets...");
 
+    // 1. Central Data Map Registry: Holds coordinates and unique assets for every single item
+    const frameContentRegistry = {
+        "tv-center": {
+            title: "Television Media Center",
+            image: "https://picsum.photos", // Custom placeholder image path
+            subtext: "Main monitor screen portal array display. Playing active background telemetry audio track.",
+            audio: "https://codesandbox.io"
+        },
+        "frame-forest": {
+            title: "Forest Pathway Art Piece",
+            image: "https://picsum.photos", 
+            subtext: "High-accent custom forest landscaping fine photography framework situated on the far-left drywall segment layout.",
+            audio: "https://soundhelix.com"
+        },
+        "frame-beach": {
+            title: "Beach Boardwalk Art Piece",
+            image: "https://picsum.photos",
+            subtext: "Lower-accent coastline boardwalk architectural framework print piece anchoring the leftmost perspective geometry planes.",
+            audio: "https://soundhelix.com"
+        },
+        "frame-leaf": {
+            title: "Green Monstera Leaf Art",
+            image: "https://picsum.photos",
+            subtext: "Close-cropped tropical organic green botanical canvas print nestled up right against the main corner divider room columns.",
+            audio: "https://soundhelix.com"
+        },
+        "frame-sunset": {
+            title: "Ocean Sunset Art Piece",
+            image: "https://picsum.photos",
+            subtext: "Horizontal sunset perspective seascape canvas frame anchoring the main right-hand decorative furniture boundary wall layout.",
+            audio: "https://soundhelix.com"
+        }
+    };
+
+    // 2. Map DOM selector elements
     const modal = document.getElementById('mediaModal');
     const closeBtn = document.getElementById('closeModal');
     const audioPlayer = document.getElementById('modalAudio');
-    const modalTitle = document.querySelector('.modal-title');
-    const modalSubtext = document.querySelector('.modal-subtext');
+    const audioSource = document.getElementById('audioSource');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalImage = document.getElementById('modalImage');
+    const modalSubtext = document.getElementById('modalSubtext');
+    const modalNotes = document.getElementById('modalNotes');
 
-    // Launch the official 3D Equirectangular Spherical Viewer
+    // 3. Initialize the 3D VR Engine Viewport Panel
     const viewer = window.pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": "livingroom.jpg", 
         "autoLoad": true,
         "hfov": 110,
-        "pitch": -0.8,   // Camera starts facing the TV monitor screen
+        "pitch": -0.8,   // View port lands directly facing the TV setup frame panel
         "yaw": -0.2,    
         "hotSpots": [
-            {
-                "pitch": -5.2,   // Pinned squarely on the TV Monitor screen
-                "yaw": -4.8,     
-                "cssClass": "custom-hotspot",
-                "clickHandlerFunc": function() {
-                    openModalData("TV Center Display", "This is the television interface module display area. Playing target asset track.");
-                }
-            },
-            {
-                "pitch": 18.5,   // Pinned on the high gallery photo frame on the far left wall
-                "yaw": -68.4,     
-                "cssClass": "custom-hotspot",
-                "clickHandlerFunc": function() {
-                    openModalData("Forest Pathway Art", "This hotspot controls the custom forest photography gallery frame accent piece hanging on the accent wall.");
-                }
-            },
-            {
-                "pitch": -12.1,  // Pinned on the low gallery photo frame on the left wall
-                "yaw": -67.9,     
-                "cssClass": "custom-hotspot",
-                "clickHandlerFunc": function() {
-                    openModalData("Beach Boardwalk Art", "This hotspot controls the beach boardwalk photography layout frame accent piece hanging on the lower accent wall.");
-                }
-            },
-            {
-                "pitch": -2.4,   // Pinned on the green leaf frame near the wall corner seam
-                "yaw": -32.8,     
-                "cssClass": "custom-hotspot",
-                "clickHandlerFunc": function() {
-                    openModalData("Monstera Leaf Art", "This hotspot controls the green Monstera canvas print hanging right next to the primary corner room divider seam.");
-                }
-            },
-            {
-                "pitch": 8.1,    // Pinned on the sunset gallery picture frame on the right-hand wall
-                "yaw": 42.6,     
-                "cssClass": "custom-hotspot",
-                "clickHandlerFunc": function() {
-                    openModalData("Ocean Sunset Art", "This hotspot controls the horizontal ocean sunset print framed directly on the right-hand layout accent wall.");
-                }
-            }
+            { "pitch": -5.2, "yaw": -4.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("tv-center") },
+            { "pitch": 18.5, "yaw": -68.4, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-forest") },
+            { "pitch": -12.1, "yaw": -67.9, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-beach") },
+            { "pitch": -2.4, "yaw": -32.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-leaf") },
+            { "pitch": 8.1, "yaw": 42.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-sunset") }
         ]
     });
 
-    // Helper function to update the modal data depending on which frame is clicked
-    function openModalData(titleText, descriptiveText) {
-        if(modalTitle) modalTitle.textContent = titleText;
-        if(modalSubtext) modalSubtext.textContent = descriptiveText;
-        if(modal) modal.classList.add('active');
+    // 4. Core Dynamic Data Switcher Mechanism
+    function openSpecificModal(frameId) {
+        console.log("[APP] Querying configuration profile data indexes for ID: " + frameId);
+        const data = frameContentRegistry[frameId];
+        
+        if (!data) return;
+
+        // Instantly alter content inside the popup modal elements
+        modalTitle.textContent = data.title;
+        modalSubtext.textContent = data.subtext;
+        
+        if (data.image) {
+            modalImage.src = data.image;
+            modalImage.style.display = "block";
+        } else {
+            modalImage.style.display = "none";
+        }
+
+        // Dynamically reload the audio element track pathway
+        audioPlayer.pause();
+        audioSource.src = data.audio;
+        audioPlayer.load(); // Forces HTML5 audio engine to clear old memory paths
+
+        // Clear notes field out or apply individual data tracking values if needed
+        modalNotes.value = ""; 
+
+        // Launch modal window
+        if (modal) modal.classList.add('active');
     }
 
-    // Handle closing operations safely
-    closeBtn.addEventListener('click', function() {
-        modal.classList.remove('active');
-        audioPlayer.pause();
-    });
-
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.classList.remove('active');
-            audioPlayer.pause();
-        }
-    });
+    // Close button modal layout sequences
+    closeBtn.addEventListener('click', function() { modal.classList.remove('active'); audioPlayer.pause(); });
+    modal.addEventListener('click', function(e) { if (e.target === modal) { modal.classList.remove('active'); audioPlayer.pause(); } });
 }

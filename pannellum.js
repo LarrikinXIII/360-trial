@@ -235,12 +235,32 @@ window.pannellum = (function() {
             canvas.width = canvas.clientWidth * dpr;
             canvas.height = canvas.clientHeight * dpr;
             drawScene();
-        });
-        
+
+                    // --- 5. SMARTPHONE GYROSCOPE MOTION DEVICE ORIENTATION CONTROLS ---
+        window.addEventListener("deviceorientation", function(e) {
+            // Check if device orientation telemetry matrix variables exist
+            if (e.alpha !== null && e.beta !== null && e.gamma !== null) {
+                
+                // Convert gyroscope degree positions into our 3D script radians angles
+                // beta tracks vertical forward tilt, gamma tracks horizontal screen roll rotation
+                var tiltY = (e.beta - 70) * 0.015; // Offset slightly for comfortable chest-level viewing
+                var rollX = e.gamma * 0.015;
+
+                // Update rendering matrices seamlessly
+                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, tiltY));
+                yaw = -rollX; 
+
+                drawScene(); // Instantly update view screen graphics layers
+            }
+               }, true);
+
         return { render: drawScene };
-    };
+    }; // This brace must sit right here to close the lib.viewer function properly
 
     return lib;
+})();
+
+window.dispatchEvent(new Event('pannellumLibraryReady'));
 })();
 
 window.dispatchEvent(new Event('pannellumLibraryReady'));

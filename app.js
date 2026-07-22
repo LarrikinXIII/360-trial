@@ -67,6 +67,19 @@ function buildVirtualTourViewer() {
             { "pitch": -12.1, "yaw": -67.9, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-beach") },
             { "pitch": -2.4, "yaw": -32.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-leaf") },
             { "pitch": 8.1, "yaw": 42.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-sunset") }
+
+            // ==========================================
+            // 🌧️ ADD THIS: 3D Projected Window Material Layer
+            // ==========================================
+            {
+                "pitch": 4.5,     // Centered vertically on the glass pane area
+                "yaw": 35.2,      // Centered horizontally on the window opening
+                "cssClass": "window-rain-layer", // Targeted CSS name
+                "createTooltipFunc": function(hotSpotDiv) {
+                    // This function runs on boot to inject our rain animation natively into 3D space
+                    hotSpotDiv.style.backgroundImage = "url('leaves.gif')"; // Your rain/leaf animation filename
+                }
+            }
         ]
     });
 

@@ -23,15 +23,16 @@ html, body {
 }
 
 /* Create the fixed Parallax Background Window Layer */
-.parallax-window-view {
-    position: absolute;
-    top: 18%;       /* Aligned to sit directly behind the window frame boundaries */
-    left: 20%;      /* Adjust these metrics depending on mobile layout viewframes */
-    width: 53%;
-    height: 48%;
-    z-index: 5;     /* Drops the asset safely behind your transparent panorama */
-    object-fit: cover;
-    pointer-events: none;
+/* 3D Window Material Texture Layout Mapping */
+.window-rain-layer {
+    width: 320px;          /* Matches width of the window frame in 3D perspective grid */
+    height: 240px;         /* Matches height of the window frame in 3D perspective grid */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.65;         /* Slightly transparent so it blends cleanly over the environment */
+    pointer-events: none;  /* Allows click drags to pass through smoothly */
+    border-radius: 4px;
+    mix-blend-mode: screen; /* Blends dark colors out so rain droplets look super realistic */
 }
 
 /* Ensure the modal text box ignores the page pinch scale */

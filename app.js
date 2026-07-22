@@ -62,7 +62,7 @@ function buildVirtualTourViewer() {
         "pitch": -0.8,
         "yaw": -0.2,    
         "hotSpots": [
-            { "pitch": -5.2, "yaw": -4.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("tv-center") },
+            { "pitch": -5.2, "yaw": 0, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("tv-center") },
             { "pitch": 18.5, "yaw": -68.4, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-forest") },
             { "pitch": -12.1, "yaw": -67.9, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-beach") },
             { "pitch": -2.4, "yaw": -32.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("frame-leaf") },

@@ -179,7 +179,7 @@
             return { render: drawScene };
         };
 
-        return lib;
+        return lib; // This must sit exactly here, inside the window.pannellum wrapper
     })();
 
     window.dispatchEvent(new Event('pannellumLibraryReady'));

@@ -86,16 +86,21 @@ window.pannellum = (function() {
             // ========================================================
             // 🚀 NATIVE AUTOPLAY TICK ENGINE (SLIDES PANORAMA ON LOAD)
             // ========================================================
+         // ========================================================
+            // 🚀 UX-REINFORCED AUTOPLAY TICK ENGINE (PAUSES ON MODALS)
+            // ========================================================
             function autoplayAnimationTick() {
-                // If the user isn't actively dragging the mouse or finger
-                if (!isDragging) {
-                    yaw += 0.0015; // Nudges horizontal camera perspective slightly (approx 60fps velocity)
-                    drawScene();   // Instantly re-renders the 3D WebGL context sphere
+                // UI/UX SAFEGUARD: Query the page to see if an interactive modal is active
+                var isModalActive = document.querySelector('.modal-overlay.active') !== null;
+
+                // Only spin if the user isn't dragging AND no pop-up modal is open
+                if (!isDragging && !isModalActive) {
+                    yaw += 0.0015; 
+                    drawScene();   
                 }
-                requestAnimationFrame(autoplayAnimationTick); // Syncs cleanly with browser rendering frames
+                requestAnimationFrame(autoplayAnimationTick); 
             }
-            requestAnimationFrame(autoplayAnimationTick); // Launches autopilot thread immediately
-        };
+            requestAnimationFrame(autoplayAnimationTick); 
         img.src = config.panorama;
 
         var pitch = config.pitch || 0, yaw = config.yaw || 0;

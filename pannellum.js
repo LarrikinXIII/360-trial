@@ -228,7 +228,7 @@ window.pannellum = (function() {
             drawScene();
         }, { passive: false });
 
-        // --- 4. HIGH-DPI DEVICE RESOLUTION RETINA OVERRIDE MODIFIERS ---
+              // --- 4. HIGH-DPI DEVICE RESOLUTION RETINA OVERRIDE MODIFIERS ---
         window.addEventListener("resize", function() {
             var dpr = window.devicePixelRatio || 1;
             canvas.width = canvas.clientWidth * dpr;
@@ -249,7 +249,16 @@ window.pannellum = (function() {
             }
         }, true);
 
-        return { render: drawScene };
+        // ========================================================
+        // 🚀 EXPOSE NATIVE ROTATION HOOK TO THE HUD BUTTONS
+        // ========================================================
+        return { 
+            render: drawScene,
+            stepYaw: function(amount) {
+                yaw += amount; // Directly updates the 3D horizontal angle vector
+                drawScene();   // Instantly re-renders the scene
+            }
+        };
     }; 
 
     return lib;

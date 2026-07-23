@@ -11,6 +11,27 @@
     <!-- 360 Panorama Viewer Element Layout Window Wrapper -->
     <div id="panorama"></div>
 
+    <div id="hud">
+    <div id="scene-title">🛋️ Luxury Living Room</div>
+    <div id="hint">Drag to look · Scroll to zoom · Click thumbnails to switch scene</div>
+</div>
+<div id="scene-switcher">
+    <div class="scene-thumb active" id="thumb-0" onclick="switchScene(0)">
+        <img id="thumb-img-0" src="back.jpg" alt="Living Room">
+        <div class="scene-label">Living Room</div>
+    </div>
+</div>
+<div id="controls">
+    <button class="ctrl-btn" id="autoplay-btn" onclick="toggleAutoplay()">▶ Auto Rotate</button>
+    <button class="ctrl-btn" onclick="resetView()">⌂ Reset</button>
+    <button class="ctrl-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+</div>
+<div id="fov-slider">
+    <label>ZOOM</label>
+    <input type="range" id="fov" min="30" max="120" value="75" oninput="setFov(this.value)">
+    <label id="fov-val">75°</label>
+</div>
+    
     <!-- Unified Media Pop-up Modal Window Panel Interface -->
     <div class="modal-overlay" id="mediaModal">
         <div class="modal-content">

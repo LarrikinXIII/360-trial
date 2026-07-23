@@ -72,7 +72,7 @@ window.pannellum = (function() {
 
                 var texture = gl.createTexture();
         var img = new Image();
-        img.onload = function() {
+              img.onload = function() {
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
@@ -80,7 +80,21 @@ window.pannellum = (function() {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            drawScene();
+            
+            drawScene(); // Draws initial screen frame
+
+            // ========================================================
+            // 🚀 NATIVE AUTOPLAY TICK ENGINE (SLIDES PANORAMA ON LOAD)
+            // ========================================================
+            function autoplayAnimationTick() {
+                // If the user isn't actively dragging the mouse or finger
+                if (!isDragging) {
+                    yaw += 0.0015; // Nudges horizontal camera perspective slightly (approx 60fps velocity)
+                    drawScene();   // Instantly re-renders the 3D WebGL context sphere
+                }
+                requestAnimationFrame(autoplayAnimationTick); // Syncs cleanly with browser rendering frames
+            }
+            requestAnimationFrame(autoplayAnimationTick); // Launches autopilot thread immediately
         };
         img.src = config.panorama;
 

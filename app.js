@@ -160,36 +160,4 @@ function buildVirtualTourViewer() {
     }
 }
 
-// ========================================================
-  // 🎛️ GLOBAL EXTENSION BRIDGE (LINKS INTERFACE BUTTONS)
-  // ========================================================
-  console.log("[HUD-LINK] Mapping internal Three.js loops to browser window context...");
 
-  // Expose your true, native functions directly to the HTML onclick hooks
-  window.toggleAutoplay = toggleAutoplay;
-  window.resetView = resetView;
-  window.toggleFullscreen = toggleFullscreen;
-  window.setFov = setFov;
-  window.switchScene = switchScene;
-
-  // AUTO-STOP UPGRADE: Forces auto-rotate to turn completely OFF when you drag manually
-  container.addEventListener('mousedown', function() { 
-      if (autoRotate) {
-          autoRotate = false; 
-          const btn = document.getElementById('autoplay-btn');
-          if (btn) {
-              btn.textContent = '▶ Auto Rotate';
-              btn.classList.remove('active');
-          }
-      }
-  });
-  container.addEventListener('touchstart', function() { 
-      if (autoRotate) {
-          autoRotate = false; 
-          const btn = document.getElementById('autoplay-btn');
-          if (btn) {
-              btn.textContent = '▶ Auto Rotate';
-              btn.classList.remove('active');
-          }
-      }
-  });

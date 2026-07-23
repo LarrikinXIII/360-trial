@@ -160,4 +160,104 @@ function buildVirtualTourViewer() {
     }
 }
 
+// ========================================================
+// 🎛️ GLOBAL HUD HANDLERS (LINKED DIRECTLY TO INLINE HTML)
+// ========================================================
+console.log("[HUD-MATRIX] Injecting global dashboard connection hooks...");
+
+let hudAutoplayIntervalTimer = null;
+let isHudAutoplayActive = false;
+
+// 1. Triggered naturally by onclick="toggleAutoplay()"
+window.toggleAutoplay = function() {
+    const autoplayBtnElement = document.getElementById("autoplay-btn");
+    
+    if (!isHudAutoplayActive) {
+        console.log("[HUD] Activating automated canvas rotation engine...");
+        isHudAutoplayActive = true;
+        if (autoplayBtnElement) autoplayBtnElement.innerHTML = "⏸ Stop Rotate";
+        
+        // Continuous smooth event loop simulating gentle drag-nudge movements on the canvas
+        hudAutoplayIntervalTimer = setInterval(function() {
+            const simulatedDragNudgeEvent = new MouseEvent('mousemove', {
+                clientX: (window.innerWidth / 2) - 1, // Moves view fractions to the left
+                clientY: window.innerHeight / 2,
+                bubbles: true
+            });
+            const roomCanvasNode = document.querySelector('#panorama canvas');
+            if (roomCanvasNode) roomCanvasNode.dispatchEvent(simulatedDragNudgeEvent);
+        }, 16); // 16ms refresh frames lock silky 60fps pan velocities
+    } else {
+        window.stopAutoplayEngine();
+    }
+};
+
+window.stopAutoplayEngine = function() {
+    isHudAutoplayActive = false;
+    if (hudAutoplayIntervalTimer) clearInterval(hudAutoplayIntervalTimer);
+    const autoplayBtnElement = document.getElementById("autoplay-btn");
+    if (autoplayBtnElement) autoplayBtnElement.innerHTML = "▶ Auto Rotate";
+};
+
+// Autodetect manual canvas drags to immediately turn off autopilot rotation safely
+window.addEventListener('DOMContentLoaded', function() {
+    const panoramaWrapperElement = document.getElementById('panorama');
+    if (panoramaWrapperElement) {
+        panoramaWrapperElement.addEventListener('mousedown', function(e) {
+            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
+        });
+        panoramaWrapperElement.addEventListener('touchstart', function(e) {
+            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
+        });
+    }
+});
+
+// 2. Triggered naturally by onclick="resetView()"
+window.resetView = function() {
+    console.log("[HUD] Resetting virtual tour camera perspective...");
+    window.stopAutoplayEngine();
+    if (window.location) window.location.reload(); // Quick page refresh re-centers look coordinates beautifully
+};
+
+// 3. Triggered naturally by onclick="toggleFullscreen()"
+window.toggleFullscreen = function() {
+    console.log("[HUD] Requesting browser display viewport size update...");
+    const baseDocumentElementShell = document.documentElement;
+    
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (baseDocumentElementShell.requestFullscreen) {
+            baseDocumentElementShell.requestFullscreen();
+        } else if (baseDocumentElementShell.webkitRequestFullscreen) { /* Safari */
+            baseDocumentElementShell.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+};
+
+// 4. Triggered naturally by oninput="setFov(this.value)"
+window.setFov = function(val) {
+    // Sync the numerical readout label element state instantly
+    const numericLabelDisplayNode = document.getElementById("fov-val");
+    if (numericLabelDisplayNode) numericLabelDisplayNode.textContent = val + "°";
+
+    // Simulate direct mouse-scroll calculations onto the active 3D viewing window
+    const simulatedScrollWheelData = new WheelEvent('wheel', {
+        deltaY: val > 75 ? 120 : -120, // Computes zoom fields relative to default slider center point
+        bubbles: true,
+        cancelable: true
+    });
+    const canvasInteractiveSurface = document.querySelector('#panorama canvas');
+    if (canvasInteractiveSurface) canvasInteractiveSurface.dispatchEvent(simulatedScrollWheelData);
+};
+
+// 5. Scene thumbnail click placeholder handler
+window.switchScene = function(sceneIndex) {
+    console.log("[HUD] Scene transition requested for index slot: " + sceneIndex);
+};
+
 

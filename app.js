@@ -158,13 +158,9 @@ function buildVirtualTourViewer() {
 // ========================================================
 console.log("[HUD-MATRIX] Injecting global dashboard connection hooks...");
 
-let hudAutoplayIntervalTimer = null;
-let isHudAutoplayActive = false;
-
-// 1. Triggered naturally by onclick="toggleAutoplay()"
 // 1. Triggered naturally by onclick="toggleAutoplay()"
 window.toggleAutoplay = function() {
-    // If the Three.js autoRotate variable exists, flip its true/false switch directly
+    // Talk directly to the native Three.js autoRotate variable
     if (typeof autoRotate !== 'undefined') {
         autoRotate = !autoRotate;
         
@@ -172,50 +168,44 @@ window.toggleAutoplay = function() {
         const btn = document.getElementById('autoplay-btn');
         if (btn) {
             btn.innerHTML = autoRotate ? '⏸ Stop Rotate' : '▶ Auto Rotate';
+            btn.classList.toggle('active', autoRotate);
         }
     } else {
         console.error("[HUD ERROR] The Three.js autoRotate variable could not be found in scope.");
     }
 };
 
-// Clean up your old window.stopAutoplayEngine to also use the native variable
+// 2. Clean stop mechanism to turn off autopilot rotation safely on manual mouse drags
 window.stopAutoplayEngine = function() {
     if (typeof autoRotate !== 'undefined') {
         autoRotate = false;
         const btn = document.getElementById('autoplay-btn');
-        if (btn) btn.innerHTML = '▶ Auto Rotate';
+        if (btn) {
+            btn.innerHTML = '▶ Auto Rotate';
+            btn.classList.remove('active');
+        }
     }
 };
 
-
-window.stopAutoplayEngine = function() {
-    isHudAutoplayActive = false;
-    if (hudAutoplayIntervalTimer) clearInterval(hudAutoplayIntervalTimer);
-    const autoplayBtnElement = document.getElementById("autoplay-btn");
-    if (autoplayBtnElement) autoplayBtnElement.innerHTML = "▶ Auto Rotate";
-};
-
-// Autodetect manual clicks to turn off autopilot rotation safely
+// Autodetect manual clicks/touches on the canvas to stop autoplay safely
 window.addEventListener('DOMContentLoaded', function() {
-    const panoramaWrapperElement = document.getElementById('panorama');
-    if (panoramaWrapperElement) {
-        panoramaWrapperElement.addEventListener('mousedown', function(e) {
-            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
-        });
-        panoramaWrapperElement.addEventListener('touchstart', function(e) {
-            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
-        });
-    }
+    // Query the active drawing workspace safely
+    document.body.addEventListener('mousedown', function(e) {
+        if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
+    });
+    document.body.addEventListener('touchstart', function(e) {
+        if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
+    });
 });
 
-// 2. Triggered naturally by onclick="resetView()"
+// 3. Triggered naturally by onclick="resetView()"
 window.resetView = function() {
     console.log("[HUD] Resetting virtual tour camera perspective...");
     window.stopAutoplayEngine();
     if (window.location) window.location.reload(); 
 };
 
-// 3. Triggered naturally by onclick="toggleFullscreen()"
+// 4. Triggered naturally by onclick="toggleFullscreen()"
 window.toggleFullscreen = function() {
     console.log("[HUD] Requesting browser display viewport size update...");
     const baseDocumentElementShell = document.documentElement;
@@ -223,7 +213,7 @@ window.toggleFullscreen = function() {
         if (baseDocumentElementShell.requestFullscreen) {
             baseDocumentElementShell.requestFullscreen();
         } else if (baseDocumentElementShell.webkitRequestFullscreen) {
-            baseDocumentElementShell.webkitRequestFullscreen();
+            baseDocumentElementShell.webkitRequestFullscreen(); // Safari support
         }
     } else {
         if (document.exitFullscreen) {
@@ -232,23 +222,4 @@ window.toggleFullscreen = function() {
             document.webkitExitFullscreen();
         }
     }
-};
-
-// 4. Triggered naturally by oninput="setFov(this.value)"
-window.setFov = function(val) {
-    const numericLabelDisplayNode = document.getElementById("fov-val");
-    if (numericLabelDisplayNode) numericLabelDisplayNode.textContent = val + "°";
-
-    const simulatedScrollWheelData = new WheelEvent('wheel', {
-        deltaY: val > 75 ? 120 : -120, 
-        bubbles: true,
-        cancelable: true
-    });
-    const canvasInteractiveSurface = document.querySelector('#panorama canvas');
-    if (canvasInteractiveSurface) canvasInteractiveSurface.dispatchEvent(simulatedScrollWheelData);
-};
-
-// 5. Scene thumbnail click placeholder handler
-window.switchScene = function(sceneIndex) {
-    console.log("[HUD] Scene transition requested for index slot: " + sceneIndex);
 };

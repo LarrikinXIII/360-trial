@@ -162,27 +162,31 @@ let hudAutoplayIntervalTimer = null;
 let isHudAutoplayActive = false;
 
 // 1. Triggered naturally by onclick="toggleAutoplay()"
+// 1. Triggered naturally by onclick="toggleAutoplay()"
 window.toggleAutoplay = function() {
-    const autoplayBtnElement = document.getElementById("autoplay-btn");
-    
-    if (!isHudAutoplayActive) {
-        console.log("[HUD] Activating automated canvas rotation engine...");
-        isHudAutoplayActive = true;
-        if (autoplayBtnElement) autoplayBtnElement.innerHTML = "⏸ Stop Rotate";
+    // If the Three.js autoRotate variable exists, flip its true/false switch directly
+    if (typeof autoRotate !== 'undefined') {
+        autoRotate = !autoRotate;
         
-        // Use the native 3D engine accessor loop to step the camera view cleanly
-        hudAutoplayIntervalTimer = setInterval(function() {
-            // Checks if your viewer instance is alive and has the step command active
-            if (window.viewer && typeof window.viewer.stepYaw === 'function') {
-                window.viewer.stepYaw(0.003); // Controls the rotation speed (approx 60fps)
-            } else if (typeof viewer !== 'undefined' && viewer && typeof viewer.stepYaw === 'function') {
-                viewer.stepYaw(0.003);
-            }
-        }, 16); 
+        // Update your HTML button text to match the new engine state instantly
+        const btn = document.getElementById('autoplay-btn');
+        if (btn) {
+            btn.innerHTML = autoRotate ? '⏸ Stop Rotate' : '▶ Auto Rotate';
+        }
     } else {
-        window.stopAutoplayEngine();
+        console.error("[HUD ERROR] The Three.js autoRotate variable could not be found in scope.");
     }
 };
+
+// Clean up your old window.stopAutoplayEngine to also use the native variable
+window.stopAutoplayEngine = function() {
+    if (typeof autoRotate !== 'undefined') {
+        autoRotate = false;
+        const btn = document.getElementById('autoplay-btn');
+        if (btn) btn.innerHTML = '▶ Auto Rotate';
+    }
+};
+
 
 window.stopAutoplayEngine = function() {
     isHudAutoplayActive = false;

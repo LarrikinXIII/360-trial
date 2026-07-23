@@ -1,5 +1,6 @@
 /**
- * Standalone Offline 3D Cubemap & Spherical Engine (Unified Complete Edition)
+ * Pannellum 2.5.6 Core 3D Engine Architecture
+ * Batch 1 of 3: Graphics Pipeline Math & Environment Init
  */
 window.pannellum = (function() {
     "use strict";
@@ -66,16 +67,12 @@ window.pannellum = (function() {
 
         var vbo = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vbo); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         var posAttr = gl.getAttribLocation(prog, "a_pos"); gl.enableVertexAttribArray(posAttr); gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, 0, 0);
+
         var ibo = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
-        var texture = gl.createTexture();
+                var texture = gl.createTexture();
         var img = new Image();
-        
-        var isDragging = false, lastX, lastY;
-        var pitch = config.pitch || 0, yaw = config.yaw || 0;
-        var mvpLoc = gl.getUniformLocation(prog, "u_mvp");
-
-        img.onload = function() {
+              img.onload = function() {
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
@@ -83,9 +80,31 @@ window.pannellum = (function() {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            drawScene();
-        };
+            
+            drawScene(); // Draws initial screen frame
+
+            // ========================================================
+            // 🚀 NATIVE AUTOPLAY TICK ENGINE (SLIDES PANORAMA ON LOAD)
+            // ========================================================
+         // ========================================================
+            // 🚀 UX-REINFORCED AUTOPLAY TICK ENGINE (PAUSES ON MODALS)
+            // ========================================================
+            function autoplayAnimationTick() {
+                // UI/UX SAFEGUARD: Query the page to see if an interactive modal is active
+                var isModalActive = document.querySelector('.modal-overlay.active') !== null;
+
+                // Only spin if the user isn't dragging AND no pop-up modal is open
+                if (!isDragging && !isModalActive) {
+                    yaw += 0.0015; 
+                    drawScene();   
+                }
+                requestAnimationFrame(autoplayAnimationTick); 
+            }
+            requestAnimationFrame(autoplayAnimationTick); 
         img.src = config.panorama;
+
+        var pitch = config.pitch || 0, yaw = config.yaw || 0;
+        var mvpLoc = gl.getUniformLocation(prog, "u_mvp");
 
         function drawScene() {
             var w = canvas.clientWidth, h = canvas.clientHeight;
@@ -121,20 +140,25 @@ window.pannellum = (function() {
             });
         }
 
-        function updateHotspots() {
+                function updateHotspots() {
             var cx = canvas.width / 2, cy = canvas.height / 2;
             config.hotSpots.forEach(function(sp) {
                 if (!sp._node) return;
+                
                 var hLon = (sp.yaw || 0) * Math.PI / 180;
                 var hLat = (sp.pitch || 0) * Math.PI / 180;
+                
                 var x = Math.cos(hLat) * Math.sin(hLon - yaw);
                 var y = Math.sin(hLat) * Math.cos(pitch) - Math.cos(hLat) * Math.sin(pitch) * Math.cos(hLon - yaw);
                 var z = Math.sin(hLat) * Math.sin(pitch) + Math.cos(hLat) * Math.cos(pitch) * Math.cos(hLon - yaw);
+                
                 if (z > 0) {
                     var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
                     var aspect = canvas.width / canvas.height;
+                    
                     var screenX = cx + (x * f / aspect / z) * cx;
                     var screenY = cy + (y * f / z) * cy; 
+                    
                     sp._node.style.display = "block";
                     sp._node.style.left = screenX + "px";
                     sp._node.style.top = screenY + "px";
@@ -145,8 +169,13 @@ window.pannellum = (function() {
             });
         }
 
-        // --- CONTROLS ENGINE ---
-        canvas.addEventListener("mousedown", function(e) { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+       // Universal Touch & High-DPI Desktop/Mobile Track Engine
+        var isDragging = false, lastX, lastY;
+        
+        // --- 1. DESKTOP MOUSE LISTENERS ---
+        canvas.addEventListener("mousedown", function(e) { 
+            isDragging = true; lastX = e.clientX; lastY = e.clientY; 
+        });
         window.addEventListener("mouseup", function() { isDragging = false; });
         window.addEventListener("mousemove", function(e) {
             if (!isDragging) return;
@@ -156,26 +185,102 @@ window.pannellum = (function() {
             drawScene();
         });
 
-        // --- MOBILE TOUCH CONTROLS ---
+        // --- 2. MOBILE PHONE TOUCH LISTENERS (PANNING & PINCH-TO-ZOOM) ---
         var initialPinchDistance = null;
+
         canvas.addEventListener("touchstart", function(e) {
             if (e.touches.length === 1) {
-                isDragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+                isDragging = true; 
+                lastX = e.touches[0].clientX; 
+                lastY = e.touches[0].clientY;
                 initialPinchDistance = null;
             } else if (e.touches.length === 2) {
-                isDragging = false;
+                isDragging = false; // Stop dragging when pitching/zooming
+                // Measures space between finger 0 and finger 1
                 var dx = e.touches[0].clientX - e.touches[1].clientX;
                 var dy = e.touches[0].clientY - e.touches[1].clientY;
                 initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
             }
         }, { passive: true });
 
-        window.addEventListener("touchend", function() { isDragging = false; initialPinchDistance = null; });
+        window.addEventListener("touchend", function() { 
+            isDragging = false; 
+            initialPinchDistance = null; 
+        });
+        
         canvas.addEventListener("touchmove", function(e) {
+            // One finger controls looking around
             if (e.touches.length === 1 && isDragging) {
-                var deltaX = e.touches[0].clientX - lastX; var deltaY = e.touches[0].clientY - lastY;
-                lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
-                yaw -= deltaX * 0.005; pitch += deltaY * 0.005;
+                var deltaX = e.touches[0].clientX - lastX;
+                var deltaY = e.touches[0].clientY - lastY;
+                
+                lastX = e.touches[0].clientX; 
+                lastY = e.touches[0].clientY;
+
+                yaw -= deltaX * 0.005; 
+                pitch += deltaY * 0.005; 
+                
                 pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
                 drawScene();
-} else if (e.touches.length === 2) {var dx = e.touches[0].clientX - e.touches[1].clientX;var dy = e.touches[0].clientY - e.touches[1].clientY;var currentPinchDistance = Math.sqrt(dx * dx + dy * dy);if (initialPinchDistance) {var pinchChange = currentPinchDistance - initialPinchDistance;config.hfov -= pinchChange * 0.15;config.hfov = Math.max(50, Math.min(130, config.hfov));drawScene();}initialPinchDistance = currentPinchDistance;}}, { passive: true });// --- SCROLL WHEEL ZOOM ---canvas.addEventListener("wheel", function(e) {e.preventDefault();if (e.deltaY > 0) { config.hfov += 4; } else { config.hfov -= 4; }config.hfov = Math.max(50, Math.min(130, config.hfov));drawScene();}, { passive: false });// --- HIGH-DPI RESIZE OVERRIDES ---window.addEventListener("resize", function() {var dpr = window.devicePixelRatio || 1;canvas.width = canvas.clientWidth * dpr;canvas.height = canvas.clientHeight * dpr;drawScene();});// ========================================================// 🚀 THE MASTER COHESIVE AUTOPLAY LOOP (CONTROL LINKED)// ========================================================function autoplayAnimationTick() {var isModalActive = document.getElementById('mediaModal') && document.getElementById('mediaModal').classList.contains('active');// Shared Scope: stops instantly on text popup or manual drag/swipe gestures!if (!isDragging && !isModalActive) {yaw += 0.0012;drawScene();}requestAnimationFrame(autoplayAnimationTick);}requestAnimationFrame(autoplayAnimationTick);return { render: drawScene };};return lib;})();window.dispatchEvent(new Event('pannellumLibraryReady'));
+            } 
+            // Two fingers control pinching to zoom
+            else if (e.touches.length === 2) {
+                var dx = e.touches[0].clientX - e.touches[1].clientX;
+                var dy = e.touches[0].clientY - e.touches[1].clientY;
+                var currentPinchDistance = Math.sqrt(dx * dx + dy * dy);
+
+                if (initialPinchDistance) {
+                    var pinchChange = currentPinchDistance - initialPinchDistance;
+                    config.hfov -= pinchChange * 0.15; // Adjusts 3D Field of View
+                    config.hfov = Math.max(50, Math.min(130, config.hfov));
+                    drawScene();
+                }
+                initialPinchDistance = currentPinchDistance;
+            }
+        }, { passive: true });
+
+        // --- 3. UNIVERSAL SCROLL & ZOOM CONTROLS ---
+        canvas.addEventListener("wheel", function(e) {
+            e.preventDefault();
+            if (e.deltaY > 0) { config.hfov += 4; } else { config.hfov -= 4; }
+            config.hfov = Math.max(50, Math.min(130, config.hfov));
+            drawScene();
+        }, { passive: false });
+
+              // --- 4. HIGH-DPI DEVICE RESOLUTION RETINA OVERRIDE MODIFIERS ---
+        window.addEventListener("resize", function() {
+            var dpr = window.devicePixelRatio || 1;
+            canvas.width = canvas.clientWidth * dpr;
+            canvas.height = canvas.clientHeight * dpr;
+            drawScene();
+        });
+
+        // --- 5. SMARTPHONE GYROSCOPE MOTION DEVICE ORIENTATION CONTROLS ---
+        window.addEventListener("deviceorientation", function(e) {
+            if (e.alpha !== null && e.beta !== null && e.gamma !== null) {
+                var tiltY = (e.beta - 70) * 0.015; 
+                var rollX = e.gamma * 0.015;
+
+                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, tiltY));
+                yaw = -rollX; 
+
+                drawScene(); 
+            }
+        }, true);
+
+        // ========================================================
+        // 🚀 EXPOSE NATIVE ROTATION HOOK TO THE HUD BUTTONS
+        // ========================================================
+        return { 
+            render: drawScene,
+            stepYaw: function(amount) {
+                yaw += amount; // Directly updates the 3D horizontal angle vector
+                drawScene();   // Instantly re-renders the scene
+            }
+        };
+    }; 
+
+    return lib;
+})();
+
+window.dispatchEvent(new Event('pannellumLibraryReady'));

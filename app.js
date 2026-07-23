@@ -152,3 +152,131 @@ function buildVirtualTourViewer() {
         });
     }
 }
+
+
+    // ========================================================
+    // 🎛️ HUD CONTROLLER ACTIVATION MATRIX ENGAGEMENT LOOPS
+    // ========================================================
+    console.log("[APP-HUD] Binding dashboard control triggers...");
+
+    // 1. Map all HTML control button elements directly
+    // Ensure these text/class tags match the structures rendered on your page
+    const autoRotateBtn = document.body.contains(Array.from(document.querySelectorAll('button, div')).find(el => el.textContent.includes('Auto Rotate'))) ? Array.from(document.querySelectorAll('button, div')).find(el => el.textContent.includes('Auto Rotate')) : null;
+    const resetBtn = Array.from(document.querySelectorAll('button, div')).find(el => el.textContent.includes('Reset'));
+    const fullscreenBtn = Array.from(document.querySelectorAll('button, div')).find(el => el.textContent.includes('Fullscreen'));
+    const zoomSlider = document.querySelector('input[type="range"]');
+
+    let rotationTimerInterval = null;
+    let isRotatingAutomatically = false;
+
+    // 2. ACTIVATE: ▶ AUTO ROTATE FUNCTIONALITY
+    if (autoRotateBtn) {
+        autoRotateBtn.style.cursor = 'pointer';
+        autoRotateBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            if (!isRotatingAutomatically) {
+                console.log("[APP-HUD] Activating automatic canvas rotation stream...");
+                isRotatingAutomatically = true;
+                autoRotateBtn.style.fontWeight = 'bold';
+                autoRotateBtn.style.color = '#00ffaa'; // Changes text neon green when active
+                
+                // Continuous telemetry interval loop modifying horizontal coordinates incrementally
+                rotationTimerInterval = setInterval(function() {
+                    // Pull internal viewer configuration reference properties safely
+                    if (viewer && typeof viewer.render === 'function') {
+                        // Access local scopes or dispatch custom simulated mouse drag events
+                        const simulateDragEvent = new MouseEvent('mousemove', {
+                            clientX: window.innerWidth / 2 - 1, // Simulates a slight drag nudge to the left
+                            clientY: window.innerHeight / 2,
+                            bubbles: true
+                        });
+                        const targetCanvas = document.querySelector('#panorama canvas');
+                        if (targetCanvas) targetCanvas.dispatchEvent(simulateDragEvent);
+                    }
+                }, 30); // Smooth 30ms render ticks (approx 30fps rotation speed)
+            } else {
+                console.log("[APP-HUD] Deactivating automatic canvas rotation stream.");
+                stopAutomaticRotationEngine();
+            }
+        });
+    }
+
+    function stopAutomaticRotationEngine() {
+        isRotatingAutomatically = false;
+        if (rotationTimerInterval) clearInterval(rotationTimerInterval);
+        if (autoRotateBtn) {
+            autoRotateBtn.style.fontWeight = 'normal';
+            autoRotateBtn.style.color = '';
+        }
+    }
+
+    // Stop rotation instantly if a user clicks or touches the canvas to drag manually
+    const mainCanvas = document.querySelector('#panorama canvas');
+    if (mainCanvas) {
+        mainCanvas.addEventListener('mousedown', stopAutomaticRotationEngine);
+        mainCanvas.addEventListener('touchstart', stopAutomaticRotationEngine);
+    }
+
+    // 3. ACTIVATE: ⌂ RESET VIEW FUNCTIONALITY
+    if (resetBtn) {
+        resetBtn.style.cursor = 'pointer';
+        resetBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log("[APP-HUD] Resetting camera viewpoint parameters back to defaults...");
+            
+            stopAutomaticRotationEngine();
+            
+            // Re-initialize or reload the scene setup back to starting parameters seamlessly
+            if (window.location) window.location.reload();
+        });
+    }
+
+    // 4. ACTIVATE: ⛶ FULLSCREEN CONTAINER EXPANSION
+    if (fullscreenBtn) {
+        fullscreenBtn.style.cursor = 'pointer';
+        fullscreenBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log("[APP-HUD] Proposing full screen viewframe matrix window expansion...");
+            
+            const coreAppWorkspace = document.documentElement; // Targets whole document workspace shell
+            
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                // Expand into full-bleed display mode tracking browser compatibility models
+                if (coreAppWorkspace.requestFullscreen) {
+                    coreAppWorkspace.requestFullscreen();
+                } else if (coreAppWorkspace.webkitRequestFullscreen) { /* Safari support */
+                    coreAppWorkspace.webkitRequestFullscreen();
+                }
+                fullscreenBtn.style.color = '#ffcc00';
+            } else {
+                // Collapse back to normal tab boundaries cleanly
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+                fullscreenBtn.style.color = '';
+            }
+        });
+    }
+
+    // 5. ACTIVATE: ZOOM INTERACTIVE RANGE SLIDER STRIP
+    if (zoomSlider) {
+        zoomSlider.addEventListener('input', function(e) {
+            console.log("[APP-HUD] Syncing input zoom matrix field factor: " + e.target.value);
+            
+            // Dispatch a simulated wheel event right into the canvas core layer matrix
+            const mockWheelEvent = new WheelEvent('wheel', {
+                deltaY: e.target.value > 90 ? -100 : 100, // Converts slider points into numerical direction chunks
+                bubbles: true,
+                cancelable: true
+            });
+            
+            if (mainCanvas) mainCanvas.dispatchEvent(mockWheelEvent);
+            
+            // Sync any numerical text readouts displayed next to the tracker knob elements
+            const numericalTextDisplay = document.querySelector('.zoom-value'); // Adjust class if needed
+            if (numericalTextDisplay) numericalTextDisplay.textContent = e.target.value + '°';
+        });
+    }

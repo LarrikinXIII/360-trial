@@ -153,9 +153,8 @@ function buildVirtualTourViewer() {
     }
 }
 
-
 // ========================================================
-// 🎛️ GLOBAL HUD HANDLERS (LINKED DIRECTLY TO INLINE HTML)
+// 🎛️ NATIVE-DRIVEN HUD HANDLERS (LINKED TO INLINE HTML)
 // ========================================================
 console.log("[HUD-MATRIX] Injecting global dashboard connection hooks...");
 
@@ -171,16 +170,15 @@ window.toggleAutoplay = function() {
         isHudAutoplayActive = true;
         if (autoplayBtnElement) autoplayBtnElement.innerHTML = "⏸ Stop Rotate";
         
-        // Continuous smooth event loop simulating gentle drag-nudge movements on the canvas
+        // Use the native 3D engine accessor loop to step the camera view cleanly
         hudAutoplayIntervalTimer = setInterval(function() {
-            const simulatedDragNudgeEvent = new MouseEvent('mousemove', {
-                clientX: (window.innerWidth / 2) - 1, // Moves view fractions to the left
-                clientY: window.innerHeight / 2,
-                bubbles: true
-            });
-            const roomCanvasNode = document.querySelector('#panorama canvas');
-            if (roomCanvasNode) roomCanvasNode.dispatchEvent(simulatedDragNudgeEvent);
-        }, 16); // 16ms refresh frames lock silky 60fps pan velocities
+            // Checks if your viewer instance is alive and has the step command active
+            if (window.viewer && typeof window.viewer.stepYaw === 'function') {
+                window.viewer.stepYaw(0.003); // Controls the rotation speed (approx 60fps)
+            } else if (typeof viewer !== 'undefined' && viewer && typeof viewer.stepYaw === 'function') {
+                viewer.stepYaw(0.003);
+            }
+        }, 16); 
     } else {
         window.stopAutoplayEngine();
     }
@@ -193,7 +191,7 @@ window.stopAutoplayEngine = function() {
     if (autoplayBtnElement) autoplayBtnElement.innerHTML = "▶ Auto Rotate";
 };
 
-// Autodetect manual canvas drags to immediately turn off autopilot rotation safely
+// Autodetect manual clicks to turn off autopilot rotation safely
 window.addEventListener('DOMContentLoaded', function() {
     const panoramaWrapperElement = document.getElementById('panorama');
     if (panoramaWrapperElement) {
@@ -210,18 +208,17 @@ window.addEventListener('DOMContentLoaded', function() {
 window.resetView = function() {
     console.log("[HUD] Resetting virtual tour camera perspective...");
     window.stopAutoplayEngine();
-    if (window.location) window.location.reload(); // Quick page refresh re-centers look coordinates beautifully
+    if (window.location) window.location.reload(); 
 };
 
 // 3. Triggered naturally by onclick="toggleFullscreen()"
 window.toggleFullscreen = function() {
     console.log("[HUD] Requesting browser display viewport size update...");
     const baseDocumentElementShell = document.documentElement;
-    
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         if (baseDocumentElementShell.requestFullscreen) {
             baseDocumentElementShell.requestFullscreen();
-        } else if (baseDocumentElementShell.webkitRequestFullscreen) { /* Safari */
+        } else if (baseDocumentElementShell.webkitRequestFullscreen) {
             baseDocumentElementShell.webkitRequestFullscreen();
         }
     } else {
@@ -235,13 +232,11 @@ window.toggleFullscreen = function() {
 
 // 4. Triggered naturally by oninput="setFov(this.value)"
 window.setFov = function(val) {
-    // Sync the numerical readout label element state instantly
     const numericLabelDisplayNode = document.getElementById("fov-val");
     if (numericLabelDisplayNode) numericLabelDisplayNode.textContent = val + "°";
 
-    // Simulate direct mouse-scroll calculations onto the active 3D viewing window
     const simulatedScrollWheelData = new WheelEvent('wheel', {
-        deltaY: val > 75 ? 120 : -120, // Computes zoom fields relative to default slider center point
+        deltaY: val > 75 ? 120 : -120, 
         bubbles: true,
         cancelable: true
     });

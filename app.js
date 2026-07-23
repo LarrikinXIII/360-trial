@@ -223,3 +223,107 @@ window.toggleFullscreen = function() {
         }
     }
 };
+
+ const container = document.getElementById('canvas-container');
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const geometry = new THREE.SphereGeometry(500, 64, 40);
+  geometry.scale(-1, 1, 1);
+  const material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 1 });
+  scene.add(new THREE.Mesh(geometry, material));
+
+  const textures = [];
+  const loader = new THREE.TextureLoader();
+  let viewerStarted = false;
+
+  function startViewer() {
+    if (viewerStarted) return;
+    viewerStarted = true;
+    material.map = textures[0]; material.needsUpdate = true;
+    const el = document.getElementById('loading');
+    el.style.opacity = '0'; setTimeout(() => el.style.display = 'none', 400);
+    animate();
+    // Load remaining scenes lazily
+    loadNextScene(1);
+  }
+
+  function loadNextScene(i) {
+    if (i >= SCENES.length) return;
+    const dataUrl = 'data:image/jpeg;base64,' + SCENES[i].b64;
+    // Set thumbnail lazily
+    const thumbImg = document.getElementById('thumb-img-' + i);
+    if (thumbImg) thumbImg.src = dataUrl;
+    loader.load(dataUrl, tex => {
+      tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+      textures[i] = tex;
+      // Load next one after this completes
+      loadNextScene(i + 1);
+    });
+  }
+
+  // Load scene 0 first, start viewer immediately when ready
+  document.getElementById('loading-text').textContent = 'Loading panorama…';
+  const dataUrl0 = 'data:image/jpeg;base64,' + SCENES[0].b64;
+  document.getElementById('thumb-img-0').src = dataUrl0;
+  loader.load(dataUrl0, tex => {
+    tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+    textures[0] = tex;
+    document.getElementById('loading-bar').style.width = '100%';
+    startViewer();
+  }, undefined, (err) => {
+    console.error('Failed to load scene 0', err);
+  });
+
+  let lon=SCENES[0].initialLon,lat=0,targetLon=SCENES[0].initialLon,targetLat=0,fov=75,autoRotate=false,currentScene=0,switching=false;
+  let isDown=false,pSX=0,pSY=0,lonS=0,latS=0;
+  function pDown(e){isDown=true;pSX=e.clientX??e.touches[0].clientX;pSY=e.clientY??e.touches[0].clientY;lonS=targetLon;latS=targetLat;}
+  function pMove(e){if(!isDown)return;const cx=e.clientX??e.touches[0].clientX,cy=e.clientY??e.touches[0].clientY;targetLon=lonS-(cx-pSX)*0.28;targetLat=Math.max(-85,Math.min(85,latS+(cy-pSY)*0.28));}
+  function pUp(){isDown=false;}
+  container.addEventListener('mousedown',pDown);container.addEventListener('mousemove',pMove);
+  container.addEventListener('mouseup',pUp);container.addEventListener('mouseleave',pUp);
+  container.addEventListener('touchstart',pDown,{passive:true});container.addEventListener('touchmove',pMove,{passive:true});container.addEventListener('touchend',pUp);
+  container.addEventListener('dblclick',resetView);
+  container.addEventListener('wheel',e=>{fov=Math.max(30,Math.min(120,fov+e.deltaY*0.05));camera.fov=fov;camera.updateProjectionMatrix();document.getElementById('fov').value=fov;document.getElementById('fov-val').textContent=Math.round(fov)+'°';});
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if(autoRotate&&!isDown)targetLon+=0.12;
+    lon+=(targetLon-lon)*0.08;lat+=(targetLat-lat)*0.08;
+    const phi=THREE.MathUtils.degToRad(90-lat),theta=THREE.MathUtils.degToRad(lon);
+    camera.lookAt(500*Math.sin(phi)*Math.cos(theta),500*Math.cos(phi),500*Math.sin(phi)*Math.sin(theta));
+    renderer.render(scene,camera);
+  }
+  window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);});
+
+  function switchScene(idx){
+    if(idx===currentScene||switching)return;
+    if(!textures[idx]){
+      // Not loaded yet — load on demand then switch
+      document.getElementById('scene-title').textContent='Loading…';
+      const dataUrl = 'data:image/jpeg;base64,' + SCENES[idx].b64;
+      loader.load(dataUrl, tex => {
+        tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+        textures[idx] = tex;
+        doSwitch(idx);
+      });
+      return;
+    }
+    doSwitch(idx);
+  }
+  function doSwitch(idx){
+    switching=true;
+    const overlay=document.getElementById('fade-overlay');overlay.classList.add('fading');
+    setTimeout(()=>{currentScene=idx;material.map=textures[idx];material.needsUpdate=true;
+      document.getElementById('scene-title').textContent=SCENES[idx].title;
+      document.querySelectorAll('.scene-thumb').forEach((el,i)=>el.classList.toggle('active',i===idx));
+      targetLon=SCENES[idx].initialLon;targetLat=0;overlay.classList.remove('fading');switching=false;},350);
+  }
+  function toggleAutoplay(){autoRotate=!autoRotate;const btn=document.getElementById('autoplay-btn');btn.textContent=autoRotate?'⏸ Pause':'▶ Auto Rotate';btn.classList.toggle('active',autoRotate);}
+  function resetView(){targetLon=SCENES[currentScene].initialLon;targetLat=0;fov=75;camera.fov=75;camera.updateProjectionMatrix();document.getElementById('fov').value=75;document.getElementById('fov-val').textContent='75°';}
+  function setFov(v){fov=+v;camera.fov=fov;camera.updateProjectionMatrix();document.getElementById('fov-val').textContent=Math.round(fov)+'°';}
+  function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}

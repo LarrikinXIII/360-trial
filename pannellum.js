@@ -73,13 +73,7 @@ window.pannellum = (function() {
                 var texture = gl.createTexture();
         var img = new Image();
               img.onload = function() {
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          
             
             drawScene(); // Draws initial screen frame
 
@@ -242,7 +236,7 @@ window.pannellum = (function() {
             drawScene();
         }, { passive: false });
 
-              // --- 4. HIGH-DPI DEVICE RESOLUTION RETINA OVERRIDE MODIFIERS ---
+             // --- 4. HIGH-DPI DEVICE RESOLUTION RETINA OVERRIDE MODIFIERS ---
         window.addEventListener("resize", function() {
             var dpr = window.devicePixelRatio || 1;
             canvas.width = canvas.clientWidth * dpr;
@@ -250,29 +244,26 @@ window.pannellum = (function() {
             drawScene();
         });
 
-        // --- 5. SMARTPHONE GYROSCOPE MOTION DEVICE ORIENTATION CONTROLS ---
-        window.addEventListener("deviceorientation", function(e) {
-            if (e.alpha !== null && e.beta !== null && e.gamma !== null) {
-                var tiltY = (e.beta - 70) * 0.015; 
-                var rollX = e.gamma * 0.015;
-
-                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, tiltY));
-                yaw = -rollX; 
-
-                drawScene(); 
-            }
-        }, true);
-
         // ========================================================
-        // 🚀 EXPOSE NATIVE ROTATION HOOK TO THE HUD BUTTONS
+        // 🚀 THE FIXED AUTOPLAY LOOP (PAUSES ON MOUSE DRAG & TOUCH)
         // ========================================================
-        return { 
-            render: drawScene,
-            stepYaw: function(amount) {
-                yaw += amount; // Directly updates the 3D horizontal angle vector
-                drawScene();   // Instantly re-renders the scene
+        function autoplayAnimationTick() {
+            // Check if any modal popup overlay is currently active on the screen
+            var isModalActive = document.getElementById('mediaModal') && document.getElementById('mediaModal').classList.contains('active');
+
+            // Now it can read "isDragging" perfectly! 
+            // It stops instantly if you click down, swipe on mobile, or open a modal.
+            if (!isDragging && !isModalActive) {
+                yaw += 0.0015; // Continuous smooth rotation nudge velocity
+                drawScene();   // Triggers the WebGL canvas redraw matrix
             }
-        };
+            requestAnimationFrame(autoplayAnimationTick);
+        }
+        
+        // Launch the loop automatically on page load
+        requestAnimationFrame(autoplayAnimationTick);
+
+        return { render: drawScene };
     }; 
 
     return lib;

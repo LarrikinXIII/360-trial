@@ -54,14 +54,21 @@ function buildVirtualTourViewer() {
     }
 
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
-    const viewer = window.pannellum.viewer('panorama', {
-        "type": "equirectangular",
-        "panorama": "beach.jpeg", 
-        "autoLoad": true,
-        "hfov": 100,
-        "pitch": 0,
-        "yaw": 190,    
-        "hotSpots": [
+  const viewer = window.pannellum.viewer('panorama', {
+    type: "equirectangular",
+    panorama: "beach.jpeg",
+
+    autoLoad: true,
+
+    hfov: 100,
+    pitch: 0,
+    yaw: 0,
+
+    autoRotate: -2,          // negative = clockwise, positive = counter-clockwise
+    autoRotateInactivityDelay: 0,
+    autoRotateStopDelay: 0,
+
+    hotSpots: [
             { "pitch": -2.4, "yaw": 0, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("tv-center") },
             { "pitch": -20, "yaw": -107.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L1") },
             { "pitch": -27.2, "yaw": -95.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L2") },

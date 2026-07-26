@@ -25,38 +25,58 @@ function buildVirtualTourViewer() {
     const gyroBtn = document.getElementById('gyro-btn');
     let panoramaPrevGyro = false;
 
-    // Start background music loop in muted state
+   // FORCED AUTOPLAY ON PAGE LOAD (Muted to bypass browser security)
+if (globalAudio) {
+    globalAudio.muted = true;               /* Essential: Browsers require this to allow autoplay */
+    globalAudio.play()
+        .then(() => {
+            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔇";
+            console.log("Audio track initialized and playing silently on page load.");
+        })
+        .catch((err) => {
+            console.log("Autoplay blocked by browser policy:", err);
+        }); 
+}
+
+// AUTOMATIC UNMUTE: Unmutes the track the absolute instant the user interacts with the canvas
+function unlockGlobalAutoplay() {
     if (globalAudio) {
-        globalAudio.play().catch(() => console.log("Waiting for user tap to activate audio..."));
-    }
-
-    // Unmute background music automatically on first drag or click interaction
-    function unlockGlobalAutoplay() {
-        if (globalAudio && globalAudio.muted) {
-            globalAudio.muted = false;
-            globalAudio.volume = 0.4;
+        globalAudio.muted = false;
+        globalAudio.volume = 0.4;
+        
+        /* If the browser paused it, force play again now that it's unmuted */
+        if (globalAudio.paused) {
             globalAudio.play();
-            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊";
         }
-        window.removeEventListener('click', unlockGlobalAutoplay);
-        window.removeEventListener('touchstart', unlockGlobalAutoplay);
+        
+        if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊";
     }
-    window.addEventListener('click', unlockGlobalAutoplay);
-    window.addEventListener('touchstart', unlockGlobalAutoplay);
+    
+    // Clean up instantly so this code never executes again during the session
+    window.removeEventListener('click', unlockGlobalAutoplay);
+    window.removeEventListener('touchstart', unlockGlobalAutoplay);
+    window.removeEventListener('mousedown', unlockGlobalAutoplay);
+}
 
-    if (globalAudioToggle && globalAudio) {
-        globalAudioToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (globalAudio.muted || globalAudio.paused) {
-                globalAudio.muted = false;
-                globalAudio.play();
-                globalAudioToggle.innerHTML = "🔊";
-            } else {
-                globalAudio.muted = true;
-                globalAudioToggle.innerHTML = "🔇";
-            }
-        });
-    }
+// Listen for any form of interaction (clicking, tapping, or dragging the panorama)
+window.addEventListener('click', unlockGlobalAutoplay);
+window.addEventListener('touchstart', unlockGlobalAutoplay);
+window.addEventListener('mousedown', unlockGlobalAutoplay);
+
+// MANUAL OVERRIDE SWITCH BUTTON
+if (globalAudioToggle && globalAudio) {
+    globalAudioToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (globalAudio.paused || globalAudio.muted) {
+            globalAudio.muted = false;
+            globalAudio.play();
+            globalAudioToggle.innerHTML = "🔊";
+        } else {
+            globalAudio.pause(); 
+            globalAudioToggle.innerHTML = "🔇";
+        }
+    });
+}
 
     // Gyro toggle handling
     let gyroActive = false;

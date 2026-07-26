@@ -170,13 +170,18 @@ function openSpecificModal(frameId) {
     // TARGET AMBIENT ENGINE: Replaced 'globalAudio' with your explicit 'globalAmbientAudio' ID
     const globalAmbientAudio = document.getElementById("globalAmbientAudio");
     
-    // KEEP PLAYING: We maintain a readable background volume (0.3) instead of dropping it to 0.1 or pausing it
-    if (globalAmbientAudio && !globalAmbientAudio.paused) {
-        globalAmbientAudio.volume = 0.3; 
+    // UNMUTE AND PLAY: Unmutes global ambient audio and forces it to play
+    if (globalAmbientAudio) {
+        globalAmbientAudio.muted = false; // Force unmute
+        globalAmbientAudio.volume = 0.3;  // Maintain background volume layer
+        globalAmbientAudio.play().catch(err => {
+            console.log("Global ambient audio play blocked or interrupted:", err);
+        });
     }
 
+    // FIX THE BR TAG: Changed textContent to innerHTML so <br> creates line breaks
     if (modalTitle) modalTitle.textContent = data.title;
-    if (modalSubtext) modalSubtext.textContent = data.subtext;
+    if (modalSubtext) modalSubtext.innerHTML = data.subtext; 
     
     if (modalImage && data.image) {
         modalImage.src = data.image;
@@ -192,16 +197,15 @@ function openSpecificModal(frameId) {
         modalAudio.play().catch(err => console.log("Voice overlay autoplay blocked:", err));
     }
 
-        // Pause gyro while modal is open, restoring previous state on close
-        panoramaPrevGyro = !!gyroActive;
-        if (panoramaViewer && panoramaViewer.setGyroEnabled) panoramaViewer.setGyroEnabled(false);
-        gyroActive = false;
-        updateGyroButton();
+    // Pause gyro while modal is open, restoring previous state on close
+    panoramaPrevGyro = !!gyroActive;
+    if (panoramaViewer && panoramaViewer.setGyroEnabled) panoramaViewer.setGyroEnabled(false);
+    gyroActive = false;
+    updateGyroButton();
 
-        isModalActive = true;
-        if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(true);
-        if (modal) modal.classList.add('active');
-    }
+    isModalActive = true;
+    if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(true);
+    if (modal) modal.classList.add('active');
 
     if (closeBtn && modal) {
         closeBtn.addEventListener('click', function() { 
@@ -209,7 +213,11 @@ function openSpecificModal(frameId) {
             isModalActive = false;
             if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
             if (modalAudio) modalAudio.pause(); 
-            if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+            
+            // CLEANUP: Unified globalAudio references to globalAmbientAudio
+            if (globalAmbientAudio && !globalAmbientAudio.muted) {
+                globalAmbientAudio.volume = 0.4; // Restore full background volume
+            }
 
             // Restore gyro state if it was active before modal
             if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
@@ -227,7 +235,11 @@ function openSpecificModal(frameId) {
                 isModalActive = false;
                 if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
                 if (modalAudio) modalAudio.pause(); 
-                if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+                
+                // CLEANUP: Unified globalAudio references to globalAmbientAudio
+                if (globalAmbientAudio && !globalAmbientAudio.muted) {
+                    globalAmbientAudio.volume = 0.4; // Restore full background volume
+                }
 
                 // Restore gyro state if it was active before modal
                 if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {

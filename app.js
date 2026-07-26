@@ -36,7 +36,7 @@ function buildVirtualTourViewer() {
             globalAudio.muted = false;
             globalAudio.volume = 0.4;
             globalAudio.play();
-            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊 Music On";
+            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊";
         }
         window.removeEventListener('click', unlockGlobalAutoplay);
         window.removeEventListener('touchstart', unlockGlobalAutoplay);
@@ -50,10 +50,10 @@ function buildVirtualTourViewer() {
             if (globalAudio.muted || globalAudio.paused) {
                 globalAudio.muted = false;
                 globalAudio.play();
-                globalAudioToggle.innerHTML = "🔊 Music On";
+                globalAudioToggle.innerHTML = "🔊";
             } else {
                 globalAudio.muted = true;
-                globalAudioToggle.innerHTML = "🔇 Music Off";
+                globalAudioToggle.innerHTML = "🔇";
             }
         });
     }
@@ -102,7 +102,7 @@ function buildVirtualTourViewer() {
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
   panoramaViewer = window.pannellum.viewer('panorama', {
     type: "equirectangular",
-    panorama: "beach.jpeg",
+    panorama: "darkroom.jpg",
 
     autoLoad: true,
 
@@ -115,7 +115,7 @@ function buildVirtualTourViewer() {
     autoRotateStopDelay: 0,
 
     hotSpots: [
-            { "pitch": -2.4, "yaw": 0, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("tv-center") },
+            { "pitch": -2.4, "yaw": 0, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("fmain") },
             { "pitch": -20, "yaw": -107.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L1") },
             { "pitch": -27.2, "yaw": -95.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L2") },
             { "pitch": -10, "yaw": -95.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L3") },
@@ -141,7 +141,7 @@ function buildVirtualTourViewer() {
 
     // Central local file mapping configuration registry dictionary layout
     const frameContentRegistry = {
-        "tv-center": { title: "Television Media Center", image: "https://picsum.photos/300/400?random=1", subtext: "Main monitor screen portal array display.", audio: "tv-audio.mp3" },
+        "fmain": { title: "Television Media Center", image: "f1.png", subtext: "Guardian", audio: "tv-audio.mp3" },
         "L1": { title: "L1", image: "https://picsum.photos/300/400?random=1", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L2": { title: "L2", image: "https://picsum.photos/300/400?random=2", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L3": { title: "L3", image: "https://picsum.photos/300/400?random=3", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
@@ -164,25 +164,34 @@ function buildVirtualTourViewer() {
         "R6": { title: "R6", image: "https://picsum.photos/300/400?random=10", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" }
     };
 
-    function openSpecificModal(frameId) {
-        const data = frameContentRegistry[frameId];
-        if (!data) return;
+function openSpecificModal(frameId) {
+    const data = frameContentRegistry[frameId];
+    if (!data) return;
 
-        if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.1;
+    // TARGET AMBIENT ENGINE: Replaced 'globalAudio' with your explicit 'globalAmbientAudio' ID
+    const globalAmbientAudio = document.getElementById("globalAmbientAudio");
+    
+    // KEEP PLAYING: We maintain a readable background volume (0.3) instead of dropping it to 0.1 or pausing it
+    if (globalAmbientAudio && !globalAmbientAudio.paused) {
+        globalAmbientAudio.volume = 0.3; 
+    }
 
-        if (modalTitle) modalTitle.textContent = data.title;
-        if (modalSubtext) modalSubtext.textContent = data.subtext;
+    if (modalTitle) modalTitle.textContent = data.title;
+    if (modalSubtext) modalSubtext.textContent = data.subtext;
+    
+    if (modalImage && data.image) {
+        modalImage.src = data.image;
+        modalImage.style.display = "block";
+    }
+
+    if (modalAudio && audioSource) {
+        modalAudio.pause();
+        audioSource.src = data.audio;
+        modalAudio.load();
         
-        if (modalImage && data.image) {
-            modalImage.src = data.image;
-            modalImage.style.display = "block";
-        }
-
-        if (modalAudio && audioSource) {
-            modalAudio.pause();
-            audioSource.src = data.audio;
-            modalAudio.load();
-        }
+        // OPTIONAL: Automatically start playing the voice overlay once it finishes loading
+        modalAudio.play().catch(err => console.log("Voice overlay autoplay blocked:", err));
+    }
 
         // Pause gyro while modal is open, restoring previous state on close
         panoramaPrevGyro = !!gyroActive;
@@ -242,7 +251,7 @@ let isHudAutoplayActive = true;
 function updateAutoplayButtonLabel() {
     const autoplayBtnElement = document.getElementById("autoplay-btn");
     if (!autoplayBtnElement) return;
-    autoplayBtnElement.innerHTML = isHudAutoplayActive ? "⏸ Stop Auto Rotate" : "▶ Auto Rotate";
+    autoplayBtnElement.innerHTML = isHudAutoplayActive ? "⏸" : "▶";
     autoplayBtnElement.classList.toggle("active", isHudAutoplayActive);
 }
 
@@ -300,7 +309,7 @@ function syncFullscreenUI() {
 
     const fullscreenButton = document.getElementById('fullscreen-btn');
     if (fullscreenButton) {
-        fullscreenButton.innerHTML = isFullscreen ? '⛶ Exit Fullscreen' : '⛶ Fullscreen';
+        fullscreenButton.innerHTML = isFullscreen ? '⛶' : '⛶';
     }
 }
 
@@ -364,3 +373,101 @@ window.setFov = function(val) {
 window.switchScene = function(sceneIndex) {
     console.log("[HUD] Scene transition requested for index slot: " + sceneIndex);
 };
+
+
+// Triggers when "Portfolio" or "Gallery" dead links are clicked
+function comingSoon(event) {
+    event.preventDefault();
+    document.getElementById('comingSoonModal').style.display = 'flex';
+}
+
+// Closes the Coming Soon alert modal
+function closeModal() {
+    document.getElementById('comingSoonModal').style.display = 'none';
+}
+
+// FIX: Added missing function requested by your HTML button
+function closeWelcomeModal() {
+    document.getElementById('welcomeModal').style.display = 'none';
+}
+
+// UX ADVANCEMENT: Closes any open modal when clicking on the dark background blur
+window.addEventListener('click', function(event) {
+    const comingSoonModal = document.getElementById('comingSoonModal');
+    const welcomeModal = document.getElementById('welcomeModal');
+    
+    if (event.target === comingSoonModal) {
+        comingSoonModal.style.display = 'none';
+    }
+    if (event.target === welcomeModal) {
+        welcomeModal.style.display = 'none';
+    }
+});
+// Opens Coming Soon features
+function comingSoon(event) {
+    event.preventDefault();
+    document.getElementById('comingSoonModal').style.display = 'flex';
+}
+
+// Closes Coming Soon alert modal
+function closeModal() {
+    document.getElementById('comingSoonModal').style.display = 'none';
+}
+
+// Closes the onboarding instructions layout
+function closeWelcomeModal() {
+    document.getElementById('welcomeModal').style.display = 'none';
+}
+
+// Global modal overlay dismiss rules
+window.addEventListener('click', function(event) {
+    const comingSoonModal = document.getElementById('comingSoonModal');
+    const welcomeModal = document.getElementById('welcomeModal');
+    
+    if (event.target === comingSoonModal) {
+        comingSoonModal.style.display = 'none';
+    }
+    if (event.target === welcomeModal) {
+        welcomeModal.style.display = 'none';
+    }
+});
+
+function submitOrderNumber() {
+    const orderInput = document.getElementById("orderNumberInput").value.trim();
+    const inputElement = document.getElementById("orderNumberInput");
+    
+    if (!orderInput) {
+        alert("Please enter an order number.");
+        return;
+    }
+
+    // Create a temporary hidden image element to safely check files on local drives
+    const testImage = new Image();
+    
+    // Path structure: looking directly inside the subfolder next to this script file
+    const targetLogoPath = `./${orderInput}/logo.png`;
+
+    // SUCCESS: The local folder and logo.png exist
+    testImage.onload = function() {
+        console.log(`Success: Found logo inside folder ${orderInput}`);
+        
+        // Opens the specific index.html workspace inside that order folder
+        window.location.href = `./${orderInput}/index.html`; 
+        
+        closeWelcomeModal();
+    };
+
+    // FAIL: The folder name doesn't match or logo.png is missing inside it
+testImage.onerror = function() {
+    document.getElementById("errorModal").style.display = "flex"; // Your CSS uses flex for alignment
+    inputElement.style.borderColor = "#ef4444"; 
+    inputElement.value = "";
+    inputElement.focus();
+};
+    // Run the image detection instantly
+    testImage.src = targetLogoPath;
+}
+
+function closeErrorModal() {
+    document.getElementById("errorModal").style.display = "none";
+}

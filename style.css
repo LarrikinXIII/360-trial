@@ -1,3 +1,436 @@
+:root {
+    /* Theme transformation: Replaced light blue canvas tokens with premium high-contrast values */
+    --bg: #030712;               /* Deep black/dark blue studio void background */
+    --primary: #ffffff;          /* Clean white typography baseline */
+    --accent: #9333ea;           /* Premium radiant purple accent */
+    --accent-secondary: #2563eb; /* Vibrant electric blue accent */
+    --white: #111827;            /* Base panel surface card charcoal values */
+    --text: #ffffff;             /* Universal white typography */
+    --text-muted: #9ca3af;       /* Secondary body contrast alignment text */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.container {
+    width: 90%;
+    max-width: 1400px;
+    margin: auto;
+}
+
+/* ==========================================================================
+   NAVIGATION HEADER
+   ========================================================================== */
+nav {
+  background: transparent;     
+  position: absolute;          /* Changed from sticky to absolute to sit on top of content */
+  left: 0;                     /* Ensures it stretches from the left edge */
+  right: 0;                    /* Ensures it stretches to the right edge */
+  top: 0;
+  z-index: 100;                /* Keeps the menu layered above the canvas/content */
+}
+
+.nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;             /* Tighter padding for a more compact, solid header bar */
+  position: relative;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo img {
+  width: 80px;
+  height: auto;
+  display: block;
+}
+
+.logo span {
+  letter-spacing: 4px;
+  font-size: 11px;
+  color: var(--accent-secondary);
+}
+
+.logo h2 {
+  color: #ffffff;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 36px;             /* Slightly optimized text size to match the cleaner header profile */
+}
+
+.menu {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+/* MODIFIED: Muted base color and added transition */
+.menu a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.65); /* Sleek, elegant semi-transparent silver */
+  font-weight: 500;                 /* Slightly lighter weight for a high-end feel */
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 1.5px;            /* Increased tracking for premium breathing room */
+  transition: color 0.25s ease, text-shadow 0.25s ease; /* Fluid color fade animation */
+}
+
+/* ADDED: Interactive hover state that pulls colors from your brand gradient */
+.menu a:hover {
+  color: #9333ea;                   /* Transitions cleanly into your purple brand accent */
+  text-shadow: 0 0 10px rgba(147, 51, 234, 0.4); /* Subtle upscale ambient neon glow */
+}
+
+/* ADDED: Active page indicator class (Optional use: add class="active" to current link in HTML) */
+.menu a.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.btn, .submitOrderNumber {
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
+  color: white;
+  text-decoration: none;
+  padding: 10px 22px;          /* Cleaned up layout depth metrics */
+  border-radius: 6px;
+  font-weight: 600;
+  transition: 0.3s ease;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 15px rgba(147, 51, 234, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 20px rgba(147, 51, 234, 0.5);
+}
+
+.menu-toggle {
+  display: none;
+}
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text);
+  order: 2;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.hamburger span {
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+
+@media (min-width: 993px) {
+    nav {
+        background: transparent;     
+        position: absolute;          
+        left: 0;                     
+        right: 0;                    
+        top: 0;
+        z-index: 100;
+    }
+
+    #hud {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        width: 100%;
+        max-width: 600px;
+        
+        /* FIX: Shifts the HUD container precisely 90px from the top edge */
+        top: 90px; 
+        
+        /* CRITICAL: Prevents HUD from blocking clicks on the 3D panorama canvas background */
+        pointer-events: none; 
+        z-index: 10;
+    }
+
+    #scene-title {
+        color: #ffffff;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        font-size: 18px;
+        margin-bottom: 6px;
+    }
+
+    #hint {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+        letter-spacing: 0.05em;
+    }
+}
+
+@media(max-width:992px){
+    .hamburger { display: flex; }
+    .menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: calc(100% + 12px);      /* Creates a clean gap below the header bar */
+        left: 5%;                    /* Centers the floating box on mobile viewports */
+        width: 90%;                  /* Prevents full-width spill for a cleaner card look */
+        
+        /* Core Glassmorphism Engine */
+        background: rgba(255, 255, 255, 0.07);     
+        backdrop-filter: blur(25px);               
+        -webkit-backdrop-filter: blur(25px);       
+        
+        /* Elegant Glass Border & Radii Setup */
+        border: 1px solid rgba(255, 255, 255, 0.25); 
+        border-radius: 20px;         /* Match the sleek rounded corner look */
+        
+        padding: 30px 24px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        gap: 20px;
+        text-align: left;            /* Left-aligned to copy the reference look perfectly */
+    }
+    
+    /* Sleek link layout & crisp text styling */
+    .menu a { 
+        color: #ffffff; 
+        font-weight: 500;
+        font-size: 15px;
+        letter-spacing: 0.03em;
+        display: block;
+        padding-bottom: 12px; 
+        /* Adds the clean divider line between menu links from your image */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+        transition: text-shadow 0.2s ease, opacity 0.2s ease;
+    }
+    
+    /* Removes the bottom line border from the last link in the list */
+    .menu a:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    /* MODIFIED: Only the text illuminates with a soft white glow */
+    .menu a:hover {
+        color: #ffffff;          
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.6); /* Clean, atmospheric text luminescence */
+        opacity: 1;                                    /* Ensures text stays fully crisp while glowing */
+    }
+    
+    .menu-toggle:checked ~ .menu { display: flex; }
+    .nav-btn { padding: 10px 18px; font-size: 13px; }
+
+  #hud {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        width: 100%;
+        
+        /* Adjusts spacing on mobile displays so it does not collide with your burger menu header */
+        top: 70px; 
+        pointer-events: none;
+        z-index: 10;
+    }
+    
+    #scene-title {
+        font-size: 16px;
+    }
+}
+
+
+/* ==========================================================================
+   CONTACT PAGE TARGET LAYOUT RULES
+   ========================================================================== */
+.contact-section {
+    padding: 60px 0;
+}
+
+.booking-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.section-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3rem;
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: #111827;           /* Upgraded block panels to charcoal dark room profiles */
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+    border: 1px solid #1f2937;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+input, select, textarea {
+    padding: 16px;
+    border: 1px solid #374151;    /* Clean dark grey field perimeter tracks */
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #ffffff;                /* Input text becomes crisp white */
+    background: #1f2937;           /* Clean dark insert canvas container slot look */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #2563eb;         /* Focus glowing border indicator tracker keys */
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+}
+
+textarea {
+    min-height: 160px;
+    resize: vertical;
+}
+
+/* ==========================================================================
+   STATS DETAILS PANEL RULES
+   ========================================================================== */
+.stats-list {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.stats-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid #1f2937; /* Dark framing split dividers lines */
+    font-size: 15px;
+}
+
+.stats-list li span:first-child {
+    font-weight: 600;
+    color: var(--text-muted);     /* Secondary descriptive content elements text colors mapping */
+}
+
+.stats-list li span:last-child {
+    font-weight: 700;
+    color: #9333ea;                /* Price nodes highlights shift to accent purple keys */
+}
+
+.contact-meta-info {
+    margin-top: 30px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   GLOBAL BRAND FOOTER
+   ========================================================================== */
+footer { 
+    background: #030712; 
+    margin-top: 80px; 
+    border-top: 1px solid #1f2937; 
+}
+.footer-grid { 
+    display: grid; 
+    grid-template-columns: 2fr 1fr 1fr 1fr; 
+    gap: 40px; 
+    padding: 60px 0; 
+}
+.footer-title { 
+    color: #ffffff; 
+    margin-bottom: 15px; 
+    font-weight: 600; 
+}
+footer ul { list-style: none; }
+footer li { margin-bottom: 10px; }
+footer a { text-decoration: none; color: var(--text-muted); transition: color 0.2s ease; }
+footer a:hover { color: #2563eb; }
+.copyright { text-align: center; padding: 20px; color: #4b5563; border-top: 1px solid #1f2937; }
+
+/* ==========================================================================
+   CUSTOM POPUP MODAL
+   ========================================================================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(3, 7, 18, 0.85); /* Solid translucent glass backdrop */
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-card {
+    background: #111827;
+    padding: 40px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    border: 1px solid #1f2937;
+    animation: modalFadeIn 0.3s ease forwards;
+}
+
+.modal-card h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.modal-card p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 28px;
+}
+
+.modal-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #2563eb, #9333ea); /* Connects button structures directly to global theme elements */
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT BREAKPOINTS
+   ========================================================================== */
+@media(max-width: 992px) {
+    .booking-grid { grid-template-columns: 1fr; gap: 30px; }
+    .footer-grid { grid-template-columns: 1fr; }
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -175,7 +608,7 @@ audio {
     #canvas-container:active { cursor: grabbing; }
     canvas { display: block; }
 
-    #hud { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10; pointer-events: none; }
+    #hud { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10; pointer-events: none; }
     #scene-title { background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); color: #fff; padding: 10px 24px; border-radius: 30px; font-size: 15px; font-weight: 700; letter-spacing: 0.04em; }
     #hint { background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(8px); color: rgba(255,255,255,0.55); padding: 5px 14px; border-radius: 20px; font-size: 11px; }
 

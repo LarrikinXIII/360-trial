@@ -8,35 +8,8 @@
 </head>
 <body>
 
-
     <!-- 360 Panorama Viewer Element Layout Window Wrapper -->
     <div id="panorama"></div>
-<nav>
-<div class="container nav-wrapper">
-    <div class="logo">
-        <a href="../index.html">
-            <img src="logo.png" alt="Ava Xin Logo">
-            <span> </span>
-        </a>
-    </div>
-
-    <input type="checkbox" id="menu-toggle" class="menu-toggle">
-    <label for="menu-toggle" class="hamburger"><span>MENU</span> ☰</label>
-
-   <div class="menu">
-    <a href="../index.html">Home</a>
-    <a href="#" onclick="comingSoon(event)">Portfolio</a>
-    <a href="#" onclick="comingSoon(event)">Gallery</a>
-    <a href="../viral-prompts/index.html">Tools</a> 
-    <a href="../products/index.html">Products</a> 
-    <a href="../family-studio-canvas/index.html">Family Canvas</a>
-    <a href="../donate/index.html">Donate</a> 
-    <a href="../contact/index.html">Contact</a>
-</div>
-
-
-</div>
-</nav>
 
     <div id="hud">
     <div id="scene-title">AVA XIN DOMAIN</div>
@@ -57,53 +30,6 @@
     <input type="range" id="fov" min="30" max="120" value="75" oninput="setFov(this.value)">
     <label id="fov-val">75°</label>
 </div>
-
-
-
-<footer>
-<div class="container footer-grid">
-    <div>
-        <p>Developed by: Larrikin Manuel</p>
-    </div>
-    <div>
-        <div class="footer-title">Quick Links</div>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="portfolio.html">Portfolio</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-            <li><a href="products.html">Products</a></li>
-        </ul>
-    </div>
-    <div>
-        <div class="footer-title">Follow Me</div>
-        <ul>
-            <li><a href="#">Instagram</a></li>
-            <li><a href="#">TikTok</a></li>
-        </ul>
-    </div>
-</div>
-<div class="copyright">
-    &copy; 2026 Ava Xin. All rights reserved.
-</div>
-</footer>
-
-<div id="comingSoonModal" class="modal-overlay">
-<div class="modal-card">
-  <h3>Feature Arriving Soon</h3>
-  <p>We are currently building this section. Check back shortly!</p>
-  <button class="btn modal-btn" onclick="closeModal()">Got it</button>
-</div>
-</div>
-
-<!-- This instantly uses your existing CSS styles -->
-<div id="errorModal" class="modal-overlay">
-    <div class="modal-card">
-        <h3>Error</h3>
-        <p id="errorModalMessage">Order number not found. Please double-check and try again.</p>
-        <button class="modal-btn" onclick="closeErrorModal()">Close</button>
-    </div>
-</div>
-
     
     <!-- Unified Media Pop-up Modal Window Panel Interface -->
     <div class="modal-overlay" id="mediaModal">
@@ -129,10 +55,10 @@
     </div>
 
     <!-- Background Music Audio Engine (Muted + Looping for Security Permissions) -->
-<audio id="globalAmbientAudio" loop>
-    <source src="alex-morgan-string-quartet-elegance-537464.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-</audio>
+    <audio id="globalAmbientAudio" loop muted>
+        <source src="alex-productions-sexy-sax.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <!-- Custom Exterior JavaScript Architecture Links -->
     <script src="./pannellum.js"></script>

@@ -317,15 +317,38 @@ window.pannellum = (function() {
 
         // --- 5. SMARTPHONE GYROSCOPE MOTION DEVICE ORIENTATION CONTROLS ---
         var gyroEnabled = false;
+        var gyroInitialised = false;
+        var gyroRefAlpha = 0, gyroRefBeta = 0, gyroRefYaw = 0, gyroRefPitch = 0;
+
         function handleDeviceOrientation(e) {
             if (!gyroEnabled) return;
-            if (e.alpha !== null && e.beta !== null && e.gamma !== null) {
-                var tiltY = (e.beta - 70) * 0.015;
-                var rollX = e.gamma * 0.015;
+            if (typeof e.alpha === 'number' && typeof e.beta === 'number') {
+                var alpha = e.alpha; // rotation around Z (degrees)
+                var beta = e.beta;   // front-back tilt (degrees)
 
-                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, tiltY));
-                yaw = -rollX;
+                if (!gyroInitialised) {
+                    gyroInitialised = true;
+                    gyroRefAlpha = alpha;
+                    gyroRefBeta = beta;
+                    gyroRefYaw = yaw;
+                    gyroRefPitch = pitch;
+                }
 
+                // Compute shortest delta for alpha (handle wrap-around)
+                var deltaAlpha = alpha - gyroRefAlpha;
+                if (deltaAlpha > 180) deltaAlpha -= 360;
+                if (deltaAlpha < -180) deltaAlpha += 360;
+
+                var deltaBeta = beta - gyroRefBeta;
+
+                // Convert degrees to radians and apply to baseline yaw/pitch
+                var yawDelta = deltaAlpha * Math.PI / 180;
+                var pitchDelta = deltaBeta * Math.PI / 180;
+
+                yaw = gyroRefYaw + yawDelta;
+                pitch = gyroRefPitch + pitchDelta;
+
+                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
                 drawScene();
             }
         }
@@ -334,6 +357,7 @@ window.pannellum = (function() {
             enabled = !!enabled;
             if (enabled === gyroEnabled) return;
             gyroEnabled = enabled;
+            gyroInitialised = false;
             if (gyroEnabled) {
                 window.addEventListener("deviceorientation", handleDeviceOrientation, true);
             } else {

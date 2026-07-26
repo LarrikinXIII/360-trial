@@ -234,16 +234,25 @@ window.pannellum = (function() {
         canvas.addEventListener("mousedown", function(e) { 
             isDragging = true; lastX = e.clientX; lastY = e.clientY;
             pauseAutoRotate("interaction");
-            // If gyro is active, rebase gyro reference to current device readings to avoid jumps
-            if (gyroEnabled && (lastDeviceAlpha !== null)) {
-                gyroRefAlpha = lastDeviceAlpha;
-                gyroRefBeta = lastDeviceBeta || 0;
-                gyroRefYaw = yawTarget;
-                gyroRefPitch = pitchTarget;
-                gyroInitialised = true;
+            if (gyroEnabled) {
+                gyroSuspended = true;
+                updateGyroListener();
             }
         });
-        window.addEventListener("mouseup", function() { isDragging = false; });
+        window.addEventListener("mouseup", function() {
+            if (gyroEnabled && gyroSuspended) {
+                gyroSuspended = false;
+                updateGyroListener();
+                if (lastDeviceAlpha !== null) {
+                    gyroRefAlpha = lastDeviceAlpha;
+                    gyroRefBeta = lastDeviceBeta || 0;
+                    gyroRefYaw = yawTarget;
+                    gyroRefPitch = pitchTarget;
+                    gyroInitialised = true;
+                }
+            }
+            isDragging = false;
+        });
         window.addEventListener("mousemove", function(e) {
             if (!isDragging) return;
             yawTarget -= (e.clientX - lastX) * 0.005;
@@ -258,18 +267,15 @@ window.pannellum = (function() {
 
         canvas.addEventListener("touchstart", function(e) {
             if (e.touches.length === 1) {
+                e.preventDefault();
                 isDragging = true; 
                 lastX = e.touches[0].clientX; 
                 lastY = e.touches[0].clientY;
                 initialPinchDistance = null;
                 pauseAutoRotate("interaction");
-                // Rebase gyro when starting touch drag
-                if (gyroEnabled && (lastDeviceAlpha !== null)) {
-                    gyroRefAlpha = lastDeviceAlpha;
-                    gyroRefBeta = lastDeviceBeta || 0;
-                    gyroRefYaw = yawTarget;
-                    gyroRefPitch = pitchTarget;
-                    gyroInitialised = true;
+                if (gyroEnabled) {
+                    gyroSuspended = true;
+                    updateGyroListener();
                 }
             } else if (e.touches.length === 2) {
                 isDragging = false; // Stop dragging when pitching/zooming
@@ -281,13 +287,24 @@ window.pannellum = (function() {
         }, { passive: true });
 
         window.addEventListener("touchend", function() { 
+            if (gyroEnabled && gyroSuspended) {
+                gyroSuspended = false;
+                updateGyroListener();
+                if (lastDeviceAlpha !== null) {
+                    gyroRefAlpha = lastDeviceAlpha;
+                    gyroRefBeta = lastDeviceBeta || 0;
+                    gyroRefYaw = yawTarget;
+                    gyroRefPitch = pitchTarget;
+                    gyroInitialised = true;
+                }
+            }
             isDragging = false; 
             initialPinchDistance = null; 
         });
         
         canvas.addEventListener("touchmove", function(e) {
-            // One finger controls looking around
             if (e.touches.length === 1 && isDragging) {
+                e.preventDefault();
                 var deltaX = e.touches[0].clientX - lastX;
                 var deltaY = e.touches[0].clientY - lastY;
                 
@@ -339,11 +356,20 @@ window.pannellum = (function() {
         // --- 5. SMARTPHONE GYROSCOPE MOTION DEVICE ORIENTATION CONTROLS ---
         var gyroEnabled = false;
         var gyroInitialised = false;
+        var gyroSuspended = false;
         var gyroRefAlpha = 0, gyroRefBeta = 0, gyroRefYaw = 0, gyroRefPitch = 0;
         var lastDeviceAlpha = null, lastDeviceBeta = null;
 
+        function updateGyroListener() {
+            if (gyroEnabled && !gyroSuspended) {
+                window.addEventListener("deviceorientation", handleDeviceOrientation, true);
+            } else {
+                window.removeEventListener("deviceorientation", handleDeviceOrientation, true);
+            }
+        }
+
         function handleDeviceOrientation(e) {
-            if (!gyroEnabled) return;
+            if (!gyroEnabled || gyroSuspended) return;
             if (typeof e.alpha === 'number' && typeof e.beta === 'number') {
                 var alpha = e.alpha; // rotation around Z (degrees)
                 var beta = e.beta;   // front-back tilt (degrees)
@@ -352,8 +378,8 @@ window.pannellum = (function() {
                     gyroInitialised = true;
                     gyroRefAlpha = alpha;
                     gyroRefBeta = beta;
-                    gyroRefYaw = yaw;
-                    gyroRefPitch = pitch;
+                    gyroRefYaw = yawTarget;
+                    gyroRefPitch = pitchTarget;
                 }
 
                 // Track latest device readings so we can re-base on user drag without jump
@@ -384,11 +410,8 @@ window.pannellum = (function() {
             if (enabled === gyroEnabled) return;
             gyroEnabled = enabled;
             gyroInitialised = false;
-            if (gyroEnabled) {
-                window.addEventListener("deviceorientation", handleDeviceOrientation, true);
-            } else {
-                window.removeEventListener("deviceorientation", handleDeviceOrientation, true);
-            }
+            gyroSuspended = false;
+            updateGyroListener();
         }
 
         // ========================================================

@@ -224,6 +224,11 @@ audio {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
+        left: auto !important;
+        right: 0 !important;
+        transform: none !important;
+        width: auto !important;
+        justify-content: flex-end !important;
     }
 
     body.is-fullscreen #controls .ctrl-btn:not(.fullscreen-toggle) {
@@ -236,12 +241,14 @@ audio {
         display: none !important;
     }
 
-    /* Ensure fullscreen toggle is always visible and accessible in fullscreen */
+    /* Ensure fullscreen toggle is still visible and accessible in fullscreen */
     body.is-fullscreen .fullscreen-toggle {
         display: inline-flex !important;
         position: fixed !important;
         bottom: 20px !important;
         right: 20px !important;
+        left: auto !important;
+        top: auto !important;
         z-index: 100000 !important;
         pointer-events: auto !important;
     }

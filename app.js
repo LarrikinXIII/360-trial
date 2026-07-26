@@ -314,6 +314,10 @@ window.toggleFullscreen = function() {
             baseDocumentElementShell.requestFullscreen();
         } else if (baseDocumentElementShell.webkitRequestFullscreen) { /* Safari */
             baseDocumentElementShell.webkitRequestFullscreen();
+        } else if (baseDocumentElementShell.mozRequestFullScreen) {
+            baseDocumentElementShell.mozRequestFullScreen();
+        } else if (baseDocumentElementShell.msRequestFullscreen) {
+            baseDocumentElementShell.msRequestFullscreen();
         }
     } else {
         if (document.exitFullscreen) {
@@ -323,11 +327,22 @@ window.toggleFullscreen = function() {
         }
     }
 
+    // Update state proactively in case browser fullscreenchange events delay or do not fire.
+    syncFullscreenUI();
     setTimeout(syncFullscreenUI, 50);
+    requestAnimationFrame(syncFullscreenUI);
 };
 
 document.addEventListener('fullscreenchange', syncFullscreenUI);
 document.addEventListener('webkitfullscreenchange', syncFullscreenUI);
+document.addEventListener('mozfullscreenchange', syncFullscreenUI);
+document.addEventListener('MSFullscreenChange', syncFullscreenUI);
+
+document.addEventListener('fullscreenerror', syncFullscreenUI);
+document.addEventListener('webkitfullscreenerror', syncFullscreenUI);
+
+document.addEventListener('mozfullscreenerror', syncFullscreenUI);
+document.addEventListener('MSFullscreenError', syncFullscreenUI);
 
 // 4. Triggered naturally by oninput="setFov(this.value)"
 window.setFov = function(val) {

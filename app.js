@@ -25,38 +25,57 @@ function buildVirtualTourViewer() {
     const gyroBtn = document.getElementById('gyro-btn');
     let panoramaPrevGyro = false;
 
-  // 1. RUNS IMMEDIATELY ON PAGE LOAD (Muted state completely allowed by browsers)
+ // 1. RUNS IMMEDIATELY ON PAGE LOAD (Muted playback starts right away)
 if (globalAudio) {
     globalAudio.muted = true;               
-    globalAudio.play().catch(() => {}); // Begins tracking playback through the timeline right away
+    globalAudio.play().catch(() => {}); 
 }
 
-// 2. UNMUTES SEAMLESSLY ON FIRST INTERACTION
+// 2. ONE-TAP UNMUTE ENGINE
 function activateAudioOnInteraction() {
     if (globalAudio) {
         globalAudio.muted = false;
         globalAudio.volume = 0.4;
         
-        // Safety guard: If browser temporarily paused it on load, wake it up
         if (globalAudio.paused) {
-            globalAudio.play();
+            globalAudio.play().catch(() => {});
         }
         
-        if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊";
+        if (globalAudioToggle) {
+            globalAudioToggle.innerHTML = "🔊";
+        }
     }
     
-    // Wipe listeners immediately so interaction logic only fires once
-    window.removeEventListener('click', activateAudioOnInteraction);
-    window.removeEventListener('touchstart', activateAudioOnInteraction);
-    window.removeEventListener('mousedown', activateAudioOnInteraction);
-    window.removeEventListener('wheel', activateAudioOnInteraction);
+    // Clean up event listeners immediately so this only runs once
+    window.removeEventListener('click', activateAudioOnInteraction, true);
+    window.removeEventListener('touchstart', activateAudioOnInteraction, true);
+    window.removeEventListener('mousedown', activateAudioOnInteraction, true);
+    window.removeEventListener('wheel', activateAudioOnInteraction, true);
 }
 
-// Monitors all movement, scrolling, or dragging actions across your 3D canvas
-window.addEventListener('click', activateAudioOnInteraction);
-window.addEventListener('touchstart', activateAudioOnInteraction);
-window.addEventListener('mousedown', activateAudioOnInteraction);
-window.addEventListener('wheel', activateAudioOnInteraction);
+// Use Event Capturing (the true flag) to handle this BEFORE button logic triggers
+window.addEventListener('click', activateAudioOnInteraction, true);
+window.addEventListener('touchstart', activateAudioOnInteraction, true);
+window.addEventListener('mousedown', activateAudioOnInteraction, true);
+window.addEventListener('wheel', activateAudioOnInteraction, true);
+
+// 3. ISOLATED MANUAL OVERRIDE CONTROL BUTTON
+if (globalAudioToggle && globalAudio) {
+    globalAudioToggle.addEventListener('click', function(e) {
+        // Blocks event from bubbling and interfering with background canvas layers
+        e.stopPropagation(); 
+        
+        if (globalAudio.paused) {
+            globalAudio.muted = false;
+            globalAudio.play().catch(() => {});
+            globalAudioToggle.innerHTML = "🔊";
+        } else {
+            globalAudio.pause(); 
+            globalAudioToggle.innerHTML = "🔇";
+        }
+    });
+}
+
 // MANUAL OVERRIDE SWITCH BUTTON
 if (globalAudioToggle && globalAudio) {
     globalAudioToggle.addEventListener('click', function(e) {

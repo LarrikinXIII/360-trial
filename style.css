@@ -219,6 +219,7 @@ audio {
         pointer-events: none;
     }
 
+    /* Keep only fullscreen toggle visible when in fullscreen */
     body.is-fullscreen #controls {
         opacity: 1;
         visibility: visible;
@@ -226,7 +227,13 @@ audio {
     }
 
     body.is-fullscreen #controls .ctrl-btn:not(.fullscreen-toggle) {
-        display: none;
+        display: none !important;
+    }
+
+    /* Hide HUD container and scene-switcher explicitly */
+    body.is-fullscreen #hud,
+    body.is-fullscreen #scene-switcher {
+        display: none !important;
     }
 
     #fov-slider { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10; }

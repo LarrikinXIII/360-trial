@@ -23,6 +23,7 @@ function buildVirtualTourViewer() {
     const globalAudio = document.getElementById('globalAmbientAudio');
     const globalAudioToggle = document.getElementById('globalAudioToggle');
     const gyroBtn = document.getElementById('gyro-btn');
+    let panoramaPrevGyro = false;
 
     // Start background music loop in muted state
     if (globalAudio) {
@@ -183,6 +184,12 @@ function buildVirtualTourViewer() {
             modalAudio.load();
         }
 
+        // Pause gyro while modal is open, restoring previous state on close
+        panoramaPrevGyro = !!gyroActive;
+        if (panoramaViewer && panoramaViewer.setGyroEnabled) panoramaViewer.setGyroEnabled(false);
+        gyroActive = false;
+        updateGyroButton();
+
         isModalActive = true;
         if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(true);
         if (modal) modal.classList.add('active');
@@ -195,6 +202,13 @@ function buildVirtualTourViewer() {
             if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
             if (modalAudio) modalAudio.pause(); 
             if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+
+            // Restore gyro state if it was active before modal
+            if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
+                panoramaViewer.setGyroEnabled(true);
+                gyroActive = true;
+                updateGyroButton();
+            }
         });
     }
     
@@ -206,6 +220,13 @@ function buildVirtualTourViewer() {
                 if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
                 if (modalAudio) modalAudio.pause(); 
                 if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+
+                // Restore gyro state if it was active before modal
+                if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
+                    panoramaViewer.setGyroEnabled(true);
+                    gyroActive = true;
+                    updateGyroButton();
+                }
             } 
         });
     }

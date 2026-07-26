@@ -217,7 +217,7 @@ window.stopAutoplayEngine = function () {
         autoplayBtnElement.innerHTML = "▶ Auto Rotate";
 
     if (window.viewer)
-        window.viewer.stopAutoRotate();
+
 };
 
 // 2. Triggered naturally by onclick="resetView()"

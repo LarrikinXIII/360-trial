@@ -88,7 +88,7 @@ window.pannellum = (function() {
             // ========================================================
             function autoplayAnimationTick() {
                 if (!isDragging && autoRotateActive) {
-                    yaw += 0.0015;
+                    yawTarget += 0.0015;
                     drawScene();
                 }
                 requestAnimationFrame(autoplayAnimationTick);
@@ -98,6 +98,7 @@ window.pannellum = (function() {
         img.src = config.panorama;
 
         var pitch = config.pitch || 0, yaw = config.yaw || 0;
+        var yawTarget = yaw, pitchTarget = pitch;
         var autoRotateEnabled = true;
         var autoRotatePausedByInteraction = false;
         var autoRotatePausedByModal = false;
@@ -163,6 +164,9 @@ window.pannellum = (function() {
         function drawScene() {
             var w = canvas.clientWidth, h = canvas.clientHeight;
             if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+            // Smoothly interpolate towards target orientation for drag/gyro smoothing
+            yaw += (yawTarget - yaw) * 0.15;
+            pitch += (pitchTarget - pitch) * 0.15;
             var aspect = w / h;
             var f = 1.0 / Math.tan((config.hfov || 110) * Math.PI / 360.0);
             var proj = [f/aspect,0,0,0, 0,f,0,0, 0,0,-1,-1, 0,0,0,0];
@@ -234,17 +238,18 @@ window.pannellum = (function() {
             if (gyroEnabled && (lastDeviceAlpha !== null)) {
                 gyroRefAlpha = lastDeviceAlpha;
                 gyroRefBeta = lastDeviceBeta || 0;
-                gyroRefYaw = yaw;
-                gyroRefPitch = pitch;
+                gyroRefYaw = yawTarget;
+                gyroRefPitch = pitchTarget;
                 gyroInitialised = true;
             }
         });
         window.addEventListener("mouseup", function() { isDragging = false; });
         window.addEventListener("mousemove", function(e) {
             if (!isDragging) return;
-            yaw -= (e.clientX - lastX) * 0.005; pitch += (e.clientY - lastY) * 0.005;
+            yawTarget -= (e.clientX - lastX) * 0.005;
+            pitchTarget += (e.clientY - lastY) * 0.005;
             lastX = e.clientX; lastY = e.clientY;
-            pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+            pitchTarget = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitchTarget));
             drawScene();
         });
 
@@ -262,8 +267,8 @@ window.pannellum = (function() {
                 if (gyroEnabled && (lastDeviceAlpha !== null)) {
                     gyroRefAlpha = lastDeviceAlpha;
                     gyroRefBeta = lastDeviceBeta || 0;
-                    gyroRefYaw = yaw;
-                    gyroRefPitch = pitch;
+                    gyroRefYaw = yawTarget;
+                    gyroRefPitch = pitchTarget;
                     gyroInitialised = true;
                 }
             } else if (e.touches.length === 2) {
@@ -289,10 +294,10 @@ window.pannellum = (function() {
                 lastX = e.touches[0].clientX; 
                 lastY = e.touches[0].clientY;
 
-                yaw -= deltaX * 0.005; 
-                pitch += deltaY * 0.005; 
+                yawTarget -= deltaX * 0.005; 
+                pitchTarget += deltaY * 0.005; 
                 
-                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+                pitchTarget = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitchTarget));
                 drawScene();
             } 
             // Two fingers control pinching to zoom
@@ -366,10 +371,10 @@ window.pannellum = (function() {
                 var yawDelta = deltaAlpha * Math.PI / 180;
                 var pitchDelta = deltaBeta * Math.PI / 180;
 
-                yaw = gyroRefYaw + yawDelta;
-                pitch = gyroRefPitch + pitchDelta;
+                yawTarget = gyroRefYaw + yawDelta;
+                pitchTarget = gyroRefPitch + pitchDelta;
 
-                pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitch));
+                pitchTarget = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitchTarget));
                 drawScene();
             }
         }

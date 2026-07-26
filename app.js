@@ -36,23 +36,8 @@ function buildVirtualTourViewer() {
         window.removeEventListener('click', unlockGlobalAutoplay);
         window.removeEventListener('touchstart', unlockGlobalAutoplay);
     }
-   window.addEventListener("DOMContentLoaded", function () {
-
-    const panoramaWrapperElement = document.getElementById("panorama");
-
-    if (!panoramaWrapperElement) return;
-
-    ["mousedown", "touchstart", "pointerdown", "wheel"].forEach(function (evt) {
-
-        panoramaWrapperElement.addEventListener(evt, function () {
-
-            window.stopAutoplayEngine();
-
-        }, { passive: true });
-
-    });
-
-});
+    window.addEventListener('click', unlockGlobalAutoplay);
+    window.addEventListener('touchstart', unlockGlobalAutoplay);
 
     if (globalAudioToggle && globalAudio) {
         globalAudioToggle.addEventListener('click', function(e) {
@@ -69,7 +54,7 @@ function buildVirtualTourViewer() {
     }
 
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
-  window.viewer = window.pannellum.viewer('panorama', {
+  const viewer = window.pannellum.viewer('panorama', {
     type: "equirectangular",
     panorama: "beach.jpeg",
 
@@ -184,40 +169,48 @@ let hudAutoplayIntervalTimer = null;
 let isHudAutoplayActive = false;
 
 // 1. Triggered naturally by onclick="toggleAutoplay()"
-window.toggleAutoplay = function () {
-
+window.toggleAutoplay = function() {
     const autoplayBtnElement = document.getElementById("autoplay-btn");
-
+    
     if (!isHudAutoplayActive) {
-
+        console.log("[HUD] Activating automated canvas rotation engine...");
         isHudAutoplayActive = true;
-
-        if (autoplayBtnElement)
-            autoplayBtnElement.innerHTML = "⏸ Stop Rotate";
-
-        window.viewer.startAutoRotate(-2);
-
+        if (autoplayBtnElement) autoplayBtnElement.innerHTML = "⏸ Stop Rotate";
+        
+        // Continuous smooth event loop simulating gentle drag-nudge movements on the canvas
+        hudAutoplayIntervalTimer = setInterval(function() {
+            const simulatedDragNudgeEvent = new MouseEvent('mousemove', {
+                clientX: (window.innerWidth / 2) - 1, // Moves view fractions to the left
+                clientY: window.innerHeight / 2,
+                bubbles: true
+            });
+            const roomCanvasNode = document.querySelector('#panorama canvas');
+            if (roomCanvasNode) roomCanvasNode.dispatchEvent(simulatedDragNudgeEvent);
+        }, 16); // 16ms refresh frames lock silky 60fps pan velocities
     } else {
-
         window.stopAutoplayEngine();
-
     }
 };
 
-window.stopAutoplayEngine = function () {
-
+window.stopAutoplayEngine = function() {
     isHudAutoplayActive = false;
-
-    if (hudAutoplayIntervalTimer)
-        clearInterval(hudAutoplayIntervalTimer);
-
+    if (hudAutoplayIntervalTimer) clearInterval(hudAutoplayIntervalTimer);
     const autoplayBtnElement = document.getElementById("autoplay-btn");
-
-    if (autoplayBtnElement)
-        autoplayBtnElement.innerHTML = "▶ Auto Rotate";
-
-
+    if (autoplayBtnElement) autoplayBtnElement.innerHTML = "▶ Auto Rotate";
 };
+
+// Autodetect manual canvas drags to immediately turn off autopilot rotation safely
+window.addEventListener('DOMContentLoaded', function() {
+    const panoramaWrapperElement = document.getElementById('panorama');
+    if (panoramaWrapperElement) {
+        panoramaWrapperElement.addEventListener('mousedown', function(e) {
+            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
+        });
+        panoramaWrapperElement.addEventListener('touchstart', function(e) {
+            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
+        });
+    }
+});
 
 // 2. Triggered naturally by onclick="resetView()"
 window.resetView = function() {
@@ -266,5 +259,3 @@ window.setFov = function(val) {
 window.switchScene = function(sceneIndex) {
     console.log("[HUD] Scene transition requested for index slot: " + sceneIndex);
 };
-
-

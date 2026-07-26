@@ -24,39 +24,44 @@ function buildVirtualTourViewer() {
     const globalAudioToggle = document.getElementById('globalAudioToggle');
     const gyroBtn = document.getElementById('gyro-btn');
     let panoramaPrevGyro = false;
+// Audio permission modal
+const audioModal = document.getElementById("audio-modal");
+const enableAudioBtn = document.getElementById("enable-audio");
+const continueMutedBtn = document.getElementById("continue-muted");
 
-// Start background music loop in muted state
-    if (globalAudio) {
-        globalAudio.play().catch(() => console.log("Waiting for user tap to activate audio..."));
-    }
+if (enableAudioBtn && audioModal) {
+    enableAudioBtn.addEventListener("click", function () {
 
-    // Unmute background music automatically on first drag or click interaction
-    function unlockGlobalAutoplay() {
-        if (globalAudio && globalAudio.muted) {
+        if (globalAudio) {
             globalAudio.muted = false;
             globalAudio.volume = 0.4;
             globalAudio.play();
-            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊 Music On";
         }
-        window.removeEventListener('click', unlockGlobalAutoplay);
-        window.removeEventListener('touchstart', unlockGlobalAutoplay);
-    }
-    window.addEventListener('click', unlockGlobalAutoplay);
-    window.addEventListener('touchstart', unlockGlobalAutoplay);
 
-    if (globalAudioToggle && globalAudio) {
-        globalAudioToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (globalAudio.muted || globalAudio.paused) {
-                globalAudio.muted = false;
-                globalAudio.play();
-                globalAudioToggle.innerHTML = "🔊 Music On";
-            } else {
-                globalAudio.muted = true;
-                globalAudioToggle.innerHTML = "🔇 Music Off";
-            }
-        });
-    }
+        if (globalAudioToggle) {
+            globalAudioToggle.innerHTML = "🔊 Music On";
+        }
+
+        audioModal.classList.add("hidden");
+    });
+}
+
+
+if (continueMutedBtn && audioModal) {
+    continueMutedBtn.addEventListener("click", function () {
+
+        if (globalAudio) {
+            globalAudio.muted = true;
+        }
+
+        if (globalAudioToggle) {
+            globalAudioToggle.innerHTML = "🔇 Music Off";
+        }
+
+        audioModal.classList.add("hidden");
+    });
+}
+
     // Gyro toggle handling
     let gyroActive = false;
     function updateGyroButton() {
@@ -483,18 +488,3 @@ function closeAudioModal() {
         modal.remove();
     }, 400); // Match your CSS transition duration
 }
-
-document.getElementById("enable-audio").addEventListener("click", async () => {
-    try {
-        audio.muted = false;
-        await audio.play();
-    } catch (err) {
-        console.log(err);
-    }
-
-    closeAudioModal();
-});
-
-document.getElementById("continue-muted").addEventListener("click", () => {
-    document.getElementById("audio-modal").classList.add("hidden");
-});

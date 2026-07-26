@@ -25,72 +25,38 @@ function buildVirtualTourViewer() {
     const gyroBtn = document.getElementById('gyro-btn');
     let panoramaPrevGyro = false;
 
- // 1. RUNS IMMEDIATELY ON PAGE LOAD (Muted playback starts right away)
-if (globalAudio) {
-    globalAudio.muted = true;               
-    globalAudio.play().catch(() => {}); 
-}
-
-// 2. ONE-TAP UNMUTE ENGINE
-function activateAudioOnInteraction() {
+// Start background music loop in muted state
     if (globalAudio) {
-        globalAudio.muted = false;
-        globalAudio.volume = 0.4;
-        
-        if (globalAudio.paused) {
-            globalAudio.play().catch(() => {});
-        }
-        
-        if (globalAudioToggle) {
-            globalAudioToggle.innerHTML = "🔊";
-        }
+        globalAudio.play().catch(() => console.log("Waiting for user tap to activate audio..."));
     }
-    
-    // Clean up event listeners immediately so this only runs once
-    window.removeEventListener('click', activateAudioOnInteraction, true);
-    window.removeEventListener('touchstart', activateAudioOnInteraction, true);
-    window.removeEventListener('mousedown', activateAudioOnInteraction, true);
-    window.removeEventListener('wheel', activateAudioOnInteraction, true);
-}
 
-// Use Event Capturing (the true flag) to handle this BEFORE button logic triggers
-window.addEventListener('click', activateAudioOnInteraction, true);
-window.addEventListener('touchstart', activateAudioOnInteraction, true);
-window.addEventListener('mousedown', activateAudioOnInteraction, true);
-window.addEventListener('wheel', activateAudioOnInteraction, true);
-
-// 3. ISOLATED MANUAL OVERRIDE CONTROL BUTTON
-if (globalAudioToggle && globalAudio) {
-    globalAudioToggle.addEventListener('click', function(e) {
-        // Blocks event from bubbling and interfering with background canvas layers
-        e.stopPropagation(); 
-        
-        if (globalAudio.paused) {
+    // Unmute background music automatically on first drag or click interaction
+    function unlockGlobalAutoplay() {
+        if (globalAudio && globalAudio.muted) {
             globalAudio.muted = false;
-            globalAudio.play().catch(() => {});
-            globalAudioToggle.innerHTML = "🔊";
-        } else {
-            globalAudio.pause(); 
-            globalAudioToggle.innerHTML = "🔇";
-        }
-    });
-}
-
-// MANUAL OVERRIDE SWITCH BUTTON
-if (globalAudioToggle && globalAudio) {
-    globalAudioToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (globalAudio.paused || globalAudio.muted) {
-            globalAudio.muted = false;
+            globalAudio.volume = 0.4;
             globalAudio.play();
-            globalAudioToggle.innerHTML = "🔊";
-        } else {
-            globalAudio.pause(); 
-            globalAudioToggle.innerHTML = "🔇";
+            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊 Music On";
         }
-    });
-}
+        window.removeEventListener('click', unlockGlobalAutoplay);
+        window.removeEventListener('touchstart', unlockGlobalAutoplay);
+    }
+    window.addEventListener('click', unlockGlobalAutoplay);
+    window.addEventListener('touchstart', unlockGlobalAutoplay);
 
+    if (globalAudioToggle && globalAudio) {
+        globalAudioToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (globalAudio.muted || globalAudio.paused) {
+                globalAudio.muted = false;
+                globalAudio.play();
+                globalAudioToggle.innerHTML = "🔊 Music On";
+            } else {
+                globalAudio.muted = true;
+                globalAudioToggle.innerHTML = "🔇 Music Off";
+            }
+        });
+    }
     // Gyro toggle handling
     let gyroActive = false;
     function updateGyroButton() {

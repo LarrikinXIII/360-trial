@@ -140,7 +140,7 @@ function buildVirtualTourViewer() {
 
     // Central local file mapping configuration registry dictionary layout
     const frameContentRegistry = {
-        "fmain": { title: "The Shadow", image: "f1.png", subtext: "My hands were never made for crowns,\nThey were made to carry tomorrow.\nAnd if the world should turn to ash,\nYou’ll still find peace beneath my shadow.", audio: ".mp3" },
+        "fmain": { title: "The Shadow", image: "f1.png", subtext: "My hands were never made for crowns,\nThey were made to carry tomorrow.\nAnd if the world should turn to ash,\nYou’ll still find peace beneath my shadow.", audio: "fmain.mp3" },
         "L1": { title: "L1", image: "https://picsum.photos/300/400?random=1", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L2": { title: "L2", image: "https://picsum.photos/300/400?random=2", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L3": { title: "L3", image: "https://picsum.photos/300/400?random=3", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
@@ -163,15 +163,34 @@ function buildVirtualTourViewer() {
         "R6": { title: "R6", image: "https://picsum.photos/300/400?random=10", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" }
     };
 
+// Track if the first-time unmute has already happened
+let hasUnmutedOnFirstModal = false;
+
 function openSpecificModal(frameId) {
     const data = frameContentRegistry[frameId];
     if (!data) return;
 
-    // TARGET AMBIENT ENGINE: Replaced 'globalAudio' with your explicit 'globalAmbientAudio' ID
     const globalAmbientAudio = document.getElementById("globalAmbientAudio");
     
-    // KEEP PLAYING: We maintain a readable background volume (0.3) instead of dropping it to 0.1 or pausing it
-    if (globalAmbientAudio && !globalAmbientAudio.paused) {
+    // FIRST-TIME UNMUTE LOGIC: Unmute, set volume, and play only on the first activation
+    if (!hasUnmutedOnFirstModal && globalAmbientAudio) {
+        globalAmbientAudio.muted = false;
+        globalAmbientAudio.volume = 0.3; // Matches your background volume
+        globalAmbientAudio.play().catch(err => console.log("Ambient autoplay blocked:", err));
+        
+        // Update the UI button text if it exists
+        const globalAudioToggle = document.getElementById("globalAudioToggle"); // Adjust ID if needed
+        if (globalAudioToggle) {
+            globalAudioToggle.innerHTML = "🔊 Music On";
+        }
+        
+        // Clean up global click listeners so they don't fire again
+        window.removeEventListener('click', unlockGlobalAutoplay);
+        window.removeEventListener('touchstart', unlockGlobalAutoplay);
+        
+        hasUnmutedOnFirstModal = true;
+    } else if (globalAmbientAudio && !globalAmbientAudio.paused) {
+        // KEEP PLAYING: Maintained for subsequent modal opens
         globalAmbientAudio.volume = 0.3; 
     }
 
@@ -188,9 +207,9 @@ function openSpecificModal(frameId) {
         audioSource.src = data.audio;
         modalAudio.load();
         
-        // OPTIONAL: Automatically start playing the voice overlay once it finishes loading
         modalAudio.play().catch(err => console.log("Voice overlay autoplay blocked:", err));
     }
+}
 
         // Pause gyro while modal is open, restoring previous state on close
         panoramaPrevGyro = !!gyroActive;

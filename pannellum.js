@@ -230,6 +230,14 @@ window.pannellum = (function() {
         canvas.addEventListener("mousedown", function(e) { 
             isDragging = true; lastX = e.clientX; lastY = e.clientY;
             pauseAutoRotate("interaction");
+            // If gyro is active, rebase gyro reference to current device readings to avoid jumps
+            if (gyroEnabled && (lastDeviceAlpha !== null)) {
+                gyroRefAlpha = lastDeviceAlpha;
+                gyroRefBeta = lastDeviceBeta || 0;
+                gyroRefYaw = yaw;
+                gyroRefPitch = pitch;
+                gyroInitialised = true;
+            }
         });
         window.addEventListener("mouseup", function() { isDragging = false; });
         window.addEventListener("mousemove", function(e) {
@@ -250,6 +258,14 @@ window.pannellum = (function() {
                 lastY = e.touches[0].clientY;
                 initialPinchDistance = null;
                 pauseAutoRotate("interaction");
+                // Rebase gyro when starting touch drag
+                if (gyroEnabled && (lastDeviceAlpha !== null)) {
+                    gyroRefAlpha = lastDeviceAlpha;
+                    gyroRefBeta = lastDeviceBeta || 0;
+                    gyroRefYaw = yaw;
+                    gyroRefPitch = pitch;
+                    gyroInitialised = true;
+                }
             } else if (e.touches.length === 2) {
                 isDragging = false; // Stop dragging when pitching/zooming
                 // Measures space between finger 0 and finger 1
@@ -319,6 +335,7 @@ window.pannellum = (function() {
         var gyroEnabled = false;
         var gyroInitialised = false;
         var gyroRefAlpha = 0, gyroRefBeta = 0, gyroRefYaw = 0, gyroRefPitch = 0;
+        var lastDeviceAlpha = null, lastDeviceBeta = null;
 
         function handleDeviceOrientation(e) {
             if (!gyroEnabled) return;
@@ -333,6 +350,10 @@ window.pannellum = (function() {
                     gyroRefYaw = yaw;
                     gyroRefPitch = pitch;
                 }
+
+                // Track latest device readings so we can re-base on user drag without jump
+                lastDeviceAlpha = alpha;
+                lastDeviceBeta = beta;
 
                 // Compute shortest delta for alpha (handle wrap-around)
                 var deltaAlpha = alpha - gyroRefAlpha;

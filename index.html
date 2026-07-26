@@ -7,7 +7,26 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+<div id="audio-modal" class="audio-modal">
+    <div class="audio-card">
+        <h2>Welcome</h2>
 
+        <p>
+            This virtual tour includes immersive ambient audio to enhance your
+            experience.
+        </p>
+
+        <div class="audio-actions">
+            <button id="enable-audio" class="audio-btn primary">
+                🔊 Continue with Sound
+            </button>
+
+            <button id="continue-muted" class="audio-btn">
+                Continue Muted
+            </button>
+        </div>
+    </div>
+</div>
 
     <!-- 360 Panorama Viewer Element Layout Window Wrapper -->
     <div id="panorama"></div>
@@ -127,7 +146,6 @@
             </audio>
         </div>
     </div>
-
 
     <!-- Background Music Audio Engine (Muted + Looping for Security Permissions) -->
 <audio id="globalAmbientAudio" loop>

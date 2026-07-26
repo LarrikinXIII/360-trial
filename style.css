@@ -27,6 +27,124 @@ body {
     margin: auto;
 }
 
+.audio-modal{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+
+    z-index:9999;
+}
+
+.audio-card{
+
+    width:min(420px,90vw);
+
+    /* Same glass effect */
+    background:rgba(255,255,255,.07);
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
+
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:20px;
+
+    padding:34px 30px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+
+    color:#fff;
+    text-align:center;
+}
+
+.audio-card h2{
+
+    margin:0 0 14px;
+    font-size:24px;
+    font-weight:600;
+    letter-spacing:.04em;
+}
+
+.audio-card p{
+
+    margin:0;
+    line-height:1.7;
+    font-size:15px;
+    opacity:.8;
+}
+
+.audio-actions{
+
+    margin-top:28px;
+
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.audio-btn{
+
+    width:100%;
+
+    padding:14px 18px;
+
+    color:#fff;
+    font-size:15px;
+    font-weight:500;
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:
+        background .25s ease,
+        border-color .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease,
+        text-shadow .25s ease;
+}
+
+.audio-btn:hover{
+
+    background:rgba(255,255,255,.08);
+
+    border-color:rgba(255,255,255,.35);
+
+    text-shadow:0 0 10px rgba(255,255,255,.6);
+
+    box-shadow:0 0 25px rgba(255,255,255,.12);
+
+    transform:translateY(-2px);
+}
+
+.audio-btn.primary{
+
+    background:rgba(255,255,255,.12);
+}
+
+.audio-btn.primary:hover{
+
+    background:rgba(255,255,255,.18);
+}
+
+.audio-modal.hidden{
+
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+
+    transition:
+        opacity .45s ease,
+        visibility .45s ease;
+}
+
 /* ==========================================================================
    NAVIGATION HEADER
    ========================================================================== */
@@ -140,46 +258,7 @@ nav {
 }
 
 
-@media (min-width: 993px) {
-    nav {
-        background: transparent;     
-        position: absolute;          
-        left: 0;                     
-        right: 0;                    
-        top: 0;
-        z-index: 100;
-    }
 
-    #hud {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
-        width: 100%;
-        max-width: 600px;
-        
-        /* FIX: Shifts the HUD container precisely 90px from the top edge */
-        top: 90px; 
-        
-        /* CRITICAL: Prevents HUD from blocking clicks on the 3D panorama canvas background */
-        pointer-events: none; 
-        z-index: 10;
-    }
-
-    #scene-title {
-        color: #ffffff;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        font-size: 18px;
-        margin-bottom: 6px;
-    }
-
-    #hint {
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 12px;
-        letter-spacing: 0.05em;
-    }
-}
 
 @media(max-width:992px){
     .hamburger { display: flex; }
@@ -238,6 +317,7 @@ nav {
   #hud {
         position: absolute;
         left: 50%;
+        top: 20px;
         transform: translateX(-50%);
         text-align: center;
         width: 100%;
@@ -701,7 +781,7 @@ audio {
     #loading-bar { height: 100%; background: #3b82f6; width: 0%; transition: width 0.3s; border-radius: 2px; }
 
     @media (max-width: 768px) {
-        #hud { top: 24px; gap: 6px; }
+        #hud { top: 12px; gap: 6px; }
         #scene-title { padding: 8px 16px; font-size: 13px; }
         #hint { padding: 4px 10px; font-size: 10px; }
 

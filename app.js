@@ -470,3 +470,23 @@ testImage.onerror = function() {
 function closeErrorModal() {
     document.getElementById("errorModal").style.display = "none";
 }
+
+
+const audio = document.getElementById("bg-audio");
+
+document.getElementById("enable-audio").onclick = async () => {
+    audio.muted = false;
+
+    try {
+        await audio.play();
+    } catch (e) {
+        console.log(e);
+    }
+
+    document.getElementById("welcome-modal").remove();
+};
+
+document.getElementById("continue-muted").onclick = () => {
+    audio.muted = true;
+    document.getElementById("welcome-modal").remove();
+};

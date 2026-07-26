@@ -472,21 +472,29 @@ function closeErrorModal() {
 }
 
 
+const modal = document.getElementById("audio-modal");
 const audio = document.getElementById("bg-audio");
 
-document.getElementById("enable-audio").onclick = async () => {
-    audio.muted = false;
+function closeAudioModal() {
+    modal.classList.add("hidden");
 
+    // Optional: completely remove it after the fade-out
+    setTimeout(() => {
+        modal.remove();
+    }, 400); // Match your CSS transition duration
+}
+
+document.getElementById("enable-audio").addEventListener("click", async () => {
     try {
+        audio.muted = false;
         await audio.play();
-    } catch (e) {
-        console.log(e);
+    } catch (err) {
+        console.log(err);
     }
 
-    document.getElementById("welcome-modal").remove();
-};
+    closeAudioModal();
+});
 
-document.getElementById("continue-muted").onclick = () => {
-    audio.muted = true;
-    document.getElementById("welcome-modal").remove();
-};
+document.getElementById("continue-muted").addEventListener("click", () => {
+    document.getElementById("audio-modal").classList.add("hidden");
+});

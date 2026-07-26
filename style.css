@@ -27,6 +27,8 @@ body {
     margin: auto;
 }
 
+
+
 .audio-modal{
     position:fixed;
     inset:0;
@@ -34,12 +36,21 @@ body {
     justify-content:center;
     align-items:center;
 
-    background:rgba(0,0,0,.45);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
+    opacity:1;
+    visibility:visible;
+
+    transition:opacity .4s ease, visibility .4s ease;
 
     z-index:9999;
 }
+
+.audio-modal.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+
 
 .audio-card{
 
@@ -59,6 +70,25 @@ body {
 
     color:#fff;
     text-align:center;
+        animation:modalIn .55s cubic-bezier(.22,1,.36,1);
+
+}
+
+
+
+@keyframes modalIn{
+
+    from{
+
+        opacity:0;
+        transform:translateY(25px) scale(.96);
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
 }
 
 .audio-card h2{

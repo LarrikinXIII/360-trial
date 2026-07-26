@@ -25,26 +25,19 @@ function buildVirtualTourViewer() {
     const gyroBtn = document.getElementById('gyro-btn');
     let panoramaPrevGyro = false;
 
-   // FORCED AUTOPLAY ON PAGE LOAD (Muted to bypass browser security)
+  // 1. RUNS IMMEDIATELY ON PAGE LOAD (Muted state completely allowed by browsers)
 if (globalAudio) {
-    globalAudio.muted = true;               /* Essential: Browsers require this to allow autoplay */
-    globalAudio.play()
-        .then(() => {
-            if (globalAudioToggle) globalAudioToggle.innerHTML = "🔇";
-            console.log("Audio track initialized and playing silently on page load.");
-        })
-        .catch((err) => {
-            console.log("Autoplay blocked by browser policy:", err);
-        }); 
+    globalAudio.muted = true;               
+    globalAudio.play().catch(() => {}); // Begins tracking playback through the timeline right away
 }
 
-// AUTOMATIC UNMUTE: Unmutes the track the absolute instant the user interacts with the canvas
-function unlockGlobalAutoplay() {
+// 2. UNMUTES SEAMLESSLY ON FIRST INTERACTION
+function activateAudioOnInteraction() {
     if (globalAudio) {
         globalAudio.muted = false;
         globalAudio.volume = 0.4;
         
-        /* If the browser paused it, force play again now that it's unmuted */
+        // Safety guard: If browser temporarily paused it on load, wake it up
         if (globalAudio.paused) {
             globalAudio.play();
         }
@@ -52,17 +45,18 @@ function unlockGlobalAutoplay() {
         if (globalAudioToggle) globalAudioToggle.innerHTML = "🔊";
     }
     
-    // Clean up instantly so this code never executes again during the session
-    window.removeEventListener('click', unlockGlobalAutoplay);
-    window.removeEventListener('touchstart', unlockGlobalAutoplay);
-    window.removeEventListener('mousedown', unlockGlobalAutoplay);
+    // Wipe listeners immediately so interaction logic only fires once
+    window.removeEventListener('click', activateAudioOnInteraction);
+    window.removeEventListener('touchstart', activateAudioOnInteraction);
+    window.removeEventListener('mousedown', activateAudioOnInteraction);
+    window.removeEventListener('wheel', activateAudioOnInteraction);
 }
 
-// Listen for any form of interaction (clicking, tapping, or dragging the panorama)
-window.addEventListener('click', unlockGlobalAutoplay);
-window.addEventListener('touchstart', unlockGlobalAutoplay);
-window.addEventListener('mousedown', unlockGlobalAutoplay);
-
+// Monitors all movement, scrolling, or dragging actions across your 3D canvas
+window.addEventListener('click', activateAudioOnInteraction);
+window.addEventListener('touchstart', activateAudioOnInteraction);
+window.addEventListener('mousedown', activateAudioOnInteraction);
+window.addEventListener('wheel', activateAudioOnInteraction);
 // MANUAL OVERRIDE SWITCH BUTTON
 if (globalAudioToggle && globalAudio) {
     globalAudioToggle.addEventListener('click', function(e) {

@@ -167,24 +167,23 @@ function openSpecificModal(frameId) {
     const data = frameContentRegistry[frameId];
     if (!data) return;
 
-    // TARGET AMBIENT ENGINE: Replaced 'globalAudio' with your explicit 'globalAmbientAudio' ID
+    // TARGET AMBIENT ENGINE
     const globalAmbientAudio = document.getElementById("globalAmbientAudio");
     
-    // FORCE UNMUTE AND PLAY: If global audio is muted or paused, this forces it on
+    // 1. FORCE GLOBAL AUDIO UNMUTE & PLAY IMMEDIATELY
     if (globalAmbientAudio) {
-        globalAmbientAudio.muted = false; // Strips away any explicit mute state
-        globalAmbientAudio.volume = 0.3;  // Maintains readable background volume level
+        globalAmbientAudio.muted = false; 
+        globalAmbientAudio.volume = 0.3;  
         
         if (globalAmbientAudio.paused) {
             globalAmbientAudio.play().catch(err => {
-                console.log("Global ambient audio play blocked by browser:", err);
+                console.log("Global ambient audio play interrupted:", err);
             });
         }
     }
 
+    // UPDATE UI TEXT AND IMAGE
     if (modalTitle) modalTitle.textContent = data.title;
-    
-    // FIX THE BR TAG: Changed textContent to innerHTML so line breaks work properly
     if (modalSubtext) modalSubtext.innerHTML = data.subtext;
     
     if (modalImage && data.image) {
@@ -192,16 +191,22 @@ function openSpecificModal(frameId) {
         modalImage.style.display = "block";
     }
 
+    // 2. FRESH RESET AND SEQUENCE THE VOICE OVERLAY MP3
     if (modalAudio && audioSource) {
-        modalAudio.pause();
-        audioSource.src = data.audio;
-        modalAudio.load();
+        modalAudio.pause();              // Stop any previous instance immediately
+        modalAudio.currentTime = 0;      // Rewind to start
+        audioSource.src = data.audio;    // Swap source path safely
+        modalAudio.load();               // Clear audio buffer cache
         
-        // OPTIONAL: Automatically start playing the voice overlay once it finishes loading
-        modalAudio.play().catch(err => console.log("Voice overlay autoplay blocked:", err));
+        // Use a tiny 50ms delay so the browser can register the global audio stream first
+        setTimeout(() => {
+            modalAudio.play().catch(err => {
+                console.log("Modal voice overlay audio failed to play:", err);
+            });
+        }, 50);
     }
 
-    // Pause gyro while modal is open, restoring previous state on close
+    // Pause gyro while modal is open
     panoramaPrevGyro = !!gyroActive;
     if (panoramaViewer && panoramaViewer.setGyroEnabled) panoramaViewer.setGyroEnabled(false);
     gyroActive = false;
@@ -212,52 +217,49 @@ function openSpecificModal(frameId) {
     if (modal) modal.classList.add('active');
 
     // ==========================================
-    // MODAL CLOSING EVENT LISTENERS
+    // MODAL CLOSING EVENT HANDLERS
     // ==========================================
     if (closeBtn && modal) {
-        closeBtn.addEventListener('click', function() { 
+        closeBtn.onclick = function() { 
             modal.classList.remove('active'); 
             isModalActive = false;
             if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
             if (modalAudio) modalAudio.pause(); 
             
-            // CLEANUP: Fixed globalAudio to globalAmbientAudio so it doesn't crash on exit
             if (globalAmbientAudio && !globalAmbientAudio.muted) {
                 globalAmbientAudio.volume = 0.4;
             }
 
-            // Restore gyro state if it was active before modal
             if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
                 panoramaViewer.setGyroEnabled(true);
                 gyroActive = true;
                 updateGyroButton();
             }
-        });
+        };
     }
     
     if (modal) {
-        modal.addEventListener('click', function(e) { 
+        modal.onclick = function(e) { 
             if (e.target === modal) { 
                 modal.classList.remove('active'); 
                 isModalActive = false;
                 if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
                 if (modalAudio) modalAudio.pause(); 
                 
-                // CLEANUP: Fixed globalAudio to globalAmbientAudio so it doesn't crash on exit
                 if (globalAmbientAudio && !globalAmbientAudio.muted) {
                     globalAmbientAudio.volume = 0.4;
                 }
 
-                // Restore gyro state if it was active before modal
                 if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
                     panoramaViewer.setGyroEnabled(true);
                     gyroActive = true;
                     updateGyroButton();
                 }
             } 
-        });
+        };
     }
-}
+} // <--- END OF FUNCTION
+
 }
 // ========================================================
 // 🎛️ GLOBAL HUD HANDLERS (LINKED DIRECTLY TO INLINE HTML)

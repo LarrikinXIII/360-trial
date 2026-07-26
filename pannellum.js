@@ -297,7 +297,10 @@ window.pannellum = (function() {
 
         // --- 3. UNIVERSAL SCROLL & ZOOM CONTROLS ---
         canvas.addEventListener("wheel", function(e) {
-            e.preventDefault();
+            // Allow page scrolling when gyro is active by not preventing default on wheel
+            if (!gyroEnabled) {
+                e.preventDefault();
+            }
             pauseAutoRotate("interaction");
             if (e.deltaY > 0) { config.hfov += 4; } else { config.hfov -= 4; }
             config.hfov = Math.max(50, Math.min(130, config.hfov));

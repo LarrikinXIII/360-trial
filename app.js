@@ -262,6 +262,29 @@ window.addEventListener('DOMContentLoaded', function() {
     isHudAutoplayActive = true;
     updateAutoplayButtonLabel();
     syncFullscreenUI();
+
+    // Attempt to request gyro permission on page load (iOS requires explicit permission)
+    (async function requestGyroOnLoad() {
+        if (!panoramaViewer || !panoramaViewer.setGyroEnabled) return;
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            try {
+                const resp = await DeviceOrientationEvent.requestPermission();
+                if (resp === 'granted') {
+                    panoramaViewer.setGyroEnabled(true);
+                    gyroActive = true;
+                    updateGyroButton();
+                }
+            } catch (err) {
+                // Permission cannot be requested without user gesture on some platforms; ignore silently
+                console.warn('Gyro permission request failed or blocked on load', err);
+            }
+        } else {
+            // Non-iOS devices often allow automatic deviceorientation events — enable by default
+            panoramaViewer.setGyroEnabled(true);
+            gyroActive = true;
+            updateGyroButton();
+        }
+    })();
 });
 
 // 2. Triggered naturally by onclick="resetView()"

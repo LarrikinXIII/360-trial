@@ -140,7 +140,7 @@ function buildVirtualTourViewer() {
 
     // Central local file mapping configuration registry dictionary layout
     const frameContentRegistry = {
-        "fmain": { title: "Television Media Center", image: "f1.png", subtext: "Guardian", audio: "tv-audio.mp3" },
+     "fmain": { title: "The Shadow", image: "f1.png", subtext: "My hands were never made for crowns,\nThey were made to carry tomorrow.\nAnd if the world should turn to ash,\nYou’ll still find peace beneath my shadow.", audio: "tv-audio.mp3" },
         "L1": { title: "L1", image: "https://picsum.photos/300/400?random=1", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L2": { title: "L2", image: "https://picsum.photos/300/400?random=2", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L3": { title: "L3", image: "https://picsum.photos/300/400?random=3", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },

@@ -16,15 +16,14 @@
     <div id="hint">Drag to look · Scroll to zoom · Click thumbnails to switch scene</div>
 </div>
 <div id="scene-switcher">
-    <div class="scene-thumb active" id="thumb-0" onclick="switchScene(0)">
-        <img id="thumb-img-0" src="back.jpg" alt="Living Room">
-        <div class="scene-label">Living Room</div>
-    </div>
+    <a class="scene-thumb order-btn" id="order-thumb" href="../contact/index.html">ORDER YOURS</a>
 </div>
 <div id="controls">
-    <button class="ctrl-btn" id="autoplay-btn" onclick="toggleAutoplay()">▶ Auto Rotate</button>
+    <button class="ctrl-btn" id="autoplay-btn" onclick="toggleAutoplay()">⏸ Stop Auto Rotate</button>
+    <button class="ctrl-btn" id="gyro-btn" title="Toggle Gyro">Gyro Off</button>
+    <button class="ctrl-btn" id="globalAudioToggle" title="Toggle Background Music">🔊 Music On</button>
     <button class="ctrl-btn" onclick="resetView()">⌂ Reset</button>
-    <button class="ctrl-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <button class="ctrl-btn fullscreen-toggle" id="fullscreen-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
 </div>
 <div id="fov-slider">
     <label>ZOOM</label>
@@ -60,11 +59,6 @@
         <source src="alex-productions-sexy-sax.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-
-    <!-- Interactive Global Floating Mute/Unmute Control Toggle Control -->
-    <button id="globalAudioToggle" class="floating-audio-btn" title="Toggle Background Music">
-        🔊 Music On
-    </button>
 
     <!-- Custom Exterior JavaScript Architecture Links -->
     <script src="./pannellum.js"></script>

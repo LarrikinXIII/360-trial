@@ -1,5 +1,8 @@
 console.log("[APP] Executing virtual tour control modules...");
 
+let isModalActive = false;
+let panoramaViewer = null;
+
 if (window.pannellum) {
     buildVirtualTourViewer();
 } else {
@@ -19,6 +22,7 @@ function buildVirtualTourViewer() {
 
     const globalAudio = document.getElementById('globalAmbientAudio');
     const globalAudioToggle = document.getElementById('globalAudioToggle');
+    const gyroBtn = document.getElementById('gyro-btn');
 
     // Start background music loop in muted state
     if (globalAudio) {
@@ -53,8 +57,49 @@ function buildVirtualTourViewer() {
         });
     }
 
+    // Gyro toggle handling
+    let gyroActive = false;
+    function updateGyroButton() {
+        if (!gyroBtn) return;
+        gyroBtn.textContent = gyroActive ? 'Gyro On' : 'Gyro Off';
+        gyroBtn.classList.toggle('active', gyroActive);
+    }
+
+    if (gyroBtn) {
+        gyroBtn.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            if (!panoramaViewer || !panoramaViewer.setGyroEnabled) return;
+
+            if (!gyroActive) {
+                // iOS permission flow
+                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    try {
+                        const resp = await DeviceOrientationEvent.requestPermission();
+                        if (resp !== 'granted') {
+                            console.warn('Gyro permission denied');
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn('Gyro permission error', err);
+                        return;
+                    }
+                }
+                panoramaViewer.setGyroEnabled(true);
+                gyroActive = true;
+            } else {
+                panoramaViewer.setGyroEnabled(false);
+                gyroActive = false;
+            }
+            updateGyroButton();
+        });
+    }
+
+    if (panoramaViewer && panoramaViewer.setAutoRotate) {
+        panoramaViewer.setAutoRotate(true);
+    }
+
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
-  const viewer = window.pannellum.viewer('panorama', {
+  panoramaViewer = window.pannellum.viewer('panorama', {
     type: "equirectangular",
     panorama: "beach.jpeg",
 
@@ -64,7 +109,7 @@ function buildVirtualTourViewer() {
     pitch: 0,
     yaw: 0,
 
-    autoRotate: -2,          // negative = clockwise, positive = counter-clockwise
+    autoRotate: 0,
     autoRotateInactivityDelay: 0,
     autoRotateStopDelay: 0,
 
@@ -138,12 +183,16 @@ function buildVirtualTourViewer() {
             modalAudio.load();
         }
 
+        isModalActive = true;
+        if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(true);
         if (modal) modal.classList.add('active');
     }
 
     if (closeBtn && modal) {
         closeBtn.addEventListener('click', function() { 
             modal.classList.remove('active'); 
+            isModalActive = false;
+            if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
             if (modalAudio) modalAudio.pause(); 
             if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
         });
@@ -153,6 +202,8 @@ function buildVirtualTourViewer() {
         modal.addEventListener('click', function(e) { 
             if (e.target === modal) { 
                 modal.classList.remove('active'); 
+                isModalActive = false;
+                if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
                 if (modalAudio) modalAudio.pause(); 
                 if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
             } 
@@ -165,51 +216,52 @@ function buildVirtualTourViewer() {
 // ========================================================
 console.log("[HUD-MATRIX] Injecting global dashboard connection hooks...");
 
-let hudAutoplayIntervalTimer = null;
-let isHudAutoplayActive = false;
+let isHudAutoplayActive = true;
+
+function updateAutoplayButtonLabel() {
+    const autoplayBtnElement = document.getElementById("autoplay-btn");
+    if (!autoplayBtnElement) return;
+    autoplayBtnElement.innerHTML = isHudAutoplayActive ? "⏸ Stop Auto Rotate" : "▶ Auto Rotate";
+    autoplayBtnElement.classList.toggle("active", isHudAutoplayActive);
+}
 
 // 1. Triggered naturally by onclick="toggleAutoplay()"
 window.toggleAutoplay = function() {
-    const autoplayBtnElement = document.getElementById("autoplay-btn");
-    
-    if (!isHudAutoplayActive) {
-        console.log("[HUD] Activating automated canvas rotation engine...");
-        isHudAutoplayActive = true;
-        if (autoplayBtnElement) autoplayBtnElement.innerHTML = "⏸ Stop Rotate";
-        
-        // Continuous smooth event loop simulating gentle drag-nudge movements on the canvas
-        hudAutoplayIntervalTimer = setInterval(function() {
-            const simulatedDragNudgeEvent = new MouseEvent('mousemove', {
-                clientX: (window.innerWidth / 2) - 1, // Moves view fractions to the left
-                clientY: window.innerHeight / 2,
-                bubbles: true
-            });
-            const roomCanvasNode = document.querySelector('#panorama canvas');
-            if (roomCanvasNode) roomCanvasNode.dispatchEvent(simulatedDragNudgeEvent);
-        }, 16); // 16ms refresh frames lock silky 60fps pan velocities
-    } else {
-        window.stopAutoplayEngine();
+    if (!panoramaViewer || !panoramaViewer.setAutoRotate) return;
+
+    if (isHudAutoplayActive) {
+        panoramaViewer.setAutoRotate(false);
+        isHudAutoplayActive = false;
+        updateAutoplayButtonLabel();
+        return;
     }
+
+    if (isModalActive) {
+        updateAutoplayButtonLabel();
+        return;
+    }
+
+    console.log("[HUD] Activating automated canvas rotation engine...");
+    panoramaViewer.setAutoRotate(true);
+    isHudAutoplayActive = true;
+    updateAutoplayButtonLabel();
 };
 
 window.stopAutoplayEngine = function() {
+    if (panoramaViewer && panoramaViewer.setAutoRotate) {
+        panoramaViewer.setAutoRotate(false);
+    }
     isHudAutoplayActive = false;
-    if (hudAutoplayIntervalTimer) clearInterval(hudAutoplayIntervalTimer);
-    const autoplayBtnElement = document.getElementById("autoplay-btn");
-    if (autoplayBtnElement) autoplayBtnElement.innerHTML = "▶ Auto Rotate";
+    updateAutoplayButtonLabel();
 };
 
-// Autodetect manual canvas drags to immediately turn off autopilot rotation safely
 window.addEventListener('DOMContentLoaded', function() {
-    const panoramaWrapperElement = document.getElementById('panorama');
-    if (panoramaWrapperElement) {
-        panoramaWrapperElement.addEventListener('mousedown', function(e) {
-            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
-        });
-        panoramaWrapperElement.addEventListener('touchstart', function(e) {
-            if (e.target.tagName === 'CANVAS') window.stopAutoplayEngine();
-        });
+    if (panoramaViewer && panoramaViewer.setAutoRotate) {
+        panoramaViewer.setAutoRotate(true);
     }
+    isHudAutoplayActive = true;
+    updateAutoplayButtonLabel();
+    syncFullscreenUI();
 });
 
 // 2. Triggered naturally by onclick="resetView()"
@@ -218,6 +270,16 @@ window.resetView = function() {
     window.stopAutoplayEngine();
     if (window.location) window.location.reload(); // Quick page refresh re-centers look coordinates beautifully
 };
+
+function syncFullscreenUI() {
+    const isFullscreen = !!document.fullscreenElement || !!document.webkitFullscreenElement;
+    document.body.classList.toggle('is-fullscreen', isFullscreen);
+
+    const fullscreenButton = document.getElementById('fullscreen-btn');
+    if (fullscreenButton) {
+        fullscreenButton.innerHTML = isFullscreen ? '⛶ Exit Fullscreen' : '⛶ Fullscreen';
+    }
+}
 
 // 3. Triggered naturally by onclick="toggleFullscreen()"
 window.toggleFullscreen = function() {
@@ -237,7 +299,12 @@ window.toggleFullscreen = function() {
             document.webkitExitFullscreen();
         }
     }
+
+    setTimeout(syncFullscreenUI, 50);
 };
+
+document.addEventListener('fullscreenchange', syncFullscreenUI);
+document.addEventListener('webkitfullscreenchange', syncFullscreenUI);
 
 // 4. Triggered naturally by oninput="setFov(this.value)"
 window.setFov = function(val) {

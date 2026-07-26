@@ -141,39 +141,30 @@ audio {
     outline: none;
 }
 
-/* Floating Global Music Control Button Styles */
-.floating-audio-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 999; /* Positions it floating safely above the 360 viewer canvas */
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    padding: 10px 16px;
-    border-radius: 30px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #333;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.floating-audio-btn:hover {
-    transform: scale(1.05);
-    background: #ffffff;
-}
-
-/* Dim button appearance when audio track is muted */
-.floating-audio-btn.is-muted {
-    background: rgba(0, 0, 0, 0.6);
+/* Music button inherits shared control styling from the bottom controls bar */
+#globalAudioToggle {
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
     color: #fff;
-    border-color: transparent;
+    padding: 10px 18px;
+    border-radius: 24px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+#globalAudioToggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
 }
 
 
@@ -195,10 +186,48 @@ audio {
     .scene-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .thumb-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.62); color: #fff; font-size: 9px; text-align: center; padding: 2px 0; font-weight: 600; letter-spacing: 0.04em; }
 
-    #controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; }
-    .ctrl-btn { background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); color: #fff; padding: 10px 18px; border-radius: 24px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    /* When the thumbnail is used as an order button */
+    .scene-thumb.order-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        min-width: 80px;
+        height: 40px;
+        padding: 6px 10px;
+        border-radius: 12px;
+        background: rgba(0,0,0,0.65);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    }
+
+    .scene-thumb.order-btn:hover { transform: none; background: rgba(255,255,255,0.05); }
+
+    #controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; flex-wrap: nowrap; justify-content: center; }
+    .ctrl-btn { background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); color: #fff; padding: 10px 18px; border-radius: 24px; font-size: 13px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
     .ctrl-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
     .ctrl-btn.active { background: rgba(59,130,246,0.4); border-color: rgba(59,130,246,0.6); }
+
+    body.is-fullscreen #hud,
+    body.is-fullscreen #scene-switcher,
+    body.is-fullscreen #fov-slider {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    body.is-fullscreen #controls {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    body.is-fullscreen #controls .ctrl-btn:not(.fullscreen-toggle) {
+        display: none;
+    }
 
     #fov-slider { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10; }
     #fov-slider label { color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; }
@@ -213,4 +242,29 @@ audio {
     #loading p { color: rgba(255,255,255,0.5); font-size: 14px; }
     #loading-bar-wrap { width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
     #loading-bar { height: 100%; background: #3b82f6; width: 0%; transition: width 0.3s; border-radius: 2px; }
+
+    @media (max-width: 768px) {
+        #hud { top: 12px; gap: 6px; }
+        #scene-title { padding: 8px 16px; font-size: 13px; }
+        #hint { padding: 4px 10px; font-size: 10px; }
+
+        #scene-switcher { left: 12px; gap: 8px; }
+        .scene-thumb { width: 58px; height: 38px; border-radius: 8px; }
+
+        #controls { bottom: 16px; gap: 8px; }
+        .ctrl-btn { padding: 8px 12px; font-size: 12px; border-radius: 20px; }
+
+        #fov-slider { right: 12px; gap: 6px; }
+        #fov-slider label { font-size: 9px; }
+        input[type=range] { height: 90px; }
+
+        #globalAudioToggle {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+
+        .modal-content { width: 94%; padding: 20px; max-width: 360px; }
+        .modal-title { font-size: 1.2rem; }
+        .modal-subtext { font-size: 0.85rem; }
+    }
   

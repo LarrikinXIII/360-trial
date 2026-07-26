@@ -87,19 +87,78 @@ window.pannellum = (function() {
             // 🚀 NATIVE AUTOPLAY TICK ENGINE (SLIDES PANORAMA ON LOAD)
             // ========================================================
             function autoplayAnimationTick() {
-                // If the user isn't actively dragging the mouse or finger
-                if (!isDragging) {
-                    yaw += 0.0015; // Nudges horizontal camera perspective slightly (approx 60fps velocity)
-                    drawScene();   // Instantly re-renders the 3D WebGL context sphere
+                if (!isDragging && autoRotateActive) {
+                    yaw += 0.0015;
+                    drawScene();
                 }
-                requestAnimationFrame(autoplayAnimationTick); // Syncs cleanly with browser rendering frames
+                requestAnimationFrame(autoplayAnimationTick);
             }
             requestAnimationFrame(autoplayAnimationTick); // Launches autopilot thread immediately
         };
         img.src = config.panorama;
 
         var pitch = config.pitch || 0, yaw = config.yaw || 0;
+        var autoRotateEnabled = true;
+        var autoRotatePausedByInteraction = false;
+        var autoRotatePausedByModal = false;
+        var autoRotateIdleTimer = null;
+        var autoRotateActive = false;
         var mvpLoc = gl.getUniformLocation(prog, "u_mvp");
+
+        function updateAutoRotateState() {
+            autoRotateActive = autoRotateEnabled && !autoRotatePausedByInteraction && !autoRotatePausedByModal;
+        }
+
+        updateAutoRotateState();
+
+        function clearAutoRotateIdleTimer() {
+            if (autoRotateIdleTimer) {
+                clearTimeout(autoRotateIdleTimer);
+                autoRotateIdleTimer = null;
+            }
+        }
+
+        function pauseAutoRotate(reason) {
+            if (reason === "interaction") {
+                autoRotatePausedByInteraction = true;
+                clearAutoRotateIdleTimer();
+                if (autoRotateEnabled && !autoRotatePausedByModal) {
+                    autoRotateIdleTimer = setTimeout(function() {
+                        autoRotateIdleTimer = null;
+                        autoRotatePausedByInteraction = false;
+                        updateAutoRotateState();
+                    }, 3000);
+                }
+            } else if (reason === "modal") {
+                autoRotatePausedByModal = true;
+                clearAutoRotateIdleTimer();
+            }
+            updateAutoRotateState();
+        }
+
+        function setAutoRotate(enabled) {
+            autoRotateEnabled = !!enabled;
+            if (!enabled) {
+                clearAutoRotateIdleTimer();
+                autoRotatePausedByInteraction = false;
+                updateAutoRotateState();
+                return;
+            }
+            autoRotatePausedByInteraction = false;
+            updateAutoRotateState();
+        }
+
+        function setModalActive(active) {
+            autoRotatePausedByModal = !!active;
+            clearAutoRotateIdleTimer();
+            if (!active && autoRotateEnabled && !autoRotatePausedByInteraction) {
+                autoRotateIdleTimer = setTimeout(function() {
+                    autoRotateIdleTimer = null;
+                    updateAutoRotateState();
+                }, 3000);
+            }
+            updateAutoRotateState();
+        }
 
         function drawScene() {
             var w = canvas.clientWidth, h = canvas.clientHeight;
@@ -169,7 +228,8 @@ window.pannellum = (function() {
         
         // --- 1. DESKTOP MOUSE LISTENERS ---
         canvas.addEventListener("mousedown", function(e) { 
-            isDragging = true; lastX = e.clientX; lastY = e.clientY; 
+            isDragging = true; lastX = e.clientX; lastY = e.clientY;
+            pauseAutoRotate("interaction");
         });
         window.addEventListener("mouseup", function() { isDragging = false; });
         window.addEventListener("mousemove", function(e) {
@@ -189,6 +249,7 @@ window.pannellum = (function() {
                 lastX = e.touches[0].clientX; 
                 lastY = e.touches[0].clientY;
                 initialPinchDistance = null;
+                pauseAutoRotate("interaction");
             } else if (e.touches.length === 2) {
                 isDragging = false; // Stop dragging when pitching/zooming
                 // Measures space between finger 0 and finger 1
@@ -237,6 +298,7 @@ window.pannellum = (function() {
         // --- 3. UNIVERSAL SCROLL & ZOOM CONTROLS ---
         canvas.addEventListener("wheel", function(e) {
             e.preventDefault();
+            pauseAutoRotate("interaction");
             if (e.deltaY > 0) { config.hfov += 4; } else { config.hfov -= 4; }
             config.hfov = Math.max(50, Math.min(130, config.hfov));
             drawScene();
@@ -251,17 +313,30 @@ window.pannellum = (function() {
         });
 
         // --- 5. SMARTPHONE GYROSCOPE MOTION DEVICE ORIENTATION CONTROLS ---
-        window.addEventListener("deviceorientation", function(e) {
+        var gyroEnabled = false;
+        function handleDeviceOrientation(e) {
+            if (!gyroEnabled) return;
             if (e.alpha !== null && e.beta !== null && e.gamma !== null) {
-                var tiltY = (e.beta - 70) * 0.015; 
+                var tiltY = (e.beta - 70) * 0.015;
                 var rollX = e.gamma * 0.015;
 
                 pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, tiltY));
-                yaw = -rollX; 
+                yaw = -rollX;
 
-                drawScene(); 
+                drawScene();
             }
-        }, true);
+        }
+
+        function setGyroEnabled(enabled) {
+            enabled = !!enabled;
+            if (enabled === gyroEnabled) return;
+            gyroEnabled = enabled;
+            if (gyroEnabled) {
+                window.addEventListener("deviceorientation", handleDeviceOrientation, true);
+            } else {
+                window.removeEventListener("deviceorientation", handleDeviceOrientation, true);
+            }
+        }
 
         // ========================================================
         // 🚀 EXPOSE NATIVE ROTATION HOOK TO THE HUD BUTTONS
@@ -271,7 +346,10 @@ window.pannellum = (function() {
             stepYaw: function(amount) {
                 yaw += amount; // Directly updates the 3D horizontal angle vector
                 drawScene();   // Instantly re-renders the scene
-            }
+            },
+            setAutoRotate: setAutoRotate,
+            setModalActive: setModalActive,
+            setGyroEnabled: setGyroEnabled
         };
     }; 
 

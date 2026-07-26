@@ -216,7 +216,6 @@ window.stopAutoplayEngine = function () {
     if (autoplayBtnElement)
         autoplayBtnElement.innerHTML = "▶ Auto Rotate";
 
-    if (window.viewer)
 
 };
 

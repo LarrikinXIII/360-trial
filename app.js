@@ -163,34 +163,15 @@ function buildVirtualTourViewer() {
         "R6": { title: "R6", image: "https://picsum.photos/300/400?random=10", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" }
     };
 
-// Track if the first-time unmute has already happened
-let hasUnmutedOnFirstModal = false;
-
 function openSpecificModal(frameId) {
     const data = frameContentRegistry[frameId];
     if (!data) return;
 
+    // TARGET AMBIENT ENGINE: Replaced 'globalAudio' with your explicit 'globalAmbientAudio' ID
     const globalAmbientAudio = document.getElementById("globalAmbientAudio");
     
-    // FIRST-TIME UNMUTE LOGIC: Unmute, set volume, and play only on the first activation
-    if (!hasUnmutedOnFirstModal && globalAmbientAudio) {
-        globalAmbientAudio.muted = false;
-        globalAmbientAudio.volume = 0.3; // Matches your background volume
-        globalAmbientAudio.play().catch(err => console.log("Ambient autoplay blocked:", err));
-        
-        // Update the UI button text if it exists
-        const globalAudioToggle = document.getElementById("globalAudioToggle"); // Adjust ID if needed
-        if (globalAudioToggle) {
-            globalAudioToggle.innerHTML = "🔊 Music On";
-        }
-        
-        // Clean up global click listeners so they don't fire again
-        window.removeEventListener('click', unlockGlobalAutoplay);
-        window.removeEventListener('touchstart', unlockGlobalAutoplay);
-        
-        hasUnmutedOnFirstModal = true;
-    } else if (globalAmbientAudio && !globalAmbientAudio.paused) {
-        // KEEP PLAYING: Maintained for subsequent modal opens
+    // KEEP PLAYING: We maintain a readable background volume (0.3) instead of dropping it to 0.1 or pausing it
+    if (globalAmbientAudio && !globalAmbientAudio.paused) {
         globalAmbientAudio.volume = 0.3; 
     }
 
@@ -207,10 +188,9 @@ function openSpecificModal(frameId) {
         audioSource.src = data.audio;
         modalAudio.load();
         
+        // OPTIONAL: Automatically start playing the voice overlay once it finishes loading
         modalAudio.play().catch(err => console.log("Voice overlay autoplay blocked:", err));
     }
-}
-
 
         // Pause gyro while modal is open, restoring previous state on close
         panoramaPrevGyro = !!gyroActive;

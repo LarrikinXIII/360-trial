@@ -61,7 +61,7 @@ function buildVirtualTourViewer() {
     let modalSubtextScrollIdleTimer = null;
     let modalSubtextAnimationId = null;
     const SUBTEXT_IDLE_DELAY = 3000; // Resume auto-scroll after 3 seconds of idle
-    const SUBTEXT_SCROLL_SPEED = 0.5; // pixels per millisecond (adjust for scroll speed)
+    const SUBTEXT_SCROLL_SPEED = 1; // pixels per frame (adjust for scroll speed)
 
     function animateSubtextScroll() {
         if (!modalSubtext || modalSubtext.classList.contains('paused')) {
@@ -108,7 +108,11 @@ function buildVirtualTourViewer() {
             pauseSubtextAutoScroll();
         }, { passive: true });
 
-        // Pause on touch drag
+        // Pause on touch/mouse interactions
+        modalSubtext.addEventListener('mousedown', function (event) {
+            pauseSubtextAutoScroll();
+        }, { passive: true });
+
         modalSubtext.addEventListener('pointerdown', function (event) {
             pauseSubtextAutoScroll();
         }, { passive: true });

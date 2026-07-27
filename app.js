@@ -57,79 +57,6 @@ function buildVirtualTourViewer() {
         }
     }, { passive: false });
 
-    // Modal subtext auto-scroll with user control
-    let modalSubtextScrollIdleTimer = null;
-    let modalSubtextAnimationId = null;
-    const SUBTEXT_IDLE_DELAY = 3000; // Resume auto-scroll after 3 seconds of idle
-    const SUBTEXT_SCROLL_SPEED = 1; // pixels per frame (adjust for scroll speed)
-
-    function animateSubtextScroll() {
-        if (!modalSubtext || modalSubtext.classList.contains('paused')) {
-            modalSubtextAnimationId = null;
-            return;
-        }
-
-        // Auto-scroll: increment scrollTop
-        const maxScroll = modalSubtext.scrollHeight - modalSubtext.clientHeight;
-        if (modalSubtext.scrollTop < maxScroll) {
-            modalSubtext.scrollTop += SUBTEXT_SCROLL_SPEED;
-            modalSubtextAnimationId = requestAnimationFrame(animateSubtextScroll);
-        } else {
-            // Reset to top when reaching bottom
-            modalSubtext.scrollTop = 0;
-            modalSubtextAnimationId = requestAnimationFrame(animateSubtextScroll);
-        }
-    }
-
-    function resumeSubtextAutoScroll() {
-        if (modalSubtext) {
-            modalSubtext.classList.remove('paused');
-            if (!modalSubtextAnimationId) {
-                animateSubtextScroll();
-            }
-        }
-    }
-
-    function pauseSubtextAutoScroll() {
-        if (modalSubtext) {
-            modalSubtext.classList.add('paused');
-        }
-        // Clear existing timer
-        if (modalSubtextScrollIdleTimer) {
-            clearTimeout(modalSubtextScrollIdleTimer);
-        }
-        // Set new idle timer to resume auto-scroll
-        modalSubtextScrollIdleTimer = setTimeout(resumeSubtextAutoScroll, SUBTEXT_IDLE_DELAY);
-    }
-
-    if (modalSubtext) {
-        // Pause on wheel scroll
-        modalSubtext.addEventListener('wheel', function (event) {
-            pauseSubtextAutoScroll();
-        }, { passive: true });
-
-        // Pause on touch/mouse interactions
-        modalSubtext.addEventListener('mousedown', function (event) {
-            pauseSubtextAutoScroll();
-        }, { passive: true });
-
-        modalSubtext.addEventListener('pointerdown', function (event) {
-            pauseSubtextAutoScroll();
-        }, { passive: true });
-
-        modalSubtext.addEventListener('touchstart', function (event) {
-            pauseSubtextAutoScroll();
-        }, { passive: true });
-
-        // Listen for any scroll events
-        modalSubtext.addEventListener('scroll', function (event) {
-            pauseSubtextAutoScroll();
-        }, { passive: true });
-
-        // Start auto-scroll animation
-        resumeSubtextAutoScroll();
-    }
-
     let modalImageZoom = 1;
     let modalImageZoomStartDistance = null;
     let modalImageZoomStartScale = 1;
@@ -163,29 +90,18 @@ function buildVirtualTourViewer() {
         modalImage.style.transform = `scale(${modalImageZoom}) translate(${modalImageOffsetX}px, ${modalImageOffsetY}px)`;
     }
 
-    function dimModalSubtext(dim) {
-        if (!modalSubtext) return;
-        if (dim) {
-            modalSubtext.classList.add('dimmed');
-        } else {
-            modalSubtext.classList.remove('dimmed');
-        }
-    }
-
     if (modalImage) {
         modalImage.addEventListener('wheel', function (event) {
             event.preventDefault();
             event.stopPropagation();
             const delta = event.deltaY > 0 ? -0.08 : 0.08;
             applyModalImageZoom(modalImageZoom + delta);
-            dimModalSubtext(true);
         }, { passive: false });
 
         modalImage.addEventListener('dblclick', function (event) {
             event.preventDefault();
             event.stopPropagation();
             resetModalImageZoom();
-            dimModalSubtext(false);
         });
 
         // Mouse drag handling
@@ -198,7 +114,6 @@ function buildVirtualTourViewer() {
                 modalImageDragOffsetX = modalImageOffsetX;
                 modalImageDragOffsetY = modalImageOffsetY;
                 modalImage.style.transition = 'none';
-                dimModalSubtext(true);
             }
         }, { passive: false });
 
@@ -224,7 +139,6 @@ function buildVirtualTourViewer() {
                 modalImageOffsetX = 0;
                 modalImageOffsetY = 0;
                 updateModalImageTransform();
-                dimModalSubtext(false);
             }
         }, { passive: false });
 
@@ -239,7 +153,6 @@ function buildVirtualTourViewer() {
                 );
                 modalImageZoomStartScale = modalImageZoom;
                 modalImage.style.transition = 'none';
-                dimModalSubtext(true);
             } else if (event.touches.length === 1 && modalImageZoom > 1) {
                 // Single touch drag when zoomed
                 event.preventDefault();
@@ -249,7 +162,6 @@ function buildVirtualTourViewer() {
                 modalImageDragOffsetX = modalImageOffsetX;
                 modalImageDragOffsetY = modalImageOffsetY;
                 modalImage.style.transition = 'none';
-                dimModalSubtext(true);
             }
         }, { passive: false });
 
@@ -286,7 +198,6 @@ function buildVirtualTourViewer() {
                 modalImageOffsetX = 0;
                 modalImageOffsetY = 0;
                 updateModalImageTransform();
-                dimModalSubtext(false);
             }
         });
     }
@@ -613,7 +524,7 @@ window.resetView = function() {
 };
 
 function syncFullscreenUI() {
-    const isFullscreen = !!document.fullscreenElement || !!document.webkitFullscreenElement || document.body.classList.contains('is-fullscreen');
+    const isFullscreen = !!document.fullscreenElement || !!document.webkitFullscreenElement;
     document.body.classList.toggle('is-fullscreen', isFullscreen);
 
     const fullscreenButton = document.getElementById('fullscreen-btn');
@@ -623,68 +534,30 @@ function syncFullscreenUI() {
 }
 
 // 3. Triggered naturally by onclick="toggleFullscreen()"
-window.toggleFullscreen = function(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
+window.toggleFullscreen = function() {
     console.log("[HUD] Requesting browser display viewport size update...");
     const baseDocumentElementShell = document.documentElement;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        // Try native fullscreen first
-        let fullscreenRequested = false;
-        
         if (baseDocumentElementShell.requestFullscreen) {
-            fullscreenRequested = true;
-            baseDocumentElementShell.requestFullscreen().catch(function (err) {
-                console.log("[HUD] Fullscreen API failed, using fallback mode:", err);
-                // Fallback: Use CSS-based fullscreen for mobile
-                document.body.classList.add('is-fullscreen');
-                syncFullscreenUI();
+            baseDocumentElementShell.requestFullscreen().catch(function () {
+                if (isMobile && document.body) {
+                    document.body.style.zoom = '100%';
+                }
             });
         } else if (baseDocumentElementShell.webkitRequestFullscreen) { /* Safari */
-            fullscreenRequested = true;
-            baseDocumentElementShell.webkitRequestFullscreen().catch(function (err) {
-                console.log("[HUD] Webkit fullscreen failed, using fallback mode:", err);
-                document.body.classList.add('is-fullscreen');
-                syncFullscreenUI();
-            });
+            baseDocumentElementShell.webkitRequestFullscreen();
         } else if (baseDocumentElementShell.mozRequestFullScreen) {
-            fullscreenRequested = true;
-            baseDocumentElementShell.mozRequestFullScreen().catch(function (err) {
-                console.log("[HUD] Moz fullscreen failed, using fallback mode:", err);
-                document.body.classList.add('is-fullscreen');
-                syncFullscreenUI();
-            });
+            baseDocumentElementShell.mozRequestFullScreen();
         } else if (baseDocumentElementShell.msRequestFullscreen) {
-            fullscreenRequested = true;
-            baseDocumentElementShell.msRequestFullscreen().catch(function (err) {
-                console.log("[HUD] MS fullscreen failed, using fallback mode:", err);
-                document.body.classList.add('is-fullscreen');
-                syncFullscreenUI();
-            });
-        } else {
-            // No fullscreen API support - use fallback mode
-            console.log("[HUD] No fullscreen API detected, using fallback mode");
-            document.body.classList.add('is-fullscreen');
-            syncFullscreenUI();
+            baseDocumentElementShell.msRequestFullscreen();
         }
     } else {
-        // Exit fullscreen
         if (document.exitFullscreen) {
-            document.exitFullscreen().catch(function () {
-                document.body.classList.remove('is-fullscreen');
-                syncFullscreenUI();
-            });
+            document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
-        } else {
-            // Fallback: Remove CSS fullscreen class
-            document.body.classList.remove('is-fullscreen');
-            syncFullscreenUI();
         }
     }
 

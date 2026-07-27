@@ -18,12 +18,137 @@ function buildVirtualTourViewer() {
     const modalTitle = document.getElementById('modalTitle');
     const modalSubtext = document.getElementById('modalSubtext');
     const modalImage = document.getElementById('modalImage');
+    const modalImageShell = document.getElementById('modalImageShell');
     const audioSource = document.getElementById('audioSource');
 
     const globalAudio = document.getElementById('globalAmbientAudio');
     const globalAudioToggle = document.getElementById('globalAudioToggle');
     const gyroBtn = document.getElementById('gyro-btn');
     let panoramaPrevGyro = false;
+
+    function isTouchZoomSurface(target) {
+        if (!target) return false;
+        return Boolean(target.closest && (
+            target.closest('#panorama') ||
+            target.closest('.modal-image-shell') ||
+            target.closest('#modalImage')
+        ));
+    }
+
+    document.addEventListener('wheel', function (event) {
+        if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('keydown', function (event) {
+        if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '0'].includes(event.key)) {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('gesturestart', function (event) {
+        event.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', function (event) {
+        if (!isTouchZoomSurface(event.target)) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    let modalImageZoom = 1;
+    let modalImageZoomStartDistance = null;
+    let modalImageZoomStartScale = 1;
+
+    function resetModalImageZoom() {
+        modalImageZoom = 1;
+        if (modalImage) {
+            modalImage.style.transform = 'scale(1)';
+            modalImage.style.transformOrigin = 'center center';
+        }
+    }
+
+    function applyModalImageZoom(nextScale) {
+        if (!modalImage) return;
+        modalImageZoom = Math.min(3, Math.max(1, nextScale));
+        modalImage.style.transform = `scale(${modalImageZoom})`;
+        modalImage.style.transformOrigin = 'center center';
+    }
+
+    if (modalImage) {
+        modalImage.addEventListener('wheel', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const delta = event.deltaY > 0 ? -0.08 : 0.08;
+            applyModalImageZoom(modalImageZoom + delta);
+        }, { passive: false });
+
+        modalImage.addEventListener('dblclick', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            resetModalImageZoom();
+        });
+
+        modalImage.addEventListener('touchstart', function (event) {
+            if (event.touches.length === 2) {
+                event.preventDefault();
+                modalImageZoomStartDistance = Math.hypot(
+                    event.touches[0].clientX - event.touches[1].clientX,
+                    event.touches[0].clientY - event.touches[1].clientY
+                );
+                modalImageZoomStartScale = modalImageZoom;
+            }
+        }, { passive: false });
+
+        modalImage.addEventListener('touchmove', function (event) {
+            if (event.touches.length === 2 && modalImageZoomStartDistance) {
+                event.preventDefault();
+                const currentDistance = Math.hypot(
+                    event.touches[0].clientX - event.touches[1].clientX,
+                    event.touches[0].clientY - event.touches[1].clientY
+                );
+                const ratio = currentDistance / modalImageZoomStartDistance;
+                applyModalImageZoom(modalImageZoomStartScale * ratio);
+            }
+        }, { passive: false });
+
+        modalImage.addEventListener('touchend', function () {
+            modalImageZoomStartDistance = null;
+            modalImageZoomStartScale = 1;
+        });
+    }
+
+    function updateGlobalAudioButton() {
+        if (!globalAudioToggle) return;
+
+        const isMuted = !!globalAudio && globalAudio.muted;
+        globalAudioToggle.innerHTML = isMuted ? '🔇 Music Off' : '🔊 Music On';
+        globalAudioToggle.classList.toggle('active', !isMuted);
+    }
+
+    function toggleGlobalAudio() {
+        if (!globalAudio) return;
+
+        if (globalAudio.muted) {
+            globalAudio.muted = false;
+            globalAudio.volume = 0.4;
+            globalAudio.play().catch(err => console.log('Ambient audio autoplay blocked:', err));
+        } else {
+            globalAudio.muted = true;
+        }
+
+        updateGlobalAudioButton();
+    }
+
+    if (globalAudioToggle) {
+        globalAudioToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleGlobalAudio();
+        });
+        window.toggleGlobalAudio = toggleGlobalAudio;
+    }
+
 // Audio permission modal
 const audioModal = document.getElementById("audio-modal");
 const enableAudioBtn = document.getElementById("enable-audio");
@@ -35,12 +160,10 @@ if (enableAudioBtn && audioModal) {
         if (globalAudio) {
             globalAudio.muted = false;
             globalAudio.volume = 0.4;
-            globalAudio.play();
+            globalAudio.play().catch(err => console.log('Ambient audio autoplay blocked:', err));
         }
 
-        if (globalAudioToggle) {
-            globalAudioToggle.innerHTML = "🔊 Music On";
-        }
+        updateGlobalAudioButton();
 
         audioModal.classList.add("hidden");
     });
@@ -54,9 +177,7 @@ if (continueMutedBtn && audioModal) {
             globalAudio.muted = true;
         }
 
-        if (globalAudioToggle) {
-            globalAudioToggle.innerHTML = "🔇 Music Off";
-        }
+        updateGlobalAudioButton();
 
         audioModal.classList.add("hidden");
     });
@@ -109,37 +230,33 @@ if (continueMutedBtn && audioModal) {
     panorama: "darkroom.jpeg",
 
     autoLoad: true,
-
     hfov: 100,
     pitch: 0,
-    yaw: 0,
+    yaw: 25,
 
     autoRotate: 0,
     autoRotateInactivityDelay: 0,
     autoRotateStopDelay: 0,
 
     hotSpots: [
-            { "pitch": -2.4, "yaw": 0, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("fmain") },
-            { "pitch": -20, "yaw": -107.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L1") },
-            { "pitch": -27.2, "yaw": -95.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L2") },
-            { "pitch": -10, "yaw": -95.6, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L3") },
-            { "pitch": -21, "yaw": -78, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L4") },
-            { "pitch": 4, "yaw": -78, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L5") },
-            { "pitch": -25, "yaw": -62, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L6") },
-            { "pitch": -8.1, "yaw": -62, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L7") },
-            { "pitch": 9.5, "yaw": -62.3, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L8") },
-            { "pitch": -16, "yaw": -49.8, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L9") },
-            { "pitch": 0.5, "yaw": -49, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L10") },
-            { "pitch": -10.3, "yaw": -31.2, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("F1") },
-            { "pitch": -10.6, "yaw": 31.3, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("F2") },
-            { "pitch": -10, "yaw": 146, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("B1") },
-            { "pitch": -10, "yaw": -145, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("B2") },
-            { "pitch": -10, "yaw": 67, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R1") },
-            { "pitch": -20, "yaw": 89, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R2") },
-            { "pitch": -1, "yaw": 89, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R3") },
-            { "pitch": -16, "yaw": 107, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R4") },
-            { "pitch": 2.2, "yaw": 107, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R5") },
-            { "pitch": -8, "yaw": 122, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R6") }
+            { "pitch": -12, "yaw": 0, "cssClass": "custom-hotspot heroimage", "clickHandlerFunc": () => openSpecificModal("fmain") },
+            { "pitch": -12, "yaw": -112, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L1") },
+            { "pitch": 2, "yaw": -112, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L2") },
+            { "pitch": -13, "yaw": -102, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L3") },
+            { "pitch": 2, "yaw": -102, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L4") },
+            { "pitch": -14, "yaw": -90, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L5") },
+            { "pitch": 2, "yaw": -90, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L6") },
+            { "pitch": -15, "yaw": -75, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L7") },
+            { "pitch": 2, "yaw": -75, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L8") },
+            { "pitch": 2, "yaw": 75, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L9") },
+            { "pitch": -18, "yaw": 75, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("L10") },
+    
+            { "pitch": -15, "yaw": 90, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R1") },
+            { "pitch": 0, "yaw": 91, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R2") },
+            { "pitch": -15, "yaw": 103, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R3") },
+            { "pitch": 0, "yaw": 103, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R4") },
+            { "pitch": -12, "yaw": 112, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R5") },
+            { "pitch": 2, "yaw": 112, "cssClass": "custom-hotspot", "clickHandlerFunc": () => openSpecificModal("R6") }
         ]
     });
 
@@ -156,10 +273,6 @@ if (continueMutedBtn && audioModal) {
         "L8": { title: "L8", image: "https://picsum.photos/300/400?random=8", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L9": { title: "L9", image: "https://picsum.photos/300/400?random=9", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L10": { title: "L10", image: "https://picsum.photos/300/400?random=10", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
-        "F1": { title: "F1", image: "https://picsum.photos/300/400?random=2", subtext: "High-accent custom forest photography canvas artwork.", audio: "forest-song.mp3" },
-        "F2": { title: "F2", image: "https://picsum.photos/300/400?random=3", subtext: "Lower-accent coastline boardwalk layout frame print piece.", audio: "beach-song.mp3" },
-        "B1": { title: "B1", image: "https://picsum.photos/300/400?random=4", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
-        "B2": { title: "B2", image: "https://picsum.photos/300/400?random=6", subtext: "Horizontal sunset seascape photography frame.", audio: "sunset-song.mp3" },
         "R1": { title: "R1", image: "https://picsum.photos/300/400?random=5", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "R2": { title: "R2", image: "https://picsum.photos/300/400?random=6", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "R3": { title: "R3", image: "https://picsum.photos/300/400?random=7", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
@@ -186,6 +299,7 @@ function openSpecificModal(frameId) {
     if (modalImage && data.image) {
         modalImage.src = data.image;
         modalImage.style.display = "block";
+        resetModalImageZoom();
     }
 
     if (modalAudio && audioSource) {
@@ -193,7 +307,19 @@ function openSpecificModal(frameId) {
         audioSource.src = data.audio;
         modalAudio.load();
         
-        // OPTIONAL: Automatically start playing the voice overlay once it finishes loading
+        modalAudio.onended = function () {
+            modal.classList.remove('active');
+            isModalActive = false;
+            if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
+            if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+            resetModalImageZoom();
+            if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
+                panoramaViewer.setGyroEnabled(true);
+                gyroActive = true;
+                updateGyroButton();
+            }
+        };
+
         modalAudio.play().catch(err => console.log("Voice overlay autoplay blocked:", err));
     }
 
@@ -215,6 +341,7 @@ function openSpecificModal(frameId) {
             if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
             if (modalAudio) modalAudio.pause(); 
             if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+            resetModalImageZoom();
 
             // Restore gyro state if it was active before modal
             if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
@@ -233,12 +360,16 @@ function openSpecificModal(frameId) {
                 if (panoramaViewer && panoramaViewer.setModalActive) panoramaViewer.setModalActive(false);
                 if (modalAudio) modalAudio.pause(); 
                 if (globalAudio && !globalAudio.muted) globalAudio.volume = 0.4;
+                resetModalImageZoom();
 
                 // Restore gyro state if it was active before modal
                 if (panoramaPrevGyro && panoramaViewer && panoramaViewer.setGyroEnabled) {
                     panoramaViewer.setGyroEnabled(true);
                     gyroActive = true;
                     updateGyroButton();
+                }
+                if (panoramaViewer && panoramaViewer.setAutoRotate) {
+                    panoramaViewer.setAutoRotate(true);
                 }
             } 
         });
@@ -270,10 +401,12 @@ window.toggleAutoplay = function() {
         return;
     }
 
-    if (isModalActive) {
-        updateAutoplayButtonLabel();
-        return;
-    }
+   if (isModalActive) {
+    panoramaViewer.setAutoRotate(true);
+    isHudAutoplayActive = true;
+    updateAutoplayButtonLabel();
+    return;
+}
 
     console.log("[HUD] Activating automated canvas rotation engine...");
     panoramaViewer.setAutoRotate(true);
@@ -321,10 +454,15 @@ function syncFullscreenUI() {
 window.toggleFullscreen = function() {
     console.log("[HUD] Requesting browser display viewport size update...");
     const baseDocumentElementShell = document.documentElement;
-    
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         if (baseDocumentElementShell.requestFullscreen) {
-            baseDocumentElementShell.requestFullscreen();
+            baseDocumentElementShell.requestFullscreen().catch(function () {
+                if (isMobile && document.body) {
+                    document.body.style.zoom = '100%';
+                }
+            });
         } else if (baseDocumentElementShell.webkitRequestFullscreen) { /* Safari */
             baseDocumentElementShell.webkitRequestFullscreen();
         } else if (baseDocumentElementShell.mozRequestFullScreen) {
@@ -342,7 +480,7 @@ window.toggleFullscreen = function() {
 
     // Update state proactively in case browser fullscreenchange events delay or do not fire.
     syncFullscreenUI();
-    setTimeout(syncFullscreenUI, 50);
+    setTimeout(syncFullscreenUI, 100);
     requestAnimationFrame(syncFullscreenUI);
 };
 

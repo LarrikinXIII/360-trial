@@ -7,6 +7,8 @@
     --white: #111827;            /* Base panel surface card charcoal values */
     --text: #ffffff;             /* Universal white typography */
     --text-muted: #9ca3af;       /* Secondary body contrast alignment text */
+    --hotspot-size: 120px;
+    --hotspot-scale: 1;
 }
 
 * {
@@ -552,6 +554,11 @@ html, body {
     height: 100%;
     overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: none;
+    overscroll-behavior: none;
+    background: #000;
 }
 
 /* 360 Viewer Container */
@@ -577,13 +584,20 @@ html, body {
 
 /* Custom Glowing Hotspot Style */
 .custom-hotspot {
-    height: 24px;
-    width: 25px;
-     background: rgba(255, 255, 255, 0.3);
+    width: var(--hotspot-size);
+    height: var(--hotspot-size);
+    background: transparent !important;
+
+    min-width: 150px;
+    min-height: 220px;
+
+    max-width: 10;
+    max-height: 20px;
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    border-radius: 50%;
+    border-radius: 0;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), inset 0 0 5px #fff;
+    /*box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), inset 0 0 5px #fff;*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -591,18 +605,37 @@ html, body {
     animation: pulsateGlow 2s infinite ease-in-out;
 }
 
+.custom-hotspot.heroimage {
+    width: 350px !important;
+    height: 1000px !important;
+    min-width: 350 !important;
+    max-width: 1000px !important;
+    min-height: 350px !important;
+    max-height: 1000px !important;
+    background: transparent !important;
+    border-radius: 0% !important; 
+    border: none !important;
+    animation: none !important; /* Stops the pulsating animation */
+}
+
+.custom-hotspot.heroimage::after {
+   display: none !important;
+}
+
 .custom-hotspot::after {
     content: '';
-    width: 10px;
-    height: 10px;
-    background: #fff;
+    width: calc(var(--hotspot-size) * 0.55);
+    height: calc(var(--hotspot-size) * 0.55);
+    background: transparent !important;
     border-radius: 50%;
+    display: none !important;
+
 }
 
 .custom-hotspot:hover {
     transform: scale(1.2);
-    background: #ffffff;
-    box-shadow: 0 0 15px #ffffff;
+    /*background: #ffffff;*/
+    /*box-shadow: 0 0 15px #ffffff;*/
 }
 
 /*@keyframes pulsateGlow {
@@ -614,11 +647,10 @@ html, body {
 /* Modal Window Styles */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px); /* Frost-blur filter background accent layer */
-    -webkit-backdrop-filter: blur(8px);
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.96);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -626,6 +658,7 @@ html, body {
     pointer-events: none;
     transition: opacity 0.3s ease;
     z-index: 1000;
+    padding: 24px;
 }
 
 .modal-overlay.active {
@@ -633,32 +666,91 @@ html, body {
     pointer-events: auto;
 }
 
+.modal-overlay.active .modal-content {
+    opacity: 1;
+    transform: scale(1);
+}
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 30px;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 440px;
+    width: min(92vw, 1100px);
+    height: min(88vh, 860px);
+    max-width: 1100px;
+    max-height: 860px;
     position: relative;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: transparent;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.modal-image-shell {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    touch-action: none;
+    border: 12px solid rgba(0, 0, 0, 0.7);
+    box-sizing: border-box;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+#modalImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform-origin: center center;
+    transition: transform 0.12s ease-out;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    border: 0;
     box-sizing: border-box;
 }
 
-
-.modal-overlay.active .modal-content {
-    transform: translateY(0);
+.modal-title,
+.modal-subtext {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
+
 
 .close-btn {
     position: absolute;
-    top: 15px; right: 15px;
-    background: none; border: none;
-    font-size: 1.8rem; color: #555;
+    top: 18px;
+    right: 18px;
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.45);
+    border: none;
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.8rem;
+    color: #fff;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.05);
 }
 
 .close-btn:hover {
@@ -666,22 +758,48 @@ html, body {
 }
 
 .modal-title {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 8px;
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 2;
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    margin: 0;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
 }
 
 .modal-subtext {
-    font-size: 0.95rem;
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 20px;
+    position: absolute;
+    right: 24px;
+    bottom: 8%;
+    transform: none;
+    z-index: 2;
+    width: min(34vw, 320px);
+    max-height: 78vh;
+    overflow: hidden;
+    font-size: clamp(0.9rem, 1.05vw, 1.05rem);
+    color: #f3f4f6;
+    line-height: 1.7;
+    margin: 0;
+    text-align: left;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    white-space: pre-line;
+    animation: creditsScroll 20s linear infinite;
+    will-change: transform;
+}
+
+@keyframes creditsScroll {
+    0% { transform: translateY(115%); }
+    100% { transform: translateY(-140%); }
 }
 
 audio {
     width: 100%;
     margin-top: 10px;
     outline: none;
+    display: none !important;
 }
 
 /* Music button inherits shared control styling from the bottom controls bar */
@@ -830,8 +948,97 @@ audio {
             font-size: 0.8rem;
         }
 
-        .modal-content { width: 94%; padding: 20px; max-width: 360px; }
-        .modal-title { font-size: 1.2rem; }
-        .modal-subtext { font-size: 0.85rem; }
-    }
+        .modal-overlay {
+            padding: 12px;
+        }
+
+        .modal-content {
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            max-height: none;
+            padding: 0;
+        }
+
+        .modal-image-shell {
+            border-width: 12px;
+            border-radius: 16px;
+        }
+
+        .modal-title {
+            font-size: 1.05rem;
+            top: 12px;
+            left: 12px;
+        }
+
+        .modal-subtext {
+            right: 12px;
+            bottom: 8%;
+            width: min(46vw, 220px);
+            max-height: 74vh;
+            font-size: 0.8rem;
+            line-height: 1.45;
+        }
+
+        /* Fullscreen styles for mobile */
+        body.is-fullscreen #hud,
+        body.is-fullscreen #scene-switcher,
+        body.is-fullscreen #fov-slider {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        body.is-fullscreen #controls {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            left: auto !important;
+            right: 0 !important;
+            transform: none !important;
+            width: auto !important;
+            justify-content: flex-end !important;
+            bottom: 12px !important;
+        }
+
+        body.is-fullscreen #controls .ctrl-btn:not(.fullscreen-toggle) {
+            display: none !important;
+        }
+
+        body.is-fullscreen #hud,
+        body.is-fullscreen #scene-switcher {
+            display: none !important;
+        }
+
+        body.is-fullscreen .fullscreen-toggle {
+            display: inline-flex !important;
+            position: fixed !important;
+            bottom: 12px !important;
+            right: 12px !important;
+            left: auto !important;
+            top: auto !important;
+            z-index: 100000 !important;
+            pointer-events: auto !important;
+        }
+
+        .custom-hotspot {
+    min-width: 30px;
+    min-height: 50px;
+    max-width: 10;
+    max-height: 20px;
+    background: transparent !important;
   
+}
+
+.custom-hotspot.heroimage {
+    width: 100px !important;
+    height: 400px !important;
+    min-width: 120 !important;
+    max-width: 400px !important;
+    min-height: 120px !important;
+    max-height: 400px !important;
+    background: transparent !important;
+   
+}
+        
+    }

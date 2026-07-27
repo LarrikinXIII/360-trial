@@ -262,6 +262,17 @@ window.pannellum = (function() {
             drawScene();
         });
 
+        function updateHotspotScale() {
+            var currentHfov = Number(config.hfov || 100);
+            var scale = Math.max(0.7, Math.min(1.8, 100 / currentHfov));
+            var sizePx = Math.max(12, Math.min(32, Math.round(18 * scale)));
+
+            document.documentElement.style.setProperty('--hotspot-scale', scale.toFixed(3));
+            document.documentElement.style.setProperty('--hotspot-size', sizePx + 'px');
+        }
+
+        updateHotspotScale();
+
         // --- 2. MOBILE PHONE TOUCH LISTENERS (PANNING & PINCH-TO-ZOOM) ---
         var initialPinchDistance = null;
 
@@ -327,6 +338,7 @@ window.pannellum = (function() {
                     var pinchChange = currentPinchDistance - initialPinchDistance;
                     config.hfov -= pinchChange * 0.15; // Adjusts 3D Field of View
                     config.hfov = Math.max(50, Math.min(130, config.hfov));
+                    updateHotspotScale();
                     drawScene();
                 }
                 initialPinchDistance = currentPinchDistance;
@@ -342,6 +354,7 @@ window.pannellum = (function() {
             pauseAutoRotate("interaction");
             if (e.deltaY > 0) { config.hfov += 4; } else { config.hfov -= 4; }
             config.hfov = Math.max(50, Math.min(130, config.hfov));
+            updateHotspotScale();
             drawScene();
         }, { passive: false });
 

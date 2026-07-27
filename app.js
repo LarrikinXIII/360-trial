@@ -262,7 +262,7 @@ if (continueMutedBtn && audioModal) {
 
     // Central local file mapping configuration registry dictionary layout
     const frameContentRegistry = {
-        "fmain": { title: "The Shadow", image: "f1.png", subtext: "My hands were never made for crowns,\nThey were made to carry tomorrow.\nAnd if the world should turn to ash,\nYou’ll still find peace beneath my shadow.", audio: "fmain.mp3" },
+        "fmain": { title: "The Shadow", image: "f1.png", subtext: "I became the silence between storms,\nSo your laughter would never fear the night.\nIf darkness ever comes for your name,\nIt will have to walk through mine first.\n\nThe night may swallow kingdoms whole,\nBut never the promise I have made.\nStand behind my shadow, little one—\nEven darkness fears a father’s love.", audio: "fmain.mp3" },
         "L1": { title: "L1", image: "https://picsum.photos/300/400?random=1", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L2": { title: "L2", image: "https://picsum.photos/300/400?random=2", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },
         "L3": { title: "L3", image: "https://picsum.photos/300/400?random=3", subtext: "Botanical green plant accent canvas print.", audio: "leaf-song.mp3" },

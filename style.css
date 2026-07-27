@@ -777,7 +777,7 @@ html, body {
     transform: none;
     z-index: 2;
     width: min(34vw, 320px);
-    max-height: 78vh;
+    max-height: 156vh;
     overflow: hidden;
     font-size: clamp(0.9rem, 1.05vw, 1.05rem);
     color: #f3f4f6;
@@ -975,7 +975,7 @@ audio {
             right: 12px;
             bottom: 8%;
             width: min(46vw, 220px);
-            max-height: 74vh;
+            max-height: 148vh;
             font-size: 0.8rem;
             line-height: 1.45;
         }

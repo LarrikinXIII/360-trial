@@ -788,6 +788,13 @@ html, body {
     white-space: pre-line;
     animation: creditsScroll 20s linear infinite;
     will-change: transform;
+    opacity: 1;
+    transition: opacity 0.25s ease, text-shadow 0.25s ease;
+}
+
+.modal-subtext.dimmed {
+    opacity: 0.2;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 @keyframes creditsScroll {

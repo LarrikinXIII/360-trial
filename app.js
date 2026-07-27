@@ -20,6 +20,19 @@ function buildVirtualTourViewer() {
     const modalImage = document.getElementById('modalImage');
     const modalImageShell = document.getElementById('modalImageShell');
     const audioSource = document.getElementById('audioSource');
+    let modalSubtextTimeoutId = null;
+
+    function dimModalSubtext() {
+        if (!modalSubtext) return;
+        modalSubtext.classList.add('dimmed');
+        if (modalSubtextTimeoutId) {
+            clearTimeout(modalSubtextTimeoutId);
+        }
+        modalSubtextTimeoutId = setTimeout(function () {
+            modalSubtext.classList.remove('dimmed');
+            modalSubtextTimeoutId = null;
+        }, 3000);
+    }
 
     const globalAudio = document.getElementById('globalAmbientAudio');
     const globalAudioToggle = document.getElementById('globalAudioToggle');
@@ -102,7 +115,45 @@ function buildVirtualTourViewer() {
             event.preventDefault();
             event.stopPropagation();
             resetModalImageZoom();
+            dimModalSubtext();
         });
+
+        modalImage.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            dimModalSubtext();
+        });
+
+        modalImage.addEventListener('wheel', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            dimModalSubtext();
+            const delta = event.deltaY > 0 ? -0.08 : 0.08;
+            applyModalImageZoom(modalImageZoom + delta);
+        }, { passive: false });
+
+        modalImage.addEventListener('touchstart', function (event) {
+            dimModalSubtext();
+            if (event.touches.length === 2) {
+                event.preventDefault();
+                isModalImageInteracting = true;
+                modalImageZoomStartDistance = Math.hypot(
+                    event.touches[0].clientX - event.touches[1].clientX,
+                    event.touches[0].clientY - event.touches[1].clientY
+                );
+                modalImageZoomStartScale = modalImageZoom;
+                modalImage.style.transition = 'none';
+            } else if (event.touches.length === 1 && modalImageZoom > 1) {
+                // Single touch drag when zoomed
+                event.preventDefault();
+                isModalImageInteracting = true;
+                modalImageDragStartX = event.touches[0].clientX;
+                modalImageDragStartY = event.touches[0].clientY;
+                modalImageDragOffsetX = modalImageOffsetX;
+                modalImageDragOffsetY = modalImageOffsetY;
+                modalImage.style.transition = 'none';
+            }
+        }, { passive: false });
 
         // Mouse drag handling
         modalImage.addEventListener('mousedown', function (event) {
@@ -206,7 +257,7 @@ function buildVirtualTourViewer() {
         if (!globalAudioToggle) return;
 
         const isMuted = !!globalAudio && globalAudio.muted;
-        globalAudioToggle.innerHTML = isMuted ? '🔇 Music Off' : '🔊 Music On';
+        globalAudioToggle.innerHTML = isMuted ? '🔇' : '🔊';
         globalAudioToggle.classList.toggle('active', !isMuted);
     }
 

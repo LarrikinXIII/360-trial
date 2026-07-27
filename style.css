@@ -481,6 +481,31 @@ footer a { text-decoration: none; color: var(--text-muted); transition: color 0.
 footer a:hover { color: #2563eb; }
 .copyright { text-align: center; padding: 20px; color: #4b5563; border-top: 1px solid #1f2937; }
 
+.visitor-counter {
+    display: inline-block;
+    margin-left: 16px;
+    color: #9ca3af;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.visitor-counter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    margin-left: 12px;
+    padding: 0 10px;
+    height: 32px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e5e7eb;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
 /* ==========================================================================
    CUSTOM POPUP MODAL
    ========================================================================== */

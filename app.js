@@ -361,7 +361,7 @@ if (continueMutedBtn && audioModal) {
     // Launch the stable 3D Equirectangular Spherical Viewer canvas
   panoramaViewer = window.pannellum.viewer('panorama', {
     type: "equirectangular",
-    panorama: "darkroom.jpeg",
+    panorama: "dark_room.jpeg",
 
     autoLoad: true,
     hfov: 100,
@@ -563,9 +563,30 @@ window.addEventListener('DOMContentLoaded', function() {
     isHudAutoplayActive = true;
     updateAutoplayButtonLabel();
     syncFullscreenUI();
+    updateVisitorCounter();
 
     // Gyro will only be enabled by user via the Gyro button.
 });
+
+function updateVisitorCounter() {
+    try {
+        const storageKey = 'virtualGalleryVisitorCount';
+        const footerCounter = document.getElementById('visitorCounter');
+        const badgeCounter = document.getElementById('visitorCounterBadge');
+        const rawValue = window.localStorage.getItem(storageKey);
+        const currentValue = rawValue ? Number(rawValue) : 0;
+        const nextValue = currentValue + 1;
+        window.localStorage.setItem(storageKey, String(nextValue));
+        if (footerCounter) {
+            footerCounter.textContent = `Visitors: ${nextValue}`;
+        }
+        if (badgeCounter) {
+            badgeCounter.textContent = nextValue;
+        }
+    } catch (error) {
+        console.warn('Visitor counter unavailable:', error);
+    }
+}
 
 // 2. Triggered naturally by onclick="resetView()"
 window.resetView = function() {

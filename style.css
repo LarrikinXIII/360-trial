@@ -801,7 +801,7 @@ html, body {
     bottom: 8%;
     transform: none;
     z-index: 2;
-    width: min(34vw, 320px);
+    width: auto;
     max-height: 156vh;
     overflow: hidden;
     font-size: clamp(0.9rem, 1.05vw, 1.05rem);
@@ -811,7 +811,7 @@ html, body {
     text-align: left;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
     white-space: pre-line;
-    animation: creditsScroll 20s linear infinite;
+    animation: creditsScroll 40s linear infinite;
     will-change: transform;
     opacity: 1;
     transition: opacity 0.25s ease, text-shadow 0.25s ease;
@@ -1071,6 +1071,29 @@ audio {
     max-height: 400px !important;
     background: transparent !important;
    
+}
+
+.modal-title {
+    top: 100px;
+
+}
+.modal-subtext {
+    position: center;
+    left: 24px;
+    right: 24px;
+    bottom: 50px;
+    transform: none;
+    width: auto;
+    max-height: 120px;
+    overflow: clip;
+    color: #f3f4f6;
+    line-height: 1;
+    margin: 0;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    white-space: pre-line;
+    animation: creditsScroll 40s linear infinite;
+  
 }
         
     }
